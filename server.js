@@ -17,8 +17,8 @@ const db = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
-  ssl: process.env.DB_HOST && !process.env.DB_HOST.includes('localhost') 
-    ? { rejectUnauthorized: false } 
+  ssl: process.env.DB_HOST && !process.env.DB_HOST.includes('localhost')
+    ? { rejectUnauthorized: false }
     : false
 });
 
@@ -65,8 +65,8 @@ app.post('/api/auth/login', async (req, res) => {
       });
     }
 
-    const derivedName = contactInfo.includes('@') 
-      ? contactInfo.split('@')[0] 
+    const derivedName = contactInfo.includes('@')
+      ? contactInfo.split('@')[0]
       : `Farmer ${contactInfo.slice(-4)}`;
 
     const [result] = await db.query(
@@ -83,7 +83,7 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
-// Helper: Normalize incoming crop keys to avoid Paddy/Rice/Corn mismatch
+// Helper: Normalize incoming crop keys to match database records reliably
 function normalizeCropKey(key = '') {
   const k = String(key).toLowerCase().trim();
   if (k.includes('rice') || k.includes('paddy')) return 'paddy';
@@ -103,14 +103,13 @@ app.post('/api/recommend', async (req, res) => {
     const langCol = (lang === 'ta' || lang === 'hi') ? `_${lang}` : '_en';
     const normalizedKey = normalizeCropKey(primaryCropKey);
 
-    // A. Primary Crop Details & Post-Harvest Storage Specs (with fallback search)
+    // A. Primary Crop Details & Post-Harvest Storage Specs
     let primaryCrop = null;
     let [crops] = await db.query(
       `SELECT * FROM crops WHERE LOWER(crop_key) = ? OR LOWER(crop_key) = ? LIMIT 1`,
       [String(primaryCropKey).toLowerCase(), normalizedKey]
     );
 
-    // If still not found, try partial match
     if (crops.length === 0) {
       [crops] = await db.query(
         `SELECT * FROM crops WHERE LOWER(name_en) LIKE ? LIMIT 1`,
@@ -130,7 +129,6 @@ app.post('/api/recommend', async (req, res) => {
         coldShelfLifeMonths: c.cold_shelf_life_months || 18
       };
     } else {
-      // Safe fallback crop so Paddy never crashes with 500
       primaryCrop = {
         key: primaryCropKey,
         name: primaryCropKey,
@@ -167,18 +165,17 @@ app.post('/api/recommend', async (req, res) => {
       console.warn('Price query fallback used:', err.message);
     }
 
-    // C. AI Intercrop Decision Matrix Scoring (Safe null checks & fallback)
+    // C. AI Intercrop Decision Matrix Scoring & Fallback
     let intercrop = null;
     try {
       let [candidateRules] = await db.query(
-        `SELECT * FROM intercrop_rules WHERE crop_key = ? OR primary_crop_key = ? OR primary_crop_key = ?`,
+        `SELECT * FROM intercrop_rules WHERE primary_crop_key = ? OR crop_key = ? OR primary_crop_key = ?`,
         [matchedCropKey, matchedCropKey, normalizedKey]
       );
 
-      // Fallback: if no rule matched the key, grab any default rule
       if (!candidateRules || candidateRules.length === 0) {
-        const [fallbackRules] = await db.query(`SELECT * FROM intercrop_rules LIMIT 3`);
-        candidateRules = fallbackRules;
+        const [anyRules] = await db.query(`SELECT * FROM intercrop_rules LIMIT 5`);
+        candidateRules = anyRules;
       }
 
       if (candidateRules && candidateRules.length > 0) {
@@ -244,7 +241,7 @@ app.post('/api/recommend', async (req, res) => {
           lerScore: parseFloat(bestMatch.ler_score || 1.3),
           sowingOffset: bestMatch.sowing_offset || 'Simultaneous on Day 0',
           rootZoneSynergy: bestMatch.root_zone_synergy || 'Deep taproot + Shallow fibrous root system',
-          reasoning: bestMatch[`reasoning${langCol}`] || bestMatch.reasoning_en || 'Natural atmospheric nitrogen fixation and canopy cover synergy.',
+          reasoning: bestMatch[`reasoning${langCol}`] || bestMatch.reasoning_en || 'Atmospheric nitrogen fixation and weed suppression synergy.',
           postHarvest: companionPostHarvest
         };
       }
@@ -252,7 +249,65 @@ app.post('/api/recommend', async (req, res) => {
       console.warn('Intercrop decision warning:', err.message);
     }
 
-    // D. Pest Management & Safety Protocol (Safe fallback query)
+    // Agronomic fallback if database yields no matching intercrop rule
+    if (!intercrop) {
+      const fallbackCompanions = {
+        maize: {
+          name: 'Cowpea (Lobia)',
+          key: 'cowpea',
+          ratio: '2:1',
+          ler: 1.32,
+          nitro: 35,
+          spacing: '30 cm x 10 cm',
+          reasoning: 'Cowpea provides ground cover, suppresses weed emergence, and fixes atmospheric nitrogen to meet the high nutrient demand of maize.'
+        },
+        paddy: {
+          name: 'Azolla / Green Gram',
+          key: 'greengram',
+          ratio: 'Border / Bund Planting',
+          ler: 1.25,
+          nitro: 40,
+          spacing: '20 cm x 10 cm on bunds',
+          reasoning: 'Bio-fertilizing nitrogen fixer that stabilizes field bunds and prevents weed establishment without interfering with flooded paddy basins.'
+        },
+        cotton: {
+          name: 'Black Gram (Urad)',
+          key: 'blackgram',
+          ratio: '1:2',
+          ler: 1.28,
+          nitro: 30,
+          spacing: '30 cm x 10 cm',
+          reasoning: 'Short-duration legume provides quick early-stage canopy cover before cotton branches out, reducing water runoff and weed competition.'
+        },
+        groundnut: {
+          name: 'Pigeon Pea (Arhar/Tur)',
+          key: 'pigeonpea',
+          ratio: '6:1',
+          ler: 1.35,
+          nitro: 45,
+          spacing: '60 cm x 15 cm',
+          reasoning: 'Deep root system extracts nutrients from lower subsoil strata, complementing shallow groundnut root structures.'
+        }
+      };
+
+      const defaultChoice = fallbackCompanions[normalizedKey] || fallbackCompanions.maize;
+
+      intercrop = {
+        key: defaultChoice.key,
+        name: defaultChoice.name,
+        harvestDuration: '65 - 75 Days',
+        rowRatio: defaultChoice.ratio,
+        spacing: defaultChoice.spacing,
+        nitrogenFixed: defaultChoice.nitro,
+        lerScore: defaultChoice.ler,
+        sowingOffset: 'Simultaneous on Day 0',
+        rootZoneSynergy: 'Deep taproot + Shallow fibrous root system',
+        reasoning: defaultChoice.reasoning,
+        postHarvest: { safeMoisturePct: 10.0, ambientMonths: 6, coldMonths: 18 }
+      };
+    }
+
+    // D. Pest Management & Safety Protocol
     let pests = [];
     try {
       const [pestRows] = await db.query(
