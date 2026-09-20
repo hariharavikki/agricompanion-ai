@@ -247,7 +247,6 @@ function getTop3Companions(cropKey, szn, soil, water, lang = 'en') {
         }
       ];
     }
-    // Kharif Default
     return [
       {
         tier: t.high,
@@ -400,7 +399,7 @@ function getTop3Companions(cropKey, szn, soil, water, lang = 'en') {
           tier: t.rec,
           key: 'greengram',
           name: getName('greengram'),
-          rowRatio: lang === 'ta' ? 'வரப்பு ஓரங்களில் நடுதல்' : lang === 'hi' ? 'मेड़ों पर बुवाई' : 'Bund & Perimeter Rows',
+          rowRatio: lang === 'ta' ? 'வரப்பு ஓரங்களில் நடுதல்' : lang === 'hi' ? 'மேड़ों पर बुवाई' : 'Bund & Perimeter Rows',
           spacing: '20 cm x 10 cm',
           lerScore: 1.22,
           nitrogenFixed: 25,
@@ -555,7 +554,6 @@ function getTop3Companions(cropKey, szn, soil, water, lang = 'en') {
     ];
   }
 
-  // Safe Universal Fallback
   return [
     {
       tier: t.high,
@@ -581,7 +579,6 @@ app.post('/api/recommend', async (req, res) => {
     const langCol = (lang === 'ta' || lang === 'hi') ? `_${lang}` : '_en';
     const normalizedKey = normalizeCropKey(primaryCropKey);
 
-    // Primary Crop Details
     let primaryCrop = null;
     let [crops] = await db.query(
       `SELECT * FROM crops WHERE LOWER(crop_key) = ? OR LOWER(crop_key) = ? LIMIT 1`,
@@ -628,13 +625,12 @@ app.post('/api/recommend', async (req, res) => {
 
     const matchedCropKey = crops.length > 0 ? crops[0].crop_key : primaryCropKey;
 
-    // Mandi Rates & MSP Benchmarks
     const CURRENT_MSP_DIRECTORY = {
-      paddy: { msp: 2300.00, mandi: 2360.00, date: '2026-06-15' },
-      rice: { msp: 2300.00, mandi: 2360.00, date: '2026-06-15' },
-      maize: { msp: 2225.00, mandi: 2280.00, date: '2026-06-15' },
-      cotton: { msp: 7121.00, mandi: 7350.00, date: '2026-06-15' },
-      groundnut: { msp: 6783.00, mandi: 6940.00, date: '2026-06-15' }
+      paddy: { msp: 2441.00, mandi: 2520.00, date: '2026-06-15' },
+      rice: { msp: 2441.00, mandi: 2520.00, date: '2026-06-15' },
+      maize: { msp: 2410.00, mandi: 2490.00, date: '2026-06-15' },
+      cotton: { msp: 8267.00, mandi: 8450.00, date: '2026-06-15' },
+      groundnut: { msp: 7517.00, mandi: 7680.00, date: '2026-06-15' }
     };
 
     const defaultCropMarket = CURRENT_MSP_DIRECTORY[normalizedKey] || CURRENT_MSP_DIRECTORY.maize;
@@ -663,7 +659,6 @@ app.post('/api/recommend', async (req, res) => {
       console.warn('Price query fallback used:', err.message);
     }
 
-    // 3-Tier Dynamic Companion Hierarchy
     const companionList = getTop3Companions(normalizedKey, season, soilType, waterStatus, lang).map(comp => ({
       ...comp,
       postHarvest: { safeMoisturePct: 10.0, ambientMonths: 6, coldMonths: 18 }
@@ -671,7 +666,6 @@ app.post('/api/recommend', async (req, res) => {
 
     const activeCompanion = companionList[0];
 
-    // Integrated Pest Management
     let pests = [];
     try {
       const [pestRows] = await db.query(
@@ -705,7 +699,76 @@ app.post('/api/recommend', async (req, res) => {
   }
 });
 
-// 3. User History Endpoints
+// 3. SECURE WEATHER PROXY ENDPOINT
+// The API Key stays strictly on the server and is never sent to the browser
+app.get('/api/weather', async (req, res) => {
+  const { lat, lon, lang = 'en' } = req.query;
+  const apiKey = process.env.OPENWEATHER_API_KEY || process.env.WEATHER_API_KEY || process.env.VITE_WEATHER_API_KEY;
+
+  if (!apiKey) {
+    return res.status(500).json({ error: 'Server weather API key is not configured in .env' });
+  }
+
+  const latitude = lat || '28.6139';
+  const longitude = lon || '77.2090';
+
+  try {
+    const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&units=metric&appid=${apiKey}`;
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`OpenWeather HTTP status ${response.status}`);
+    }
+
+    const data = await response.json();
+    const city = data.city?.name || 'Local Farm Station';
+
+    const dailyMap = {};
+    data.list.forEach((item) => {
+      const dateKey = item.dt_txt.split(' ')[0];
+      if (!dailyMap[dateKey]) {
+        dailyMap[dateKey] = {
+          temps: [],
+          rainProb: [],
+          windSpeeds: []
+        };
+      }
+      dailyMap[dateKey].temps.push(item.main.temp);
+      dailyMap[dateKey].rainProb.push((item.pop || 0) * 100);
+      dailyMap[dateKey].windSpeeds.push(Math.round(item.wind.speed * 3.6)); // m/s to km/h
+    });
+
+    const dayLabels = {
+      en: ['Day 1 (Today)', 'Day 2', 'Day 3', 'Day 4', 'Day 5'],
+      ta: ['நாள் 1 (இன்று)', 'நாள் 2', 'நாள் 3', 'நாள் 4', 'நாள் 5'],
+      hi: ['दिन 1 (आज)', 'दिन 2', 'दिन 3', 'दिन 4', 'दिन 5']
+    };
+    const labels = dayLabels[lang] || dayLabels.en;
+
+    const forecast = Object.keys(dailyMap).slice(0, 5).map((dKey, idx) => {
+      const dData = dailyMap[dKey];
+      const maxT = Math.round(Math.max(...dData.temps));
+      const maxRain = Math.round(Math.max(...dData.rainProb));
+      const maxW = Math.round(Math.max(...dData.windSpeeds));
+      const isHighRisk = maxRain >= 50 || maxW >= 20;
+
+      return {
+        day: labels[idx] || `Day ${idx + 1}`,
+        date: dKey,
+        temp: maxT,
+        rainProb: maxRain,
+        windKmh: maxW,
+        sprayRisk: isHighRisk ? 'High' : 'Low'
+      };
+    });
+
+    res.json({ city, forecast });
+  } catch (err) {
+    console.error('Proxy weather fetch error:', err.message);
+    res.status(500).json({ error: 'Weather proxy failed: ' + err.message });
+  }
+});
+
+// 4. User History Endpoints
 app.post('/api/history/save', async (req, res) => {
   const { userId, primaryCrop, intercrop, season, soilType, waterStatus } = req.body;
   try {

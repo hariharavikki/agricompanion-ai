@@ -4,11 +4,11 @@ import ReactDOM from 'react-dom/client';
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5002';
 
 const CURRENT_MSP_DIRECTORY = {
-  paddy: { msp: 2300.00, mandi: 2360.00, date: '2026-06-15' },
-  rice: { msp: 2300.00, mandi: 2360.00, date: '2026-06-15' },
-  maize: { msp: 2225.00, mandi: 2280.00, date: '2026-06-15' },
-  cotton: { msp: 7121.00, mandi: 7350.00, date: '2026-06-15' },
-  groundnut: { msp: 6783.00, mandi: 6940.00, date: '2026-06-15' }
+  paddy: { msp: 2441.00, mandi: 2520.00, date: '2026-06-15' },
+  rice: { msp: 2441.00, mandi: 2520.00, date: '2026-06-15' },
+  maize: { msp: 2410.00, mandi: 2490.00, date: '2026-06-15' },
+  cotton: { msp: 8267.00, mandi: 8450.00, date: '2026-06-15' },
+  groundnut: { msp: 7517.00, mandi: 7680.00, date: '2026-06-15' }
 };
 
 const DICTIONARY = {
@@ -254,12 +254,11 @@ const DICTIONARY = {
   }
 };
 
-// Comprehensive Trilingual Translation Dictionaries
 const AGRONOMIC_TRANSLATIONS = {
   crops: {
     cowpea: { en: 'Cowpea (Lobia)', ta: 'காராமணி (தட்டப்பயறு)', hi: 'लोबिया (चौलाई)' },
     greengram: { en: 'Green Gram (Moong)', ta: 'பாசிப்பயறு (பச்சைப்பயறு)', hi: 'मूंग (Green Gram)' },
-    blackgram: { en: 'Black Gram (Urad)', ta: 'உளுந்து (கருப்பு உளுந்து)', hi: 'உड़द (Black Gram)' },
+    blackgram: { en: 'Black Gram (Urad)', ta: 'உளுந்து (கருப்பு உளுந்து)', hi: 'उड़द (Black Gram)' },
     frenchbean: { en: 'French Bean (Rajma)', ta: 'பீன்ஸ் / ராஜ்மா', hi: 'राजमा / फ्रेंच बीन' },
     pea: { en: 'Field Pea (Matar)', ta: 'பச்சை பட்டாணி', hi: 'हरी मटर (Field Pea)' },
     chickpea: { en: 'Chickpea (Chana)', ta: 'கொண்டைக்கடலை', hi: 'चना (Chickpea)' },
@@ -352,7 +351,7 @@ const getLocalizedCropName = (cropKey, englishName, currentLang) => {
 
 const getLocalizedTier = (tierStr, currentLang) => {
   const t = String(tierStr || '').toLowerCase();
-  if (t.includes('highly') || t.includes('சிறந்த') || t.includes('अत्यधिक')) {
+  if (t.includes('highly') || t.includes('சிறந்த') || t.includes('அत्यधिक')) {
     return AGRONOMIC_TRANSLATIONS.tiers.high[currentLang] || AGRONOMIC_TRANSLATIONS.tiers.high.en;
   }
   if (t.includes('feasible') || t.includes('alternative') || t.includes('மாற்று') || t.includes('विकल्प')) {
@@ -432,7 +431,7 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
     soybean: { en: 'Soybean', ta: 'சோயாபீன்', hi: 'सोयाबीन (Soybean)' },
     horsegram: { en: 'Horse Gram (Kulthi)', ta: 'கொள்ளு (Horse Gram)', hi: 'कुलथी (Horse Gram)' },
     clusterbean: { en: 'Cluster Bean (Guar)', ta: 'கொத்தவரங்காய் (Guar)', hi: 'ग्वारफली (Cluster Bean)' },
-    azolla: { en: 'Azolla Pinnata (Biofertilizer)', ta: 'அசோலா உயிர் உரம்', hi: 'अजोला जैव उर्वरक' },
+    azolla: { en: 'Azolla Pinnata (Biofertilizer)', ta: 'அசோலா உயிர் உரம்', hi: 'அजोला जैव उर्वरक' },
     sesbania: { en: 'Sesbania (Dhaincha)', ta: 'தக்கைப்பூண்டு (சணப்பை)', hi: 'ढैंचा (हरी खाद)' },
     pearlmillet: { en: 'Pearl Millet (Bajra)', ta: 'கம்பு (Bajra)', hi: 'बाजरा (Pearl Millet)' },
     pigeonpea: { en: 'Pigeon Pea (Tur / Arhar)', ta: 'துவரை (Red Gram)', hi: 'अरहर / तूर दाल' },
@@ -509,8 +508,8 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
         name: getName('soybean'),
         rowRatio: '2:2 / 2:1',
         spacing: '30 cm x 10 cm',
-        nitrogenFixed: 36,
         lerScore: 1.29,
+        nitrogenFixed: 36,
         harvestDuration: lang === 'ta' ? '80 - 90 நாட்கள்' : lang === 'hi' ? '80 - 90 दिन' : '80 - 90 Days',
         sowingOffset: lang === 'ta' ? 'முதல் நாளில் விதைப்பு' : lang === 'hi' ? 'दिन 0 पर बुवाई' : 'Simultaneous on Day 0',
         rootZoneSynergy: lang === 'ta' ? 'நேரான தண்டு' : lang === 'hi' ? 'मजबूत तना' : 'Vertical erect profile reducing wind lodging',
@@ -534,7 +533,6 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
     ];
   }
 
-  // Safe Fallback Set
   return [
     {
       tier: t.high,
@@ -604,13 +602,14 @@ export default function App() {
   const [imageAnalysisResult, setImageAnalysisResult] = useState(null);
   const fileInputRef = useRef(null);
 
-  const [weatherForecast] = useState([
+  const [weatherForecast, setWeatherForecast] = useState([
     { day: 'Day 1 (Today)', temp: 31, rainProb: 10, windKmh: 12, sprayRisk: 'Low' },
     { day: 'Day 2', temp: 30, rainProb: 20, windKmh: 14, sprayRisk: 'Low' },
     { day: 'Day 3', temp: 27, rainProb: 75, windKmh: 24, sprayRisk: 'High' },
     { day: 'Day 4', temp: 26, rainProb: 65, windKmh: 20, sprayRisk: 'High' },
     { day: 'Day 5', temp: 29, rainProb: 15, windKmh: 11, sprayRisk: 'Low' }
   ]);
+  const [locationName, setLocationName] = useState('Field Weather Station');
 
   useEffect(() => {
     const updateVoices = () => {
@@ -624,10 +623,40 @@ export default function App() {
     }
   }, []);
 
+  // Secure Proxy Weather Fetcher (Client never handles OpenWeather API Keys)
+  useEffect(() => {
+    const fetchWeather = async (lat, lon) => {
+      try {
+        const query = lat && lon ? `?lat=${lat}&lon=${lon}&lang=${lang}` : `?lang=${lang}`;
+        const res = await fetch(`${API_BASE}/api/weather${query}`);
+        if (!res.ok) throw new Error(`Weather endpoint status ${res.status}`);
+        const data = await res.json();
+
+        if (data.city) {
+          setLocationName(data.city);
+        }
+        if (data.forecast && data.forecast.length > 0) {
+          setWeatherForecast(data.forecast);
+        }
+      } catch (err) {
+        console.warn('Weather fetch fallback engaged:', err.message);
+      }
+    };
+
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => fetchWeather(pos.coords.latitude, pos.coords.longitude),
+        () => fetchWeather()
+      );
+    } else {
+      fetchWeather();
+    }
+  }, [lang]);
+
   const calculateEconomics = () => {
     if (!advice || !advice.primaryCrop) return null;
     const yieldPerAcre = Number(advice.primaryCrop.avgYield || (primaryCropKey === 'cotton' ? 8.5 : primaryCropKey === 'groundnut' ? 12.0 : 18.0));
-    const mandiRate = Number(advice.marketData?.pricePerQuintal || 2450);
+    const mandiRate = Number(advice.marketData?.pricePerQuintal || 2490);
     const costPerAcre = primaryCropKey === 'cotton' ? 21000 : 15500;
 
     const primaryYield = yieldPerAcre * acres;
@@ -1096,7 +1125,6 @@ export default function App() {
 
   return (
     <div className="bg-gray-100 min-h-screen p-4 md:p-8 font-sans max-w-5xl mx-auto">
-      {/* Top Header */}
       <div className="flex flex-wrap justify-between items-center bg-white p-4 rounded-xl shadow-sm border mb-6 gap-3">
         <div>
           <h1 className="text-xl font-black text-green-900">{d.title}</h1>
@@ -1124,9 +1152,7 @@ export default function App() {
         </div>
       </div>
 
-      {/* Action Row: Soil Photo Scanner & Voice Input */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        {/* Soil Image Diagnostics */}
         <div className="bg-white border p-3.5 rounded-xl shadow-sm space-y-2">
           <div className="flex justify-between items-center">
             <h3 className="text-xs font-extrabold text-gray-800 uppercase tracking-wide">
@@ -1180,7 +1206,6 @@ export default function App() {
           )}
         </div>
 
-        {/* Voice Assistant */}
         <div className="bg-white border p-3.5 rounded-xl shadow-sm flex flex-col justify-between">
           <div className="flex justify-between items-center">
             <h3 className="text-xs font-extrabold text-gray-800 uppercase tracking-wide">
@@ -1209,9 +1234,7 @@ export default function App() {
         </div>
       </div>
 
-      {/* Main Grid: Parameters + Results */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Form Selectors */}
         <div className="bg-white p-5 rounded-xl shadow-sm border space-y-4">
           <div>
             <label className="text-xs font-bold text-gray-700 block mb-1">{d.crop}</label>
@@ -1251,7 +1274,6 @@ export default function App() {
             </select>
           </div>
 
-          {/* Farm Size Slider */}
           <div className="bg-emerald-50/70 p-3 rounded-lg border border-emerald-200">
             <div className="flex justify-between items-center mb-1.5">
               <label className="text-xs font-bold text-emerald-950">Farm Land Area</label>
@@ -1279,7 +1301,6 @@ export default function App() {
           </button>
         </div>
 
-        {/* Tabbed Results Area */}
         <div className="md:col-span-2 space-y-4">
           {!advice ? (
             <div className="bg-white p-10 rounded-xl border border-dashed text-center text-xs text-gray-500">
@@ -1287,7 +1308,6 @@ export default function App() {
             </div>
           ) : (
             <div className="space-y-4">
-              {/* Primary Crop Header */}
               <div className="bg-white p-4 rounded-xl shadow-sm border flex flex-wrap justify-between items-center gap-2">
                 <div>
                   <span className="text-[10px] font-extrabold uppercase text-gray-400 tracking-wider">Primary Crop Selected</span>
@@ -1306,7 +1326,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Navigation Tab Bar */}
               <div className="flex overflow-x-auto border-b border-gray-200 bg-white rounded-t-xl px-2 pt-2 gap-1 shadow-sm scrollbar-none">
                 <button
                   onClick={() => setActiveTab('intercrop')}
@@ -1372,10 +1391,8 @@ export default function App() {
                 </button>
               </div>
 
-              {/* TAB 1: INTERCROP BLUEPRINT + 3-TIER HIERARCHY */}
               {activeTab === 'intercrop' && (
                 <div className="space-y-4">
-                  {/* 3-Tier Hierarchy Cards */}
                   {advice.companionOptions && advice.companionOptions.length > 0 && (
                     <div className="bg-white p-4 rounded-xl shadow-sm border space-y-2">
                       <div>
@@ -1422,7 +1439,6 @@ export default function App() {
                     </div>
                   )}
 
-                  {/* Active Companion Blueprint Card */}
                   {advice.intercrop && (
                     <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-5 rounded-xl border border-emerald-300 shadow-sm space-y-4">
                       <div className="flex justify-between items-start">
@@ -1451,7 +1467,6 @@ export default function App() {
                         </div>
                       </div>
 
-                      {/* Agronomic Specs Grid */}
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-2 pt-1">
                         <div className="bg-white/90 p-2.5 rounded-lg border border-emerald-100 shadow-2xs">
                           <p className="text-[10px] text-gray-500 font-semibold">{d.rowRatio}</p>
@@ -1476,7 +1491,6 @@ export default function App() {
                         </div>
                       </div>
 
-                      {/* Sowing Schedule & Root Synergy */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
                         <div className="bg-white/90 p-3 rounded-lg border border-emerald-100">
                           <p className="text-[10px] text-gray-500 font-bold uppercase">{d.sowingSchedule}</p>
@@ -1517,7 +1531,6 @@ export default function App() {
                 </div>
               )}
 
-              {/* TAB 2: FIELD CHECKLIST */}
               {activeTab === 'checklist' && (
                 <div className="bg-white p-5 rounded-b-xl shadow-sm border space-y-4">
                   <div className="flex flex-wrap justify-between items-center border-b pb-3 gap-2">
@@ -1613,7 +1626,6 @@ export default function App() {
                 </div>
               )}
 
-              {/* TAB 3: PROFIT & YIELD CALCULATOR */}
               {activeTab === 'economics' && fin && (
                 <div className="bg-white p-5 rounded-b-xl shadow-sm border space-y-4">
                   <div className="flex justify-between items-center border-b pb-2">
@@ -1653,7 +1665,6 @@ export default function App() {
                 </div>
               )}
 
-              {/* TAB 4: FERTILIZER & BIO-N DOSAGE */}
               {activeTab === 'fertilizer' && fert && (
                 <div className="bg-white p-5 rounded-b-xl shadow-sm border space-y-4">
                   <div className="flex justify-between items-center border-b pb-2">
@@ -1695,12 +1706,13 @@ export default function App() {
                 </div>
               )}
 
-              {/* TAB 5: WEATHER */}
               {activeTab === 'weather' && (
                 <div className="bg-white p-5 rounded-b-xl shadow-sm border space-y-4">
                   <div className="flex justify-between items-center border-b pb-2">
                     <h3 className="text-sm font-black text-gray-800">5-Day Field Weather & Spraying Outlook</h3>
-                    <span className="text-xs text-gray-500 font-bold">Field Weather Station</span>
+                    <span className="text-xs text-emerald-800 font-bold bg-emerald-50 px-2.5 py-1 rounded border border-emerald-200">
+                      📍 {locationName}
+                    </span>
                   </div>
 
                   <div className="grid grid-cols-5 gap-2 text-center text-xs">
@@ -1721,7 +1733,6 @@ export default function App() {
                 </div>
               )}
 
-              {/* TAB 6: POST-HARVEST STORAGE */}
               {activeTab === 'storage' && (
                 <div className="bg-white p-5 rounded-b-xl shadow-sm border space-y-4">
                   <div className="flex justify-between items-center border-b pb-2">
@@ -1758,7 +1769,6 @@ export default function App() {
                 </div>
               )}
 
-              {/* TAB 7: PESTS */}
               {activeTab === 'pests' && (
                 <div className="bg-white p-5 rounded-b-xl shadow-sm border space-y-3">
                   <h3 className="text-xs font-black text-red-800 uppercase border-b pb-2">{d.pestTitle}</h3>
@@ -1790,7 +1800,6 @@ export default function App() {
         </div>
       </div>
 
-      {/* History Modal */}
       {showHistory && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
           <div className="bg-white p-6 rounded-xl max-w-md w-full space-y-4 shadow-xl max-h-[80vh] overflow-y-auto">
@@ -1821,7 +1830,6 @@ export default function App() {
         </div>
       )}
 
-      {/* Auth Modal */}
       {showAuth && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
           <form onSubmit={handleAuth} className="bg-white p-6 rounded-xl max-w-sm w-full space-y-3 shadow-lg">
