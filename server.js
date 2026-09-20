@@ -22,7 +22,7 @@ const db = mysql.createPool({
     : false
 });
 
-// Auto-check and initialize tables on boot
+// Auto-check and initialize/migrate tables on boot
 (async () => {
   try {
     const conn = await db.getConnection();
@@ -40,17 +40,37 @@ const db = mysql.createPool({
       CREATE TABLE IF NOT EXISTS user_history (
         id INT AUTO_INCREMENT PRIMARY KEY,
         user_id INT,
-        primary_crop VARCHAR(50) NOT NULL,
+        primary_crop VARCHAR(50) NOT NULL DEFAULT '',
         intercrop VARCHAR(50) DEFAULT 'none',
-        season VARCHAR(50),
-        soil_type VARCHAR(50),
-        water_status VARCHAR(50),
+        season VARCHAR(50) DEFAULT '',
+        soil_type VARCHAR(50) DEFAULT '',
+        water_status VARCHAR(50) DEFAULT '',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
 
+    // Safe column migrations in case user_history pre-existed with older columns
+    const columnsToAdd = [
+      { name: 'user_id', def: 'INT NULL AFTER id' },
+      { name: 'primary_crop', def: "VARCHAR(50) NOT NULL DEFAULT ''" },
+      { name: 'intercrop', def: "VARCHAR(50) DEFAULT 'none'" },
+      { name: 'season', def: "VARCHAR(50) DEFAULT ''" },
+      { name: 'soil_type', def: "VARCHAR(50) DEFAULT ''" },
+      { name: 'water_status', def: "VARCHAR(50) DEFAULT ''" }
+    ];
+
+    for (const col of columnsToAdd) {
+      try {
+        await conn.query(`ALTER TABLE user_history ADD COLUMN ${col.name} ${col.def}`);
+      } catch (colErr) {
+        if (colErr.errno !== 1060 && !String(colErr.message).includes('Duplicate column')) {
+          console.warn(`Migration notice for ${col.name}:`, colErr.message);
+        }
+      }
+    }
+
     conn.release();
-    console.log('Database connected: Users & User History tables ready.');
+    console.log('Database connected: Users & User History schema synchronized.');
   } catch (err) {
     console.error('DB Init Error:', err.message);
   }
@@ -263,7 +283,7 @@ app.post('/api/recommend', async (req, res) => {
       console.warn('Intercrop decision warning:', err.message);
     }
 
-    // Hardcoded Agronomic Fallback if database has no rules
+    // Fallback if database table yields no rules
     if (!intercrop) {
       const fallbackCompanions = {
         maize: {
@@ -361,7 +381,7 @@ app.post('/api/history/save', async (req, res) => {
     const [result] = await db.query(
       `INSERT INTO user_history (user_id, primary_crop, intercrop, season, soil_type, water_status)
        VALUES (?, ?, ?, ?, ?, ?)`,
-      [userId || null, primaryCrop, intercrop || 'none', season, soilType, waterStatus]
+      [userId || null, primaryCrop || '', intercrop || 'none', season || '', soilType || '', waterStatus || '']
     );
     res.json({ success: true, insertId: result.insertId });
   } catch (err) {
