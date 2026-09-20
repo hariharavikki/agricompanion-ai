@@ -399,7 +399,7 @@ function getTop3Companions(cropKey, szn, soil, water, lang = 'en') {
           tier: t.rec,
           key: 'greengram',
           name: getName('greengram'),
-          rowRatio: lang === 'ta' ? 'வரப்பு ஓரங்களில் நடுதல்' : lang === 'hi' ? 'மேड़ों पर बुवाई' : 'Bund & Perimeter Rows',
+          rowRatio: lang === 'ta' ? 'வரப்பு ஓரங்களில் நடுதல்' : lang === 'hi' ? 'मेड़ों पर बुवाई' : 'Bund & Perimeter Rows',
           spacing: '20 cm x 10 cm',
           lerScore: 1.22,
           nitrogenFixed: 25,
@@ -700,7 +700,6 @@ app.post('/api/recommend', async (req, res) => {
 });
 
 // 3. SECURE WEATHER PROXY ENDPOINT
-// The API Key stays strictly on the server and is never sent to the browser
 app.get('/api/weather', async (req, res) => {
   const { lat, lon, lang = 'en' } = req.query;
   const apiKey = process.env.OPENWEATHER_API_KEY || process.env.WEATHER_API_KEY || process.env.VITE_WEATHER_API_KEY;
@@ -734,7 +733,7 @@ app.get('/api/weather', async (req, res) => {
       }
       dailyMap[dateKey].temps.push(item.main.temp);
       dailyMap[dateKey].rainProb.push((item.pop || 0) * 100);
-      dailyMap[dateKey].windSpeeds.push(Math.round(item.wind.speed * 3.6)); // m/s to km/h
+      dailyMap[dateKey].windSpeeds.push(Math.round(item.wind.speed * 3.6));
     });
 
     const dayLabels = {

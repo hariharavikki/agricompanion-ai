@@ -351,7 +351,7 @@ const getLocalizedCropName = (cropKey, englishName, currentLang) => {
 
 const getLocalizedTier = (tierStr, currentLang) => {
   const t = String(tierStr || '').toLowerCase();
-  if (t.includes('highly') || t.includes('சிறந்த') || t.includes('அत्यधिक')) {
+  if (t.includes('highly') || t.includes('சிறந்த') || t.includes('अत्यधिक')) {
     return AGRONOMIC_TRANSLATIONS.tiers.high[currentLang] || AGRONOMIC_TRANSLATIONS.tiers.high.en;
   }
   if (t.includes('feasible') || t.includes('alternative') || t.includes('மாற்று') || t.includes('विकल्प')) {
@@ -431,7 +431,7 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
     soybean: { en: 'Soybean', ta: 'சோயாபீன்', hi: 'सोयाबीन (Soybean)' },
     horsegram: { en: 'Horse Gram (Kulthi)', ta: 'கொள்ளு (Horse Gram)', hi: 'कुलथी (Horse Gram)' },
     clusterbean: { en: 'Cluster Bean (Guar)', ta: 'கொத்தவரங்காய் (Guar)', hi: 'ग्वारफली (Cluster Bean)' },
-    azolla: { en: 'Azolla Pinnata (Biofertilizer)', ta: 'அசோலா உயிர் உரம்', hi: 'அजोला जैव उर्वरक' },
+    azolla: { en: 'Azolla Pinnata (Biofertilizer)', ta: 'அசோலா உயிர் உரம்', hi: 'अजोला जैव उर्वरक' },
     sesbania: { en: 'Sesbania (Dhaincha)', ta: 'தக்கைப்பூண்டு (சணப்பை)', hi: 'ढैंचा (हरी खाद)' },
     pearlmillet: { en: 'Pearl Millet (Bajra)', ta: 'கம்பு (Bajra)', hi: 'बाजरा (Pearl Millet)' },
     pigeonpea: { en: 'Pigeon Pea (Tur / Arhar)', ta: 'துவரை (Red Gram)', hi: 'अरहर / तूर दाल' },
@@ -477,8 +477,8 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
           name: getName('blackgram'),
           rowRatio: '2:1',
           spacing: '30 cm x 10 cm',
-          nitrogenFixed: 30,
           lerScore: 1.27,
+          nitrogenFixed: 30,
           harvestDuration: lang === 'ta' ? '70 - 75 நாட்கள்' : lang === 'hi' ? '70 - 75 दिन' : '70 - 75 Days',
           sowingOffset: lang === 'ta' ? 'முதல் நாளில் விதைப்பு' : lang === 'hi' ? 'दिन 0 पर बुवाई' : 'Simultaneous on Day 0',
           rootZoneSynergy: lang === 'ta' ? 'சமச்சீர் வேர்' : lang === 'hi' ? 'संतुलित जड़ें' : 'Compact pulse zone',
@@ -494,8 +494,8 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
         name: getName('cowpea'),
         rowRatio: '2:1',
         spacing: '30 cm x 10 cm',
-        nitrogenFixed: 35,
         lerScore: 1.32,
+        nitrogenFixed: 35,
         harvestDuration: lang === 'ta' ? '65 - 75 நாட்கள்' : lang === 'hi' ? '65 - 75 दिन' : '65 - 75 Days',
         sowingOffset: lang === 'ta' ? 'முதல் நாளில் விதைப்பு' : lang === 'hi' ? 'दिन 0 पर बुवाई' : 'Simultaneous on Day 0',
         rootZoneSynergy: lang === 'ta' ? 'ஆழமான மற்றும் சல்லி வேர்கள்' : lang === 'hi' ? 'गहरी व उथली जड़ें' : 'Deep taproot + Shallow fibrous root system',
@@ -522,8 +522,8 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
         name: getName('horsegram'),
         rowRatio: '2:1',
         spacing: '30 cm x 10 cm',
-        nitrogenFixed: 28,
         lerScore: 1.26,
+        nitrogenFixed: 28,
         harvestDuration: lang === 'ta' ? '80 - 90 நாட்கள்' : lang === 'hi' ? '80 - 90 दिन' : '80 - 90 Days',
         sowingOffset: lang === 'ta' ? 'முதல் நாளில் விதைப்பு' : lang === 'hi' ? 'दिन 0 पर बुवाई' : 'Simultaneous on Day 0',
         rootZoneSynergy: lang === 'ta' ? 'மண் பிடிப்பு வேர்கள்' : lang === 'hi' ? 'मिट्टी बांधक जड़ें' : 'Fibrous soil-binding mulch layer',
@@ -602,14 +602,10 @@ export default function App() {
   const [imageAnalysisResult, setImageAnalysisResult] = useState(null);
   const fileInputRef = useRef(null);
 
-  const [weatherForecast, setWeatherForecast] = useState([
-    { day: 'Day 1 (Today)', temp: 31, rainProb: 10, windKmh: 12, sprayRisk: 'Low' },
-    { day: 'Day 2', temp: 30, rainProb: 20, windKmh: 14, sprayRisk: 'Low' },
-    { day: 'Day 3', temp: 27, rainProb: 75, windKmh: 24, sprayRisk: 'High' },
-    { day: 'Day 4', temp: 26, rainProb: 65, windKmh: 20, sprayRisk: 'High' },
-    { day: 'Day 5', temp: 29, rainProb: 15, windKmh: 11, sprayRisk: 'Low' }
-  ]);
-  const [locationName, setLocationName] = useState('Field Weather Station');
+  // Dynamic Weather State
+  const [weatherForecast, setWeatherForecast] = useState([]);
+  const [weatherLoading, setWeatherLoading] = useState(true);
+  const [locationName, setLocationName] = useState('Detecting location...');
 
   useEffect(() => {
     const updateVoices = () => {
@@ -623,34 +619,111 @@ export default function App() {
     }
   }, []);
 
-  // Secure Proxy Weather Fetcher (Client never handles OpenWeather API Keys)
+  // Live Location & Weather Fetcher
   useEffect(() => {
-    const fetchWeather = async (lat, lon) => {
-      try {
-        const query = lat && lon ? `?lat=${lat}&lon=${lon}&lang=${lang}` : `?lang=${lang}`;
-        const res = await fetch(`${API_BASE}/api/weather${query}`);
-        if (!res.ok) throw new Error(`Weather endpoint status ${res.status}`);
-        const data = await res.json();
+    let isMounted = true;
 
-        if (data.city) {
-          setLocationName(data.city);
+    const fetchLiveForecast = async (lat, lon) => {
+      const clientApiKey = import.meta.env.VITE_WEATHER_API_KEY;
+
+      try {
+        let forecastList = [];
+        let cityName = '';
+
+        if (clientApiKey) {
+          const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${clientApiKey}`;
+          const res = await fetch(url);
+          
+          if (!res.ok) {
+            const errData = await res.json().catch(() => ({}));
+            throw new Error(`OpenWeather status ${res.status}: ${errData.message || res.statusText}`);
+          }
+
+          const data = await res.json();
+          cityName = data.city?.name || 'Local Farm Area';
+
+          const dailyMap = {};
+          data.list.forEach((item) => {
+            const dateKey = item.dt_txt.split(' ')[0];
+            if (!dailyMap[dateKey]) {
+              dailyMap[dateKey] = { temps: [], rainProb: [], windSpeeds: [] };
+            }
+            dailyMap[dateKey].temps.push(item.main.temp);
+            dailyMap[dateKey].rainProb.push((item.pop || 0) * 100);
+            dailyMap[dateKey].windSpeeds.push(Math.round(item.wind.speed * 3.6));
+          });
+
+          const dayLabels = {
+            en: ['Day 1 (Today)', 'Day 2', 'Day 3', 'Day 4', 'Day 5'],
+            ta: ['நாள் 1 (இன்று)', 'நாள் 2', 'நாள் 3', 'நாள் 4', 'நாள் 5'],
+            hi: ['दिन 1 (आज)', 'दिन 2', 'दिन 3', 'दिन 4', 'दिन 5']
+          };
+          const labels = dayLabels[lang] || dayLabels.en;
+
+          forecastList = Object.keys(dailyMap).slice(0, 5).map((dKey, idx) => {
+            const dayData = dailyMap[dKey];
+            const maxTemp = Math.round(Math.max(...dayData.temps));
+            const maxRain = Math.round(Math.max(...dayData.rainProb));
+            const maxWind = Math.round(Math.max(...dayData.windSpeeds));
+            const highRisk = maxRain >= 50 || maxWind >= 20;
+
+            return {
+              day: labels[idx] || `Day ${idx + 1}`,
+              temp: maxTemp,
+              rainProb: maxRain,
+              windKmh: maxWind,
+              sprayRisk: highRisk ? 'High' : 'Low'
+            };
+          });
+        } else {
+          // Fallback to Backend Proxy
+          const proxyRes = await fetch(`${API_BASE}/api/weather?lat=${lat}&lon=${lon}&lang=${lang}`);
+          if (!proxyRes.ok) throw new Error(`Proxy error status: ${proxyRes.status}`);
+          const proxyData = await proxyRes.json();
+          cityName = proxyData.city || 'Local Farm Area';
+          forecastList = proxyData.forecast || [];
         }
-        if (data.forecast && data.forecast.length > 0) {
-          setWeatherForecast(data.forecast);
+
+        if (isMounted && forecastList.length > 0) {
+          setWeatherForecast(forecastList);
+          setLocationName(cityName);
+          setWeatherLoading(false);
         }
       } catch (err) {
-        console.warn('Weather fetch fallback engaged:', err.message);
+        console.error('Dynamic Weather Fetch Warning:', err.message);
+        if (isMounted) {
+          setLocationName('Weather Station (Offline / Baseline)');
+          setWeatherForecast([
+            { day: 'Day 1 (Today)', temp: 31, rainProb: 10, windKmh: 12, sprayRisk: 'Low' },
+            { day: 'Day 2', temp: 30, rainProb: 20, windKmh: 14, sprayRisk: 'Low' },
+            { day: 'Day 3', temp: 27, rainProb: 75, windKmh: 24, sprayRisk: 'High' },
+            { day: 'Day 4', temp: 26, rainProb: 65, windKmh: 20, sprayRisk: 'High' },
+            { day: 'Day 5', temp: 29, rainProb: 15, windKmh: 11, sprayRisk: 'Low' }
+          ]);
+          setWeatherLoading(false);
+        }
       }
     };
 
+    const defaultLat = 28.6139;
+    const defaultLon = 77.2090;
+
     if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
-        (pos) => fetchWeather(pos.coords.latitude, pos.coords.longitude),
-        () => fetchWeather()
+        (pos) => fetchLiveForecast(pos.coords.latitude, pos.coords.longitude),
+        (err) => {
+          console.warn('Geolocation denied or timed out:', err.message);
+          fetchLiveForecast(defaultLat, defaultLon);
+        },
+        { timeout: 7000 }
       );
     } else {
-      fetchWeather();
+      fetchLiveForecast(defaultLat, defaultLon);
     }
+
+    return () => {
+      isMounted = false;
+    };
   }, [lang]);
 
   const calculateEconomics = () => {
@@ -1099,7 +1172,7 @@ export default function App() {
 
   const renderTierBadge = (tier) => {
     const tStr = String(tier || '');
-    if (tStr.includes('Highly') || tStr.includes('சிறந்த') || tStr.includes('अत्यधिक')) {
+    if (tStr.includes('Highly') || tStr.includes('சிறந்த') || tStr.includes('அत्यधिक')) {
       return <span className="bg-emerald-700 text-white text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wide">{tier || '⭐ Highly Recommended'}</span>;
     }
     if (tStr.includes('Alternative') || tStr.includes('மாற்று') || tStr.includes('विकल्प')) {
@@ -1706,6 +1779,7 @@ export default function App() {
                 </div>
               )}
 
+              {/* TAB 5: WEATHER */}
               {activeTab === 'weather' && (
                 <div className="bg-white p-5 rounded-b-xl shadow-sm border space-y-4">
                   <div className="flex justify-between items-center border-b pb-2">
@@ -1715,21 +1789,34 @@ export default function App() {
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-5 gap-2 text-center text-xs">
-                    {weatherForecast.map((w, idx) => (
-                      <div key={idx} className={`p-2 rounded-lg border ${w.sprayRisk === 'High' ? 'bg-red-50 border-red-200' : 'bg-emerald-50 border-emerald-200'}`}>
-                        <p className="font-black text-gray-900 text-[11px]">{w.day}</p>
-                        <p className="text-xs font-bold text-gray-700 mt-1">{w.temp}°C</p>
-                        <p className="text-[10px] text-blue-700 font-semibold">💧 {w.rainProb}% Rain</p>
-                        <p className="text-[9px] text-gray-500">{w.windKmh} km/h</p>
-                        <span className={`inline-block text-[8px] font-black uppercase px-1 py-0.5 rounded mt-1.5 ${
-                          w.sprayRisk === 'High' ? 'bg-red-200 text-red-900' : 'bg-emerald-200 text-emerald-900'
-                        }`}>
-                          {w.sprayRisk === 'High' ? 'No Spray' : 'Safe Spray'}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
+                  {weatherLoading ? (
+                    <div className="py-8 text-center text-xs text-emerald-700 animate-pulse font-bold">
+                      🛰️ Contacting weather satellite & retrieving live field forecast...
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-5 gap-2 text-center text-xs">
+                      {weatherForecast.map((w, idx) => (
+                        <div
+                          key={idx}
+                          className={`p-2 rounded-lg border transition ${
+                            w.sprayRisk === 'High' ? 'bg-red-50 border-red-200' : 'bg-emerald-50 border-emerald-200'
+                          }`}
+                        >
+                          <p className="font-black text-gray-900 text-[11px]">{w.day}</p>
+                          <p className="text-xs font-bold text-gray-700 mt-1">{w.temp}°C</p>
+                          <p className="text-[10px] text-blue-700 font-semibold">💧 {w.rainProb}% Rain</p>
+                          <p className="text-[9px] text-gray-500">{w.windKmh} km/h</p>
+                          <span
+                            className={`inline-block text-[8px] font-black uppercase px-1 py-0.5 rounded mt-1.5 ${
+                              w.sprayRisk === 'High' ? 'bg-red-200 text-red-900' : 'bg-emerald-200 text-emerald-900'
+                            }`}
+                          >
+                            {w.sprayRisk === 'High' ? 'No Spray' : 'Safe Spray'}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 
