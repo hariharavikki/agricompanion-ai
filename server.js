@@ -199,7 +199,7 @@ app.post('/api/recommend', async (req, res) => {
       console.warn('Price query fallback used:', err.message);
     }
 
-    // C. AI Intercrop Decision Matrix Scoring & Fallback
+    // C. AI Intercrop Decision Matrix: Database Search with Strict Multi-Variable Scoring
     let intercrop = null;
     try {
       let [candidateRules] = await db.query(
@@ -207,12 +207,7 @@ app.post('/api/recommend', async (req, res) => {
         [matchedCropKey, matchedCropKey, normalizedKey]
       );
 
-      if (!candidateRules || candidateRules.length === 0) {
-        const [anyRules] = await db.query(`SELECT * FROM intercrop_rules LIMIT 5`);
-        candidateRules = anyRules;
-      }
-
-      if (candidateRules && candidateRules.length > 0) {
+      if (candidateRules && candidateRules.length > 1) {
         const safeReqSeason = String(season || '').toLowerCase();
         const safeReqSoil = String(soilType || '').toLowerCase();
         const safeReqWater = String(waterStatus || '').toLowerCase();
@@ -223,125 +218,244 @@ app.post('/api/recommend', async (req, res) => {
           const rSoil = String(rule.soil_type || '').toLowerCase();
           const rWater = String(rule.water_status || '').toLowerCase();
 
-          if (rSeason && safeReqSeason && (rSeason === safeReqSeason || rSeason.includes(safeReqSeason) || safeReqSeason.includes(rSeason))) {
-            score += 20;
+          // Exact variable matching
+          if (rSeason && safeReqSeason && (rSeason === safeReqSeason || rSeason.includes(safeReqSeason))) {
+            score += 40;
           }
-          if (rSoil && safeReqSoil && (rSoil === safeReqSoil || rSoil.includes(safeReqSoil) || safeReqSoil.includes(rSoil))) {
-            score += 30;
-          } else if (safeReqSoil.includes('loam') || rSoil.includes('loam')) {
-            score += 15;
+          if (rSoil && safeReqSoil && (rSoil === safeReqSoil || rSoil.includes(safeReqSoil))) {
+            score += 35;
           }
-          if (rWater && safeReqWater && (rWater === safeReqWater || rWater.includes(safeReqWater) || safeReqWater.includes(rWater))) {
-            score += 30;
-          } else if (safeReqWater.includes('medium')) {
-            score += 15;
+          if (rWater && safeReqWater && (rWater === safeReqWater || rWater.includes(safeReqWater))) {
+            score += 35;
           }
 
           const lerVal = parseFloat(rule.ler_score || 1.25);
-          score += Math.min((lerVal - 1.0) * 100, 40);
+          score += Math.min((lerVal - 1.0) * 50, 30);
 
           return { rule, score };
         });
 
         scoredCandidates.sort((a, b) => b.score - a.score);
-        const bestMatch = scoredCandidates[0].rule;
-        const targetIntercropKey = bestMatch.intercrop_key || bestMatch.companion_crop || 'Cowpea';
+        
+        // Only accept if there is a meaningful correlation score
+        if (scoredCandidates[0].score >= 35) {
+          const bestMatch = scoredCandidates[0].rule;
+          const targetIntercropKey = bestMatch.intercrop_key || bestMatch.companion_crop || 'Cowpea';
 
-        let intercropName = targetIntercropKey;
-        let intercropDuration = '60 - 75 Days';
-        let companionPostHarvest = { safeMoisturePct: 10.0, ambientMonths: 6, coldMonths: 18 };
+          let intercropName = targetIntercropKey;
+          let intercropDuration = '60 - 75 Days';
+          let companionPostHarvest = { safeMoisturePct: 10.0, ambientMonths: 6, coldMonths: 18 };
 
-        const [icCrops] = await db.query(
-          `SELECT * FROM crops WHERE crop_key = ? OR name_en = ? LIMIT 1`,
-          [targetIntercropKey, targetIntercropKey]
-        );
-        if (icCrops.length > 0) {
-          intercropName = icCrops[0][`name${langCol}`] || icCrops[0].name_en || targetIntercropKey;
-          intercropDuration = icCrops[0].harvest_duration || intercropDuration;
-          companionPostHarvest = {
-            safeMoisturePct: parseFloat(icCrops[0].safe_moisture_pct || 10.0),
-            ambientMonths: icCrops[0].ambient_shelf_life_months || 6,
-            coldMonths: icCrops[0].cold_shelf_life_months || 18
+          const [icCrops] = await db.query(
+            `SELECT * FROM crops WHERE crop_key = ? OR name_en = ? LIMIT 1`,
+            [targetIntercropKey, targetIntercropKey]
+          );
+          if (icCrops.length > 0) {
+            intercropName = icCrops[0][`name${langCol}`] || icCrops[0].name_en || targetIntercropKey;
+            intercropDuration = icCrops[0].harvest_duration || intercropDuration;
+            companionPostHarvest = {
+              safeMoisturePct: parseFloat(icCrops[0].safe_moisture_pct || 10.0),
+              ambientMonths: icCrops[0].ambient_shelf_life_months || 6,
+              coldMonths: icCrops[0].cold_shelf_life_months || 18
+            };
+          }
+
+          intercrop = {
+            key: targetIntercropKey,
+            name: intercropName,
+            harvestDuration: intercropDuration,
+            rowRatio: bestMatch.row_ratio || '2:1',
+            spacing: bestMatch.spacing_cm || '30 cm x 10 cm',
+            nitrogenFixed: bestMatch.nitrogen_fixed_kg_ha || 25,
+            lerScore: parseFloat(bestMatch.ler_score || 1.3),
+            sowingOffset: bestMatch.sowing_offset || 'Simultaneous on Day 0',
+            rootZoneSynergy: bestMatch.root_zone_synergy || 'Deep taproot + Shallow fibrous root system',
+            reasoning: bestMatch[`reasoning${langCol}`] || bestMatch.reasoning_en || 'Atmospheric nitrogen fixation and weed suppression synergy.',
+            postHarvest: companionPostHarvest
+          };
+        }
+      }
+    } catch (err) {
+      console.warn('Intercrop database scoring error:', err.message);
+    }
+
+    // D. Dynamic Multi-Variable Agronomic Decision Engine (Active when DB lacks specific matrix rules)
+    if (!intercrop) {
+      const getDynamicCompanion = (crop, szn, soil, water) => {
+        const s = String(szn).toLowerCase();
+        const so = String(soil).toLowerCase();
+        const w = String(water).toLowerCase();
+
+        // 1. MAIZE MATRIX
+        if (crop === 'maize') {
+          if (s.includes('zaid') || w.includes('high')) {
+            return {
+              key: 'greengram',
+              name: 'Green Gram (Moong - Summer Special)',
+              ratio: '1:2 or 2:2',
+              spacing: '25 cm x 10 cm',
+              ler: 1.38,
+              nitro: 38,
+              duration: '55 - 65 Days',
+              reasoning: 'Under summer irrigation (Zaid), fast-maturing Green Gram establishes canopy before high heat, intercepting light between maize rows without draining subsoil reserves.'
+            };
+          }
+          if (s.includes('rabi')) {
+            return {
+              key: 'frenchbean',
+              name: 'French Bean (Rajma)',
+              ratio: '2:1 Alternate Bed',
+              spacing: '30 cm x 15 cm',
+              ler: 1.34,
+              nitro: 30,
+              duration: '70 - 80 Days',
+              reasoning: 'Winter (Rabi) temperatures are optimal for French Beans, generating superior market value per acre while matching the lower water requirements of winter maize.'
+            };
+          }
+          if (w.includes('low') || so.includes('sandy')) {
+            return {
+              key: 'horsegram',
+              name: 'Horse Gram (Kulthi)',
+              ratio: '2:1',
+              spacing: '30 cm x 10 cm',
+              ler: 1.26,
+              nitro: 28,
+              duration: '80 - 90 Days',
+              reasoning: 'In rainfed or sandy drought-prone profiles, Horse Gram develops deep sub-surface root tapestries that conserve soil moisture and prevent surface crusting.'
+            };
+          }
+          return {
+            key: 'cowpea',
+            name: 'Cowpea (Lobia)',
+            ratio: '2:1',
+            spacing: '30 cm x 10 cm',
+            ler: 1.32,
+            nitro: 35,
+            duration: '65 - 75 Days',
+            reasoning: 'Standard Kharif monsoon pairing: rapid early vine growth smothers aggressive weeds and nodulates atmospheric nitrogen during maize peak vegetative expansion.'
           };
         }
 
-        intercrop = {
-          key: targetIntercropKey,
-          name: intercropName,
-          harvestDuration: intercropDuration,
-          rowRatio: bestMatch.row_ratio || '2:1',
-          spacing: bestMatch.spacing_cm || '30 cm x 10 cm',
-          nitrogenFixed: bestMatch.nitrogen_fixed_kg_ha || 25,
-          lerScore: parseFloat(bestMatch.ler_score || 1.3),
-          sowingOffset: bestMatch.sowing_offset || 'Simultaneous on Day 0',
-          rootZoneSynergy: bestMatch.root_zone_synergy || 'Deep taproot + Shallow fibrous root system',
-          reasoning: bestMatch[`reasoning${langCol}`] || bestMatch.reasoning_en || 'Atmospheric nitrogen fixation and weed suppression synergy.',
-          postHarvest: companionPostHarvest
-        };
-      }
-    } catch (err) {
-      console.warn('Intercrop decision warning:', err.message);
-    }
-
-    // Fallback if database table yields no rules
-    if (!intercrop) {
-      const fallbackCompanions = {
-        maize: {
-          name: 'Cowpea (Lobia)',
-          key: 'cowpea',
-          ratio: '2:1',
-          ler: 1.32,
-          nitro: 35,
-          spacing: '30 cm x 10 cm',
-          reasoning: 'Cowpea provides ground cover, suppresses weed emergence, and fixes atmospheric nitrogen to meet the high nutrient demand of maize.'
-        },
-        paddy: {
-          name: 'Azolla / Green Gram',
-          key: 'greengram',
-          ratio: 'Border / Bund Planting',
-          ler: 1.25,
-          nitro: 40,
-          spacing: '20 cm x 10 cm on bunds',
-          reasoning: 'Bio-fertilizing nitrogen fixer that stabilizes field bunds and prevents weed establishment without interfering with flooded paddy basins.'
-        },
-        cotton: {
-          name: 'Black Gram (Urad)',
-          key: 'blackgram',
-          ratio: '1:2',
-          ler: 1.28,
-          nitro: 30,
-          spacing: '30 cm x 10 cm',
-          reasoning: 'Short-duration legume provides quick early-stage canopy cover before cotton branches out, reducing water runoff and weed competition.'
-        },
-        groundnut: {
-          name: 'Pigeon Pea (Arhar/Tur)',
-          key: 'pigeonpea',
-          ratio: '6:1',
-          ler: 1.35,
-          nitro: 45,
-          spacing: '60 cm x 15 cm',
-          reasoning: 'Deep root system extracts nutrients from lower subsoil strata, complementing shallow groundnut root structures.'
+        // 2. COTTON MATRIX
+        if (crop === 'cotton') {
+          if (so.includes('black')) {
+            return {
+              key: 'blackgram',
+              name: 'Black Gram (Urad) / Marigold',
+              ratio: '1:2',
+              spacing: '30 cm x 10 cm',
+              ler: 1.31,
+              nitro: 32,
+              duration: '70 - 75 Days',
+              reasoning: 'Deep Vertisols (Black soil) retain moisture to support short-cycle Black Gram between wide cotton rows, with Marigold boundaries trapping American bollworm moths.'
+            };
+          }
+          if (w.includes('low') || so.includes('sandy')) {
+            return {
+              key: 'clusterbean',
+              name: 'Cluster Bean (Guar)',
+              ratio: '1:1',
+              spacing: '45 cm x 15 cm',
+              ler: 1.24,
+              nitro: 25,
+              duration: '85 - 95 Days',
+              reasoning: 'Guar exhibits extreme drought hardiness and deep osmotic adjustment, thriving alongside cotton in coarse or moisture-stressed topsoils.'
+            };
+          }
+          return {
+            key: 'soybean',
+            name: 'Soybean',
+            ratio: '1:2 Strip Cropping',
+            spacing: '30 cm x 10 cm',
+            ler: 1.29,
+            nitro: 35,
+            duration: '80 - 90 Days',
+            reasoning: 'Erect soybean cultivars form a biological barrier against soil erosion during heavy rains and harvest before peak cotton boll maturation.'
+          };
         }
+
+        // 3. PADDY / RICE MATRIX
+        if (crop === 'paddy') {
+          if (w.includes('high')) {
+            return {
+              key: 'azolla',
+              name: 'Azolla Pinnata (Dual-Culture Biofertilizer)',
+              ratio: 'Floating Water Inoculation',
+              spacing: 'Continuous Floating Biomass',
+              ler: 1.27,
+              nitro: 45,
+              duration: 'Living Water Blanket',
+              reasoning: 'Under standing water regimes, floating Azolla doubles biomass every 5 days, fixing up to 45 kg N/ha and lowering floodwater temperatures by 2-3°C.'
+            };
+          }
+          return {
+            key: 'greengram',
+            name: 'Green Gram (Paddy Bund Planting)',
+            ratio: 'Bund & Perimeter Rows',
+            spacing: '20 cm x 10 cm on bunds',
+            ler: 1.22,
+            nitro: 25,
+            duration: '60 - 65 Days',
+            reasoning: 'Planted on peripheral bunds to exploit non-flooded edges, providing supplemental pulse harvest without competing for root basin area.'
+          };
+        }
+
+        // 4. GROUNDNUT MATRIX
+        if (crop === 'groundnut') {
+          if (w.includes('low') || so.includes('sandy')) {
+            return {
+              key: 'pearlmillet',
+              name: 'Pearl Millet (Bajra) Shelterbelt',
+              ratio: '6:1 Border Barrier',
+              spacing: '45 cm x 15 cm',
+              ler: 1.28,
+              nitro: 0,
+              duration: '80 - 85 Days',
+              reasoning: 'Tall Pearl Millet borders deflect hot drying winds in arid sandy zones, maintaining humidity around groundnut peg entry zones.'
+            };
+          }
+          return {
+            key: 'pigeonpea',
+            name: 'Pigeon Pea (Arhar / Tur)',
+            ratio: '6:1',
+            spacing: '60 cm x 15 cm',
+            ler: 1.36,
+            nitro: 42,
+            duration: '130 - 150 Days',
+            reasoning: 'Deep taproot systems forage nutrients down to 1.5 meters, while groundnut roots occupy the top 20cm, eliminating nutrient competition.'
+          };
+        }
+
+        return {
+          key: 'cowpea',
+          name: 'Cowpea (Universal Companion)',
+          ratio: '2:1',
+          spacing: '30 cm x 10 cm',
+          ler: 1.25,
+          nitro: 30,
+          duration: '65 - 75 Days',
+          reasoning: 'General grain-legume synergy providing nitrogen credits and weed reduction.'
+        };
       };
 
-      const defaultChoice = fallbackCompanions[normalizedKey] || fallbackCompanions.maize;
+      const matchedChoice = getDynamicCompanion(normalizedKey, season, soilType, waterStatus);
 
       intercrop = {
-        key: defaultChoice.key,
-        name: defaultChoice.name,
-        harvestDuration: '65 - 75 Days',
-        rowRatio: defaultChoice.ratio,
-        spacing: defaultChoice.spacing,
-        nitrogenFixed: defaultChoice.nitro,
-        lerScore: defaultChoice.ler,
+        key: matchedChoice.key,
+        name: matchedChoice.name,
+        harvestDuration: matchedChoice.duration,
+        rowRatio: matchedChoice.ratio,
+        spacing: matchedChoice.spacing,
+        nitrogenFixed: matchedChoice.nitro,
+        lerScore: matchedChoice.ler,
         sowingOffset: 'Simultaneous on Day 0',
-        rootZoneSynergy: 'Deep taproot + Shallow fibrous root system',
-        reasoning: defaultChoice.reasoning,
+        rootZoneSynergy: 'Deep taproot + Shallow fibrous root zone partitioning',
+        reasoning: matchedChoice.reasoning,
         postHarvest: { safeMoisturePct: 10.0, ambientMonths: 6, coldMonths: 18 }
       };
     }
 
-    // D. Pest Management & Safety Protocol
+    // E. Pest Management & Safety Protocol
     let pests = [];
     try {
       const [pestRows] = await db.query(
