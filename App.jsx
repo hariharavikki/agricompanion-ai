@@ -274,7 +274,7 @@ const getClientTop3Companions = (crop, szn, soil, water) => {
           harvestDuration: '55 - 65 Days',
           sowingOffset: 'Simultaneous on Day 0',
           rootZoneSynergy: 'Shallow legume canopy shading under summer irrigation',
-          reasoning: 'Under summer irrigation (Zaid), fast 60-day Moong captures light between tall maize stalks before heat peaks, fixing high soil nitrogen.',
+          reasoning: 'Under summer irrigation (Zaid), fast 60-day Moong captures light between tall maize stalks before peak heat, fixing high soil nitrogen.',
           postHarvest: { safeMoisturePct: 10.0, ambientMonths: 6, coldMonths: 18 }
         },
         {
@@ -506,7 +506,7 @@ const getClientTop3Companions = (crop, szn, soil, water) => {
           harvestDuration: 'Living Water Blanket',
           sowingOffset: 'Inoculated on Day 7 after transplanting',
           rootZoneSynergy: 'Floating aquatic symbiosis in standing water',
-          reasoning: 'Multiplies every 5 days on floodwaters, fixing up to 45 kg N/ha, smothering aquatic weeds, and lowering root temperatures.',
+          reasoning: 'Multiplies every 5 days on floodwaters, fixing up to 45 kg N/ha, photo-cooling the basin, and smothering weeds.',
           postHarvest: { safeMoisturePct: 12.0, ambientMonths: 3, coldMonths: 6 }
         },
         {
@@ -764,7 +764,7 @@ export default function App() {
     const primaryYield = yieldPerAcre * acres;
     const primaryRevenue = primaryYield * mandiRate;
 
-    const bonusPct = advice.intercrop ? (Number(advice.intercrop.lerScore || 1.25) - 1.0) * 0.75 : 0;
+    const bonusPct = advice.intercrop ? (Number(advice.intercrop.lerScore || advice.intercrop.ler || 1.25) - 1.0) * 0.75 : 0;
     const intercropRevenue = primaryRevenue * bonusPct;
     const totalGrossRevenue = Math.round(primaryRevenue + intercropRevenue);
     const totalCost = costPerAcre * acres;
@@ -793,7 +793,7 @@ export default function App() {
 
     const rdfKey = String(advice.primaryCrop.key || primaryCropKey).toLowerCase();
     const rdf = rdfTable[rdfKey] || { n: 40, p: 20, k: 20 };
-    const nCreditPerAcre = advice.intercrop ? Math.round((Number(advice.intercrop.nitrogenFixed) || 0) / 2.47) : 0;
+    const nCreditPerAcre = advice.intercrop ? Math.round((Number(advice.intercrop.nitrogenFixed ?? advice.intercrop.nitro ?? 0)) / 2.47) : 0;
     const adjustedNPerAcre = Math.max(0, rdf.n - nCreditPerAcre);
 
     const ureaBags = Math.ceil((adjustedNPerAcre * acres) / 20.7);
@@ -1013,11 +1013,18 @@ export default function App() {
       const data = await res.json();
       if (!data || !data.primaryCrop) throw new Error('Invalid response structure');
 
-      if (!data.companionOptions || data.companionOptions.length === 0) {
-        data.companionOptions = getClientTop3Companions(normKey, sVar, soVar, wVar);
-      }
-      if (!data.intercrop) {
-        data.intercrop = data.companionOptions[0];
+      const fallback3 = getClientTop3Companions(normKey, sVar, soVar, wVar);
+      data.companionOptions = (data.companionOptions && data.companionOptions.length > 0)
+        ? data.companionOptions
+        : fallback3;
+
+      if (!data.intercrop || !data.intercrop.rowRatio) {
+        const topOne = data.companionOptions[0];
+        data.intercrop = {
+          ...topOne,
+          rowRatio: topOne.rowRatio || topOne.ratio || '2:1',
+          harvestDuration: topOne.harvestDuration || topOne.duration || '65 - 75 Days'
+        };
       }
 
       setAdvice(data);
@@ -1086,17 +1093,17 @@ export default function App() {
     if (lang === 'ta') {
       textToRead = `முதன்மைப் பயிர்: ${advice.primaryCrop.name}. அறுவடை காலம்: ${duration}. அரசு ஆதார விலை MSP: குவிண்டாலுக்கு ₹${advice.marketData?.officialMsp}. `;
       if (advice.intercrop) {
-        textToRead += `பரிந்துரைக்கப்படும் உகந்த ஊடு பயிர்: ${advice.intercrop.name}. முன்னுரிமை தகுதி: ${advice.intercrop.tier}. பயிர் வரிசை அமைப்பு: ${advice.intercrop.rowRatio}. நில பயன்பாட்டு திறன்: ${advice.intercrop.lerScore}. பலன்: ${advice.intercrop.reasoning}.`;
+        textToRead += `பரிந்துரைக்கப்படும் உகந்த ஊடு பயிர்: ${advice.intercrop.name}. முன்னுரிமை தகுதி: ${advice.intercrop.tier}. பயிர் வரிசை அமைப்பு: ${advice.intercrop.rowRatio || advice.intercrop.ratio}. நில பயன்பாட்டு திறன்: ${advice.intercrop.lerScore || advice.intercrop.ler}. பலன்: ${advice.intercrop.reasoning}.`;
       }
     } else if (lang === 'hi') {
       textToRead = `मुख्य फसल: ${advice.primaryCrop.name}. कटाई अवधि: ${duration}. सरकारी MSP: ₹${advice.marketData?.officialMsp} प्रति क्विंटल. `;
       if (advice.intercrop) {
-        textToRead += `अनुशंसित साथी फसल: ${advice.intercrop.name}. प्राथमिकता स्तर: ${advice.intercrop.tier}. पंक्ति अनुपात: ${advice.intercrop.rowRatio}. भूमि दक्षता LER: ${advice.intercrop.lerScore}. लाभ: ${advice.intercrop.reasoning}.`;
+        textToRead += `अनुशंसित साथी फसल: ${advice.intercrop.name}. प्राथमिकता स्तर: ${advice.intercrop.tier}. पंक्ति अनुपात: ${advice.intercrop.rowRatio || advice.intercrop.ratio}. भूमि दक्षता LER: ${advice.intercrop.lerScore || advice.intercrop.ler}. लाभ: ${advice.intercrop.reasoning}.`;
       }
     } else {
       textToRead = `Primary crop: ${advice.primaryCrop.name}. Harvest duration: ${advice.primaryCrop.harvestDuration}. Government MSP floor rate: ₹${advice.marketData?.officialMsp} per quintal. `;
       if (advice.intercrop) {
-        textToRead += `Recommended companion crop: ${advice.intercrop.name}. Recommendation tier: ${advice.intercrop.tier}. Row pattern: ${advice.intercrop.rowRatio}. Land Equivalent Ratio: ${advice.intercrop.lerScore}. Rationale: ${advice.intercrop.reasoning}.`;
+        textToRead += `Recommended companion crop: ${advice.intercrop.name}. Recommendation tier: ${advice.intercrop.tier}. Row pattern: ${advice.intercrop.rowRatio || advice.intercrop.ratio}. Land Equivalent Ratio: ${advice.intercrop.lerScore || advice.intercrop.ler}. Rationale: ${advice.intercrop.reasoning}.`;
       }
     }
 
@@ -1205,7 +1212,11 @@ export default function App() {
   const selectCompanionFromHierarchy = (selectedCompanion) => {
     setAdvice(prev => ({
       ...prev,
-      intercrop: selectedCompanion
+      intercrop: {
+        ...selectedCompanion,
+        rowRatio: selectedCompanion.rowRatio || selectedCompanion.ratio || '2:1',
+        harvestDuration: selectedCompanion.harvestDuration || selectedCompanion.duration || '65 - 75 Days'
+      }
     }));
   };
 
@@ -1351,7 +1362,6 @@ export default function App() {
 
       {/* Main Grid: Parameters + Tabbed Output */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Form Selectors & Farm Acreage */}
         <div className="bg-white p-5 rounded-xl shadow-sm border space-y-4">
           <div>
             <label className="text-xs font-bold text-gray-700 block mb-1">{d.crop}</label>
@@ -1391,7 +1401,6 @@ export default function App() {
             </select>
           </div>
 
-          {/* Farm Size Acreage Control */}
           <div className="bg-emerald-50/70 p-3 rounded-lg border border-emerald-200">
             <div className="flex justify-between items-center mb-1.5">
               <label className="text-xs font-bold text-emerald-950">Farm Land Area</label>
@@ -1419,7 +1428,6 @@ export default function App() {
           </button>
         </div>
 
-        {/* Tabbed Output Area */}
         <div className="md:col-span-2 space-y-4">
           {!advice ? (
             <div className="bg-white p-10 rounded-xl border border-dashed text-center text-xs text-gray-500">
@@ -1427,7 +1435,6 @@ export default function App() {
             </div>
           ) : (
             <div className="space-y-4">
-              {/* Primary Crop Header Summary */}
               <div className="bg-white p-4 rounded-xl shadow-sm border flex flex-wrap justify-between items-center gap-2">
                 <div>
                   <span className="text-[10px] font-extrabold uppercase text-gray-400 tracking-wider">Primary Crop Selected</span>
@@ -1446,7 +1453,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Navigation Tab Bar */}
               <div className="flex overflow-x-auto border-b border-gray-200 bg-white rounded-t-xl px-2 pt-2 gap-1 shadow-sm scrollbar-none">
                 <button
                   onClick={() => setActiveTab('intercrop')}
@@ -1512,17 +1518,13 @@ export default function App() {
                 </button>
               </div>
 
-              {/* TAB 1: INTERCROP BLUEPRINT WITH 3-TIER HIERARCHY */}
               {activeTab === 'intercrop' && (
                 <div className="space-y-4">
-                  {/* 3-TIER HIERARCHY SELECTOR */}
                   {advice.companionOptions && advice.companionOptions.length > 0 && (
                     <div className="bg-white p-4 rounded-xl shadow-sm border space-y-2">
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <h3 className="text-xs font-black text-gray-900 uppercase tracking-wide">{d.hierarchyTitle}</h3>
-                          <p className="text-[11px] text-gray-500">{d.hierarchySubtitle}</p>
-                        </div>
+                      <div>
+                        <h3 className="text-xs font-black text-gray-900 uppercase tracking-wide">{d.hierarchyTitle}</h3>
+                        <p className="text-[11px] text-gray-500">{d.hierarchySubtitle}</p>
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-2 pt-1">
@@ -1560,7 +1562,6 @@ export default function App() {
                     </div>
                   )}
 
-                  {/* ACTIVE BLUEPRINT DETAILS */}
                   {advice.intercrop ? (
                     <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-5 rounded-xl border border-emerald-300 shadow-sm space-y-4">
                       <div className="flex justify-between items-start">
@@ -1593,28 +1594,35 @@ export default function App() {
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-2 pt-1">
                         <div className="bg-white/90 p-2.5 rounded-lg border border-emerald-100 shadow-2xs">
                           <p className="text-[10px] text-gray-500 font-semibold">{d.rowRatio}</p>
-                          <p className="text-xs font-extrabold text-green-950">{advice.intercrop.rowRatio || advice.intercrop.ratio}</p>
+                          <p className="text-xs font-extrabold text-green-950">
+                            {advice.intercrop.rowRatio || advice.intercrop.ratio || '2:1'}
+                          </p>
                         </div>
 
                         <div className="bg-white/90 p-2.5 rounded-lg border border-emerald-100 shadow-2xs">
                           <p className="text-[10px] text-gray-500 font-semibold">{d.plantSpacing}</p>
-                          <p className="text-xs font-extrabold text-green-950 truncate">{advice.intercrop.spacing}</p>
+                          <p className="text-xs font-extrabold text-green-950 truncate">
+                            {advice.intercrop.spacing || advice.intercrop.plantSpacing || '30 cm x 10 cm'}
+                          </p>
                         </div>
 
                         <div className="bg-white/90 p-2.5 rounded-lg border border-emerald-100 shadow-2xs">
                           <p className="text-[10px] text-gray-500 font-semibold">{d.nFix}</p>
                           <p className="text-xs font-extrabold text-emerald-800">
-                            {Number(advice.intercrop.nitrogenFixed || advice.intercrop.nitro) > 0 ? `+${advice.intercrop.nitrogenFixed || advice.intercrop.nitro} kg N/ha` : 'Trap Barrier'}
+                            {Number(advice.intercrop.nitrogenFixed ?? advice.intercrop.nitro ?? 0) > 0
+                              ? `+${advice.intercrop.nitrogenFixed || advice.intercrop.nitro} kg N/ha`
+                              : 'Trap Barrier'}
                           </p>
                         </div>
 
                         <div className="bg-white/90 p-2.5 rounded-lg border border-emerald-100 shadow-2xs">
                           <p className="text-[10px] text-gray-500 font-semibold">Companion Cycle</p>
-                          <p className="text-xs font-extrabold text-gray-800">{formatDuration(advice.intercrop.harvestDuration || advice.intercrop.duration)}</p>
+                          <p className="text-xs font-extrabold text-gray-800">
+                            {formatDuration(advice.intercrop.harvestDuration || advice.intercrop.duration) || '65 - 75 Days'}
+                          </p>
                         </div>
                       </div>
 
-                      {/* Planting Schedules & Root Synergy */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
                         <div className="bg-white/90 p-3 rounded-lg border border-emerald-100">
                           <p className="text-[10px] text-gray-500 font-bold uppercase">{d.sowingSchedule}</p>
@@ -1655,7 +1663,6 @@ export default function App() {
                 </div>
               )}
 
-              {/* TAB 2: FARMER REMINDER CHECKLIST */}
               {activeTab === 'checklist' && (
                 <div className="bg-white p-5 rounded-b-xl shadow-sm border space-y-4">
                   <div className="flex flex-wrap justify-between items-center border-b pb-3 gap-2">
@@ -1785,7 +1792,6 @@ export default function App() {
                 </div>
               )}
 
-              {/* TAB 3: DYNAMIC PROFITABILITY & YIELD CALCULATOR */}
               {activeTab === 'economics' && fin && (
                 <div className="bg-white p-5 rounded-b-xl shadow-sm border space-y-4">
                   <div className="flex justify-between items-center border-b pb-2">
@@ -1823,7 +1829,6 @@ export default function App() {
                 </div>
               )}
 
-              {/* TAB 4: FERTILIZER DOSAGE & BIO NITROGEN CREDITS */}
               {activeTab === 'fertilizer' && fert && (
                 <div className="bg-white p-5 rounded-b-xl shadow-sm border space-y-4">
                   <div className="flex justify-between items-center border-b pb-2">
@@ -1865,7 +1870,6 @@ export default function App() {
                 </div>
               )}
 
-              {/* TAB 5: 5-DAY WEATHER & SPRAY ADVISORY */}
               {activeTab === 'weather' && (
                 <div className="bg-white p-5 rounded-b-xl shadow-sm border space-y-4">
                   <div className="flex justify-between items-center border-b pb-2">
@@ -1899,7 +1903,6 @@ export default function App() {
                 </div>
               )}
 
-              {/* TAB 6: POST-HARVEST STORAGE & SHELF-LIFE */}
               {activeTab === 'storage' && (
                 <div className="bg-white p-5 rounded-b-xl shadow-sm border space-y-4">
                   <div className="flex justify-between items-center border-b pb-2">
@@ -1939,7 +1942,6 @@ export default function App() {
                 </div>
               )}
 
-              {/* TAB 7: PEST MANAGEMENT & SAFETY COUNTDOWNS */}
               {activeTab === 'pests' && (
                 <div className="bg-white p-5 rounded-b-xl shadow-sm border space-y-3">
                   <h3 className="text-xs font-black text-red-800 uppercase border-b pb-2">{d.pestTitle}</h3>
@@ -1971,7 +1973,6 @@ export default function App() {
         </div>
       </div>
 
-      {/* History Modal */}
       {showHistory && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
           <div className="bg-white p-6 rounded-xl max-w-md w-full space-y-4 shadow-xl max-h-[80vh] overflow-y-auto">
@@ -2000,7 +2001,6 @@ export default function App() {
         </div>
       )}
 
-      {/* Auth Modal */}
       {showAuth && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
           <form onSubmit={handleAuth} className="bg-white p-6 rounded-xl max-w-sm w-full space-y-3 shadow-lg">

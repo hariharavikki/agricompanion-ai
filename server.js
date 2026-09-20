@@ -127,7 +127,7 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
-// Helper: 3-tier hierarchy generator based on full parameter matrix
+// Helper: 3-tier hierarchy generator with normalized property keys
 function getTop3Companions(cropKey, szn, soil, water) {
   const s = String(szn || '').toLowerCase();
   const so = String(soil || '').toLowerCase();
@@ -141,24 +141,24 @@ function getTop3Companions(cropKey, szn, soil, water) {
           tier: 'Highly Recommended',
           key: 'greengram',
           name: 'Green Gram (Moong)',
-          ratio: '1:2 or 2:2',
+          rowRatio: '1:2 or 2:2',
           spacing: '25 cm x 10 cm',
-          ler: 1.38,
-          nitro: 38,
-          duration: '55 - 65 Days',
+          lerScore: 1.38,
+          nitrogenFixed: 38,
+          harvestDuration: '55 - 65 Days',
           sowingOffset: 'Simultaneous on Day 0',
           rootZoneSynergy: 'Shallow root zone complements deep maize taproot',
-          reasoning: 'Under summer irrigation (Zaid), fast 60-day Moong captures light between tall maize stalks before heat peaks, fixing high soil nitrogen.'
+          reasoning: 'Under summer irrigation (Zaid), fast 60-day Moong captures light between tall maize stalks before peak heat, fixing high soil nitrogen.'
         },
         {
           tier: 'Recommended',
           key: 'cowpea',
           name: 'Cowpea (Lobia)',
-          ratio: '2:1',
+          rowRatio: '2:1',
           spacing: '30 cm x 10 cm',
-          ler: 1.32,
-          nitro: 35,
-          duration: '65 - 75 Days',
+          lerScore: 1.32,
+          nitrogenFixed: 35,
+          harvestDuration: '65 - 75 Days',
           sowingOffset: 'Simultaneous on Day 0',
           rootZoneSynergy: 'Spreading canopy creates living mulch over topsoil',
           reasoning: 'Provides heavy foliage to suppress summer weeds while offering dual food and fodder harvests.'
@@ -167,11 +167,11 @@ function getTop3Companions(cropKey, szn, soil, water) {
           tier: 'Feasible Alternative',
           key: 'blackgram',
           name: 'Black Gram (Urad)',
-          ratio: '2:1',
+          rowRatio: '2:1',
           spacing: '30 cm x 10 cm',
-          ler: 1.27,
-          nitro: 30,
-          duration: '70 - 75 Days',
+          lerScore: 1.27,
+          nitrogenFixed: 30,
+          harvestDuration: '70 - 75 Days',
           sowingOffset: 'Simultaneous on Day 0',
           rootZoneSynergy: 'Compact root zone with balanced moisture uptake',
           reasoning: 'Stable pulse option with high Mandi liquidity if Green Gram seed availability is constrained.'
@@ -184,11 +184,11 @@ function getTop3Companions(cropKey, szn, soil, water) {
           tier: 'Highly Recommended',
           key: 'frenchbean',
           name: 'French Bean (Rajma)',
-          ratio: '2:1 Alternate Bed',
+          rowRatio: '2:1 Alternate Bed',
           spacing: '30 cm x 15 cm',
-          ler: 1.34,
-          nitro: 30,
-          duration: '70 - 80 Days',
+          lerScore: 1.34,
+          nitrogenFixed: 30,
+          harvestDuration: '70 - 80 Days',
           sowingOffset: 'Simultaneous on Day 0',
           rootZoneSynergy: 'Erect cool-season legume architecture',
           reasoning: 'Thrives in crisp winter temperatures, earning high premium market value alongside winter maize.'
@@ -197,11 +197,11 @@ function getTop3Companions(cropKey, szn, soil, water) {
           tier: 'Recommended',
           key: 'pea',
           name: 'Field Pea (Matar)',
-          ratio: '2:2',
+          rowRatio: '2:2',
           spacing: '30 cm x 10 cm',
-          ler: 1.30,
-          nitro: 32,
-          duration: '65 - 75 Days',
+          lerScore: 1.30,
+          nitrogenFixed: 32,
+          harvestDuration: '65 - 75 Days',
           sowingOffset: 'Simultaneous on Day 0',
           rootZoneSynergy: 'Light climbing tendrils on lower maize stems',
           reasoning: 'Rapid cold-tolerant green pod harvesting provides quick early cash flow for the farmer.'
@@ -210,28 +210,27 @@ function getTop3Companions(cropKey, szn, soil, water) {
           tier: 'Feasible Alternative',
           key: 'chickpea',
           name: 'Chickpea (Gram)',
-          ratio: '2:1',
+          rowRatio: '2:1',
           spacing: '30 cm x 10 cm',
-          ler: 1.25,
-          nitro: 28,
-          duration: '85 - 100 Days',
+          lerScore: 1.25,
+          nitrogenFixed: 28,
+          harvestDuration: '85 - 100 Days',
           sowingOffset: 'Day 0 with seed treatment',
           rootZoneSynergy: 'Deep winter taproots mining subsoil phosphorus',
           reasoning: 'Durable winter legume with very low pest overlap with maize.'
         }
       ];
     }
-    // Rainfed / Sandy or Default Kharif
     return [
       {
         tier: 'Highly Recommended',
         key: 'cowpea',
         name: 'Cowpea (Lobia)',
-        ratio: '2:1',
+        rowRatio: '2:1',
         spacing: '30 cm x 10 cm',
-        ler: 1.32,
-        nitro: 35,
-        duration: '65 - 75 Days',
+        lerScore: 1.32,
+        nitrogenFixed: 35,
+        harvestDuration: '65 - 75 Days',
         sowingOffset: 'Simultaneous on Day 0',
         rootZoneSynergy: 'Deep taproot + Shallow fibrous root system',
         reasoning: 'Best monsoon cover: rapid vegetative canopy suffocates weeds and fixes biological nitrogen during maize vegetative burst.'
@@ -240,11 +239,11 @@ function getTop3Companions(cropKey, szn, soil, water) {
         tier: 'Recommended',
         key: 'soybean',
         name: 'Soybean',
-        ratio: '2:2 or 2:1',
+        rowRatio: '2:2 or 2:1',
         spacing: '30 cm x 10 cm',
-        ler: 1.29,
-        nitro: 36,
-        duration: '80 - 90 Days',
+        lerScore: 1.29,
+        nitrogenFixed: 36,
+        harvestDuration: '80 - 90 Days',
         sowingOffset: 'Simultaneous on Day 0',
         rootZoneSynergy: 'Vertical erect profile reducing wind lodging',
         reasoning: 'Substantial commercial oilseed value with robust atmospheric nitrogen contribution in loamy and clay soils.'
@@ -253,11 +252,11 @@ function getTop3Companions(cropKey, szn, soil, water) {
         tier: 'Feasible Alternative',
         key: 'horsegram',
         name: 'Horse Gram (Kulthi)',
-        ratio: '2:1',
+        rowRatio: '2:1',
         spacing: '30 cm x 10 cm',
-        ler: 1.26,
-        nitro: 28,
-        duration: '80 - 90 Days',
+        lerScore: 1.26,
+        nitrogenFixed: 28,
+        harvestDuration: '80 - 90 Days',
         sowingOffset: 'Simultaneous on Day 0',
         rootZoneSynergy: 'Fibrous soil-binding mulch layer',
         reasoning: 'Extreme drought insurance; thrives even if monsoon breaks occur or in nutrient-deficient sandy soils.'
@@ -273,11 +272,11 @@ function getTop3Companions(cropKey, szn, soil, water) {
           tier: 'Highly Recommended',
           key: 'blackgram',
           name: 'Black Gram (Urad) / Marigold',
-          ratio: '1:2',
+          rowRatio: '1:2',
           spacing: '30 cm x 10 cm',
-          ler: 1.31,
-          nitro: 32,
-          duration: '70 - 75 Days',
+          lerScore: 1.31,
+          nitrogenFixed: 32,
+          harvestDuration: '70 - 75 Days',
           sowingOffset: 'Simultaneous on Day 0',
           rootZoneSynergy: 'Shallow pulse zone utilizing moisture between 90cm cotton rows',
           reasoning: 'Deep Vertisols (Black soil) hold moisture to finish short Black Gram, while Marigold borders lure away American bollworms.'
@@ -286,11 +285,11 @@ function getTop3Companions(cropKey, szn, soil, water) {
           tier: 'Recommended',
           key: 'greengram',
           name: 'Green Gram (Moong)',
-          ratio: '1:2',
+          rowRatio: '1:2',
           spacing: '25 cm x 10 cm',
-          ler: 1.28,
-          nitro: 30,
-          duration: '60 - 65 Days',
+          lerScore: 1.28,
+          nitrogenFixed: 30,
+          harvestDuration: '60 - 65 Days',
           sowingOffset: 'Simultaneous on Day 0',
           rootZoneSynergy: 'Quick maturity before cotton branches wide',
           reasoning: 'Harvested before cotton reaches peak vegetative branching, ensuring zero competition for sunlight.'
@@ -299,28 +298,27 @@ function getTop3Companions(cropKey, szn, soil, water) {
           tier: 'Feasible Alternative',
           key: 'soybean',
           name: 'Soybean',
-          ratio: '1:2 Strip Cropping',
+          rowRatio: '1:2 Strip Cropping',
           spacing: '30 cm x 10 cm',
-          ler: 1.26,
-          nitro: 34,
-          duration: '80 - 90 Days',
+          lerScore: 1.26,
+          nitrogenFixed: 34,
+          harvestDuration: '80 - 90 Days',
           sowingOffset: 'Simultaneous on Day 0',
           rootZoneSynergy: 'Mid-tier canopy cover protecting wide ridges',
           reasoning: 'Generates early cash income before cotton picking starts; requires timely picking of soybean pods.'
         }
       ];
     }
-    // Rainfed / Sandy or Loam
     return [
       {
         tier: 'Highly Recommended',
         key: 'clusterbean',
         name: 'Cluster Bean (Guar)',
-        ratio: '1:1',
+        rowRatio: '1:1',
         spacing: '45 cm x 15 cm',
-        ler: 1.24,
-        nitro: 25,
-        duration: '85 - 95 Days',
+        lerScore: 1.24,
+        nitrogenFixed: 25,
+        harvestDuration: '85 - 95 Days',
         sowingOffset: 'Simultaneous on Day 0',
         rootZoneSynergy: 'Extreme osmotic adjustment for dry soils',
         reasoning: 'Outstanding drought and heat resilience; deep taproot extracts nutrients without invading wide cotton root balls.'
@@ -329,11 +327,11 @@ function getTop3Companions(cropKey, szn, soil, water) {
         tier: 'Recommended',
         key: 'blackgram',
         name: 'Black Gram (Urad)',
-        ratio: '1:2',
+        rowRatio: '1:2',
         spacing: '30 cm x 10 cm',
-        ler: 1.28,
-        nitro: 30,
-        duration: '70 - 75 Days',
+        lerScore: 1.28,
+        nitrogenFixed: 30,
+        harvestDuration: '70 - 75 Days',
         sowingOffset: 'Simultaneous on Day 0',
         rootZoneSynergy: 'Low sprawling canopy reducing soil crusting',
         reasoning: 'Proven commercial pulse intercrop that provides weed control during cotton’s slow juvenile phase.'
@@ -342,11 +340,11 @@ function getTop3Companions(cropKey, szn, soil, water) {
         tier: 'Feasible Alternative',
         key: 'cowpea',
         name: 'Cowpea (Trap / Cover)',
-        ratio: '1:1 Border',
+        rowRatio: '1:1 Border',
         spacing: '30 cm x 10 cm',
-        ler: 1.22,
-        nitro: 32,
-        duration: '65 - 75 Days',
+        lerScore: 1.22,
+        nitrogenFixed: 32,
+        harvestDuration: '65 - 75 Days',
         sowingOffset: 'Simultaneous on Day 0',
         rootZoneSynergy: 'Aggressive topsoil shading',
         reasoning: 'Effective cover against erosion, but requires pruning if vegetative vines begin climbing young cotton stalks.'
@@ -362,11 +360,11 @@ function getTop3Companions(cropKey, szn, soil, water) {
           tier: 'Highly Recommended',
           key: 'azolla',
           name: 'Azolla Pinnata (Biofertilizer Mat)',
-          ratio: 'Inoculated Floating Blanket',
+          rowRatio: 'Inoculated Floating Blanket',
           spacing: 'Continuous Biomass Layer',
-          ler: 1.27,
-          nitro: 45,
-          duration: 'Living Water Blanket',
+          lerScore: 1.27,
+          nitrogenFixed: 45,
+          harvestDuration: 'Living Water Blanket',
           sowingOffset: 'Inoculated on Day 7 after transplanting',
           rootZoneSynergy: 'Floating aquatic symbiosis in standing water',
           reasoning: 'Multiplies every 5 days on floodwaters, fixing up to 45 kg N/ha, smothering aquatic weeds, and lowering root temperatures.'
@@ -375,11 +373,11 @@ function getTop3Companions(cropKey, szn, soil, water) {
           tier: 'Recommended',
           key: 'greengram',
           name: 'Green Gram (Paddy Bund Intercrop)',
-          ratio: 'Bund & Perimeter Rows',
+          rowRatio: 'Bund & Perimeter Rows',
           spacing: '20 cm x 10 cm on bunds',
-          ler: 1.22,
-          nitro: 25,
-          duration: '60 - 65 Days',
+          lerScore: 1.22,
+          nitrogenFixed: 25,
+          harvestDuration: '60 - 65 Days',
           sowingOffset: 'Day 0 along field bunds',
           rootZoneSynergy: 'Perimeter pulse taking advantage of non-flooded edges',
           reasoning: 'Converts uncultivated bund margins into productive pulse ground without interfering with flooded basin paddy.'
@@ -388,28 +386,27 @@ function getTop3Companions(cropKey, szn, soil, water) {
           tier: 'Feasible Alternative',
           key: 'blackgram',
           name: 'Black Gram (Relay / Bund)',
-          ratio: 'Bund or Relay Sowing',
+          rowRatio: 'Bund or Relay Sowing',
           spacing: '20 cm x 10 cm on bunds',
-          ler: 1.18,
-          nitro: 22,
-          duration: '65 - 70 Days',
+          lerScore: 1.18,
+          nitrogenFixed: 22,
+          harvestDuration: '65 - 70 Days',
           sowingOffset: 'Sown on bunds or broadcast into relay moisture',
           rootZoneSynergy: 'Utilizes residual soil moisture profile',
           reasoning: 'Traditional rice-fallow relay companion that sprouts in residual mud moisture before paddy harvest.'
         }
       ];
     }
-    // Low / Medium Water Paddy
     return [
       {
         tier: 'Highly Recommended',
         key: 'greengram',
         name: 'Green Gram (Paddy Bund Intercrop)',
-        ratio: 'Bund & Perimeter Rows',
+        rowRatio: 'Bund & Perimeter Rows',
         spacing: '20 cm x 10 cm on bunds',
-        ler: 1.22,
-        nitro: 25,
-        duration: '60 - 65 Days',
+        lerScore: 1.22,
+        nitrogenFixed: 25,
+        harvestDuration: '60 - 65 Days',
         sowingOffset: 'Day 0 along field bunds',
         rootZoneSynergy: 'Perimeter root zone without flooding competition',
         reasoning: 'Monetizes raised bunds and binds bund soil against erosion under partial irrigation regimes.'
@@ -418,11 +415,11 @@ function getTop3Companions(cropKey, szn, soil, water) {
         tier: 'Recommended',
         key: 'blackgram',
         name: 'Black Gram (Urad)',
-        ratio: 'Bund Rows',
+        rowRatio: 'Bund Rows',
         spacing: '25 cm x 10 cm on bunds',
-        ler: 1.20,
-        nitro: 22,
-        duration: '70 - 75 Days',
+        lerScore: 1.20,
+        nitrogenFixed: 22,
+        harvestDuration: '70 - 75 Days',
         sowingOffset: 'Day 0 along field bunds',
         rootZoneSynergy: 'Low canopy stabilizing farm path edges',
         reasoning: 'Resilient bund legume that thrives on splash moisture and minimal management.'
@@ -431,11 +428,11 @@ function getTop3Companions(cropKey, szn, soil, water) {
         tier: 'Feasible Alternative',
         key: 'sesbania',
         name: 'Sesbania (Dhaincha Bund Barrier)',
-        ratio: 'Peripheral Windbreak',
+        rowRatio: 'Peripheral Windbreak',
         spacing: '30 cm x 15 cm on borders',
-        ler: 1.16,
-        nitro: 40,
-        duration: 'Green Manure / Border',
+        lerScore: 1.16,
+        nitrogenFixed: 40,
+        harvestDuration: 'Green Manure / Border',
         sowingOffset: 'Simultaneous on Day 0',
         rootZoneSynergy: 'Deep nitrogen nodules on bund perimeters',
         reasoning: 'Excellent green manure boundary that buffers strong winds and can be lopped into paddy basins as bio-fertilizer.'
@@ -451,11 +448,11 @@ function getTop3Companions(cropKey, szn, soil, water) {
           tier: 'Highly Recommended',
           key: 'pearlmillet',
           name: 'Pearl Millet (Bajra) Windbreak',
-          ratio: '6:1 or 8:1 Border Rows',
+          rowRatio: '6:1 or 8:1 Border Rows',
           spacing: '45 cm x 15 cm',
-          ler: 1.28,
-          nitro: 0,
-          duration: '80 - 85 Days',
+          lerScore: 1.28,
+          nitrogenFixed: 0,
+          harvestDuration: '80 - 85 Days',
           sowingOffset: 'Simultaneous on Day 0',
           rootZoneSynergy: 'Tall perimeter micro-climate barrier',
           reasoning: 'Tall Bajra border rows deflect hot desiccating winds in sandy zones, conserving topsoil humidity for groundnut pegging.'
@@ -464,11 +461,11 @@ function getTop3Companions(cropKey, szn, soil, water) {
           tier: 'Recommended',
           key: 'pigeonpea',
           name: 'Pigeon Pea (Arhar / Tur)',
-          ratio: '6:1 or 8:1',
+          rowRatio: '6:1 or 8:1',
           spacing: '60 cm x 15 cm',
-          ler: 1.34,
-          nitro: 40,
-          duration: '130 - 150 Days',
+          lerScore: 1.34,
+          nitrogenFixed: 40,
+          harvestDuration: '130 - 150 Days',
           sowingOffset: 'Simultaneous on Day 0',
           rootZoneSynergy: 'Deep taproot foraging lower subsoil water',
           reasoning: 'Pigeon Pea taproots tap deep moisture reserves without competing with shallow groundnut pods.'
@@ -477,28 +474,27 @@ function getTop3Companions(cropKey, szn, soil, water) {
           tier: 'Feasible Alternative',
           key: 'sesame',
           name: 'Sesame (Til)',
-          ratio: '4:1 or Border Rows',
+          rowRatio: '4:1 or Border Rows',
           spacing: '30 cm x 10 cm',
-          ler: 1.21,
-          nitro: 0,
-          duration: '75 - 85 Days',
+          lerScore: 1.21,
+          nitrogenFixed: 0,
+          harvestDuration: '75 - 85 Days',
           sowingOffset: 'Simultaneous on Day 0',
           rootZoneSynergy: 'Low water requirement oilseed canopy',
           reasoning: 'Drought-tolerant dual oilseed pairing that thrives in sandy loam under low water availability.'
         }
       ];
     }
-    // Loam / Clay / Medium / High Water
     return [
       {
         tier: 'Highly Recommended',
         key: 'pigeonpea',
         name: 'Pigeon Pea (Arhar / Tur)',
-        ratio: '6:1',
+        rowRatio: '6:1',
         spacing: '60 cm x 15 cm',
-        ler: 1.36,
-        nitro: 42,
-        duration: '130 - 150 Days',
+        lerScore: 1.36,
+        nitrogenFixed: 42,
+        harvestDuration: '130 - 150 Days',
         sowingOffset: 'Simultaneous on Day 0',
         rootZoneSynergy: 'Deep taproot (1.5m) + Shallow groundnut peg layer (20cm)',
         reasoning: 'Classic ICAR pairing: groundnut harvests in 105 days, leaving Pigeon Pea to exploit the full field and late season sunlight.'
@@ -507,11 +503,11 @@ function getTop3Companions(cropKey, szn, soil, water) {
         tier: 'Recommended',
         key: 'castor',
         name: 'Castor (Wide Strip Companion)',
-        ratio: '8:1',
+        rowRatio: '8:1',
         spacing: '90 cm x 30 cm',
-        ler: 1.30,
-        nitro: 0,
-        duration: '140 - 160 Days',
+        lerScore: 1.30,
+        nitrogenFixed: 0,
+        harvestDuration: '140 - 160 Days',
         sowingOffset: 'Simultaneous on Day 0',
         rootZoneSynergy: 'Deep taproot with vertical canopy branching',
         reasoning: 'Castor generates heavy secondary commercial returns and acts as an effective trap crop for Spodoptera caterpillars.'
@@ -520,11 +516,11 @@ function getTop3Companions(cropKey, szn, soil, water) {
         tier: 'Feasible Alternative',
         key: 'blackgram',
         name: 'Black Gram (Urad)',
-        ratio: '4:1',
+        rowRatio: '4:1',
         spacing: '30 cm x 10 cm',
-        ler: 1.23,
-        nitro: 28,
-        duration: '65 - 75 Days',
+        lerScore: 1.23,
+        nitrogenFixed: 28,
+        harvestDuration: '65 - 75 Days',
         sowingOffset: 'Simultaneous on Day 0',
         rootZoneSynergy: 'Fast pulse harvest before groundnut canopy locks',
         reasoning: 'Short-duration pulse that gives an early grain harvest before groundnut pods mature.'
@@ -532,17 +528,16 @@ function getTop3Companions(cropKey, szn, soil, water) {
     ];
   }
 
-  // Generic Safe Fallback
   return [
     {
       tier: 'Highly Recommended',
       key: 'cowpea',
       name: 'Cowpea (Universal Companion)',
-      ratio: '2:1',
+      rowRatio: '2:1',
       spacing: '30 cm x 10 cm',
-      ler: 1.30,
-      nitro: 32,
-      duration: '65 - 75 Days',
+      lerScore: 1.30,
+      nitrogenFixed: 32,
+      harvestDuration: '65 - 75 Days',
       sowingOffset: 'Simultaneous on Day 0',
       rootZoneSynergy: 'Deep taproot + Shallow fibrous root system',
       reasoning: 'Dependable biological nitrogen fixation, weed suppression, and soil cover.'
@@ -551,11 +546,11 @@ function getTop3Companions(cropKey, szn, soil, water) {
       tier: 'Recommended',
       key: 'greengram',
       name: 'Green Gram (Moong)',
-      ratio: '2:1',
+      rowRatio: '2:1',
       spacing: '25 cm x 10 cm',
-      ler: 1.25,
-      nitro: 28,
-      duration: '60 - 65 Days',
+      lerScore: 1.25,
+      nitrogenFixed: 28,
+      harvestDuration: '60 - 65 Days',
       sowingOffset: 'Simultaneous on Day 0',
       rootZoneSynergy: 'Rapid pulse canopy development',
       reasoning: 'Fast-maturing pulse that clears early and enriches topsoil.'
@@ -564,11 +559,11 @@ function getTop3Companions(cropKey, szn, soil, water) {
       tier: 'Feasible Alternative',
       key: 'blackgram',
       name: 'Black Gram (Urad)',
-      ratio: '2:1',
+      rowRatio: '2:1',
       spacing: '30 cm x 10 cm',
-      ler: 1.20,
-      nitro: 25,
-      duration: '70 - 75 Days',
+      lerScore: 1.20,
+      nitrogenFixed: 25,
+      harvestDuration: '70 - 75 Days',
       sowingOffset: 'Simultaneous on Day 0',
       rootZoneSynergy: 'Compact root architecture',
       reasoning: 'Stable cash legume with modest moisture requirements.'
@@ -584,7 +579,6 @@ app.post('/api/recommend', async (req, res) => {
     const langCol = (lang === 'ta' || lang === 'hi') ? `_${lang}` : '_en';
     const normalizedKey = normalizeCropKey(primaryCropKey);
 
-    // A. Primary Crop Details
     let primaryCrop = null;
     let [crops] = await db.query(
       `SELECT * FROM crops WHERE LOWER(crop_key) = ? OR LOWER(crop_key) = ? LIMIT 1`,
@@ -623,7 +617,6 @@ app.post('/api/recommend', async (req, res) => {
 
     const matchedCropKey = crops.length > 0 ? crops[0].crop_key : primaryCropKey;
 
-    // B. Mandi Rates & MSP (Current Official Floor Benchmarks)
     const CURRENT_MSP_DIRECTORY = {
       paddy: { msp: 2441.00, mandi: 2520.00, date: '2026-06-15' },
       rice: { msp: 2441.00, mandi: 2520.00, date: '2026-06-15' },
@@ -658,16 +651,13 @@ app.post('/api/recommend', async (req, res) => {
       console.warn('Price query fallback used:', err.message);
     }
 
-    // C. 3-Tier Dynamic Companion Crop Hierarchy
     const companionList = getTop3Companions(normalizedKey, season, soilType, waterStatus).map(comp => ({
       ...comp,
       postHarvest: { safeMoisturePct: 10.0, ambientMonths: 6, coldMonths: 18 }
     }));
 
-    // Default active companion is Tier 1 (Highly Recommended)
     const activeCompanion = companionList[0];
 
-    // D. Integrated Pest Management & Safety Protocol
     let pests = [];
     try {
       const [pestRows] = await db.query(
