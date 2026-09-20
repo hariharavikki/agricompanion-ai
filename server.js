@@ -22,7 +22,7 @@ const db = mysql.createPool({
     : false
 });
 
-// Auto-check tables on boot
+// Auto-check and initialize tables on boot
 (async () => {
   try {
     const conn = await db.getConnection();
@@ -35,12 +35,38 @@ const db = mysql.createPool({
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
+
+    await conn.query(`
+      CREATE TABLE IF NOT EXISTS user_history (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT,
+        primary_crop VARCHAR(50) NOT NULL,
+        intercrop VARCHAR(50) DEFAULT 'none',
+        season VARCHAR(50),
+        soil_type VARCHAR(50),
+        water_status VARCHAR(50),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
     conn.release();
-    console.log('Database connected: Users table ready.');
+    console.log('Database connected: Users & User History tables ready.');
   } catch (err) {
     console.error('DB Init Error:', err.message);
   }
 })();
+
+// Helper: Normalize incoming crop keys
+function normalizeCropKey(key = '') {
+  const k = String(key).toLowerCase().trim();
+  if (k.includes('rice') || k.includes('paddy')) return 'paddy';
+  if (k.includes('maize') || k.includes('corn')) return 'maize';
+  if (k.includes('cotton')) return 'cotton';
+  if (k.includes('groundnut') || k.includes('peanut')) return 'groundnut';
+  if (k.includes('sugarcane')) return 'sugarcane';
+  if (k.includes('wheat')) return 'wheat';
+  return k;
+}
 
 // 1. User Authentication (Login & Auto-Register)
 app.post('/api/auth/login', async (req, res) => {
@@ -83,18 +109,6 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
-// Helper: Normalize incoming crop keys to match database records reliably
-function normalizeCropKey(key = '') {
-  const k = String(key).toLowerCase().trim();
-  if (k.includes('rice') || k.includes('paddy')) return 'paddy';
-  if (k.includes('maize') || k.includes('corn')) return 'maize';
-  if (k.includes('cotton')) return 'cotton';
-  if (k.includes('groundnut') || k.includes('peanut')) return 'groundnut';
-  if (k.includes('sugarcane')) return 'sugarcane';
-  if (k.includes('wheat')) return 'wheat';
-  return k;
-}
-
 // 2. Comprehensive Agronomic & Intercropping Recommendation Endpoint
 app.post('/api/recommend', async (req, res) => {
   const { primaryCropKey, season = '', soilType = '', waterStatus = '', lang = 'en' } = req.body;
@@ -103,7 +117,7 @@ app.post('/api/recommend', async (req, res) => {
     const langCol = (lang === 'ta' || lang === 'hi') ? `_${lang}` : '_en';
     const normalizedKey = normalizeCropKey(primaryCropKey);
 
-    // A. Primary Crop Details & Post-Harvest Storage Specs
+    // A. Primary Crop Details
     let primaryCrop = null;
     let [crops] = await db.query(
       `SELECT * FROM crops WHERE LOWER(crop_key) = ? OR LOWER(crop_key) = ? LIMIT 1`,
@@ -142,7 +156,7 @@ app.post('/api/recommend', async (req, res) => {
 
     const matchedCropKey = crops.length > 0 ? crops[0].crop_key : primaryCropKey;
 
-    // B. Mandi Rates & Official Government MSP
+    // B. Mandi Rates & MSP
     let marketData = {
       pricePerQuintal: 2300.00,
       officialMsp: 2300.00,
@@ -249,7 +263,7 @@ app.post('/api/recommend', async (req, res) => {
       console.warn('Intercrop decision warning:', err.message);
     }
 
-    // Agronomic fallback if database yields no matching intercrop rule
+    // Hardcoded Agronomic Fallback if database has no rules
     if (!intercrop) {
       const fallbackCompanions = {
         maize: {
@@ -344,15 +358,15 @@ app.post('/api/recommend', async (req, res) => {
 app.post('/api/history/save', async (req, res) => {
   const { userId, primaryCrop, intercrop, season, soilType, waterStatus } = req.body;
   try {
-    await db.query(
+    const [result] = await db.query(
       `INSERT INTO user_history (user_id, primary_crop, intercrop, season, soil_type, water_status)
        VALUES (?, ?, ?, ?, ?, ?)`,
       [userId || null, primaryCrop, intercrop || 'none', season, soilType, waterStatus]
     );
-    res.json({ success: true });
+    res.json({ success: true, insertId: result.insertId });
   } catch (err) {
     console.error('Error in /api/history/save:', err);
-    res.status(500).json({ error: 'Could not save blueprint' });
+    res.status(500).json({ error: 'Database could not save blueprint: ' + err.message });
   }
 });
 
@@ -365,7 +379,7 @@ app.get('/api/history/:userId', async (req, res) => {
     res.json(rows);
   } catch (err) {
     console.error('Error fetching history:', err);
-    res.status(500).json({ error: 'Could not fetch history' });
+    res.status(500).json({ error: 'Could not fetch history: ' + err.message });
   }
 });
 
@@ -375,7 +389,7 @@ app.delete('/api/history/:id', async (req, res) => {
     res.json({ success: true });
   } catch (err) {
     console.error('Error deleting history entry:', err);
-    res.status(500).json({ error: 'Could not delete entry' });
+    res.status(500).json({ error: 'Could not delete entry: ' + err.message });
   }
 });
 

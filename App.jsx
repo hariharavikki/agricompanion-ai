@@ -251,7 +251,7 @@ const CLIENT_COMPANIONS = {
     harvestDuration: '65 - 75 Days',
     sowingOffset: 'Simultaneous on Day 0',
     rootZoneSynergy: 'Deep taproot + Shallow fibrous root system',
-    reasoning: 'Cowpea provides vegetative soil cover, suppresses weeds, and fixes atmospheric nitrogen to support maize nutrition.',
+    reasoning: 'Cowpea provides vegetative ground cover, suppresses weed emergence, and fixes atmospheric nitrogen to meet the high nutrient demand of maize.',
     postHarvest: { safeMoisturePct: 10.0, ambientMonths: 6, coldMonths: 18 }
   },
   rice: {
@@ -264,7 +264,7 @@ const CLIENT_COMPANIONS = {
     harvestDuration: '60 - 70 Days',
     sowingOffset: 'Simultaneous on Day 0',
     rootZoneSynergy: 'Surface nitrogen symbiosis without water competition',
-    reasoning: 'Green gram stabilizes bunds and fixes nitrogen without competing with flooded paddy root zones.',
+    reasoning: 'Green gram stabilizes field bunds and fixes atmospheric nitrogen without competing with flooded paddy root zones.',
     postHarvest: { safeMoisturePct: 11.0, ambientMonths: 6, coldMonths: 18 }
   },
   cotton: {
@@ -626,7 +626,6 @@ export default function App() {
       const data = await res.json();
       if (!data || !data.primaryCrop) throw new Error('Invalid response structure');
 
-      // Guarantee an intercrop object so the fallback message never appears
       if (!data.intercrop) {
         const fallback = CLIENT_COMPANIONS[cropLookup] || CLIENT_COMPANIONS.maize;
         data.intercrop = fallback;
@@ -636,7 +635,6 @@ export default function App() {
       setActiveTab('intercrop');
     } catch (err) {
       console.warn('Backend fetch fallback engaged:', err);
-      // Client-side offline fallback
       const cropLookup = overrideParams?.primaryCropKey || primaryCropKey;
       const fallbackCompanion = CLIENT_COMPANIONS[cropLookup] || CLIENT_COMPANIONS.maize;
       setAdvice({
@@ -759,19 +757,28 @@ export default function App() {
       return;
     }
     try {
-      await fetch(`${API_BASE}/api/history/save`, {
+      const res = await fetch(`${API_BASE}/api/history/save`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId: user.id,
           primaryCrop: primaryCropKey,
-          intercrop: advice?.intercrop?.key || 'none',
-          season, soilType, waterStatus, lang
+          intercrop: advice?.intercrop?.key || advice?.intercrop?.name || 'none',
+          season,
+          soilType,
+          waterStatus,
+          lang
         })
       });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || `Server error ${res.status}`);
+      }
       alert('Companion intercropping blueprint saved to your farmer profile!');
-    } catch {
-      alert('Failed to save blueprint.');
+    } catch (err) {
+      console.error('Save failed:', err);
+      alert('Failed to save blueprint: ' + err.message);
     }
   };
 
@@ -783,9 +790,14 @@ export default function App() {
     try {
       const res = await fetch(`${API_BASE}/api/history/${user.id}`);
       const data = await res.json();
-      setHistoryList(data);
+      if (Array.isArray(data)) {
+        setHistoryList(data);
+      } else {
+        setHistoryList([]);
+      }
       setShowHistory(true);
-    } catch {
+    } catch (err) {
+      console.error('History fetch failed:', err);
       alert('Could not fetch history.');
     }
   };
@@ -1549,6 +1561,7 @@ export default function App() {
   );
 }
 
+// Auto-mounts the root element reliably across browser environments
 const rootElement = document.getElementById('root');
 if (rootElement && !rootElement._reactRootContainer) {
   const root = ReactDOM.createRoot(rootElement);
