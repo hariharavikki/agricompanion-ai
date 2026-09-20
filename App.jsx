@@ -4,11 +4,11 @@ import ReactDOM from 'react-dom/client';
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5002';
 
 const CURRENT_MSP_DIRECTORY = {
-  paddy: { msp: 2441.00, mandi: 2520.00, date: '2026-06-15' },
-  rice: { msp: 2441.00, mandi: 2520.00, date: '2026-06-15' },
-  maize: { msp: 2410.00, mandi: 2490.00, date: '2026-06-15' },
-  cotton: { msp: 8267.00, mandi: 8450.00, date: '2026-06-15' },
-  groundnut: { msp: 7517.00, mandi: 7680.00, date: '2026-06-15' }
+  paddy: { msp: 2300.00, mandi: 2360.00, date: '2026-06-15' },
+  rice: { msp: 2300.00, mandi: 2360.00, date: '2026-06-15' },
+  maize: { msp: 2225.00, mandi: 2280.00, date: '2026-06-15' },
+  cotton: { msp: 7121.00, mandi: 7350.00, date: '2026-06-15' },
+  groundnut: { msp: 6783.00, mandi: 6940.00, date: '2026-06-15' }
 };
 
 const DICTIONARY = {
@@ -254,6 +254,148 @@ const DICTIONARY = {
   }
 };
 
+// Comprehensive Trilingual Translation Dictionaries
+const AGRONOMIC_TRANSLATIONS = {
+  crops: {
+    cowpea: { en: 'Cowpea (Lobia)', ta: 'காராமணி (தட்டப்பயறு)', hi: 'लोबिया (चौलाई)' },
+    greengram: { en: 'Green Gram (Moong)', ta: 'பாசிப்பயறு (பச்சைப்பயறு)', hi: 'मूंग (Green Gram)' },
+    blackgram: { en: 'Black Gram (Urad)', ta: 'உளுந்து (கருப்பு உளுந்து)', hi: 'உड़द (Black Gram)' },
+    frenchbean: { en: 'French Bean (Rajma)', ta: 'பீன்ஸ் / ராஜ்மா', hi: 'राजमा / फ्रेंच बीन' },
+    pea: { en: 'Field Pea (Matar)', ta: 'பச்சை பட்டாணி', hi: 'हरी मटर (Field Pea)' },
+    chickpea: { en: 'Chickpea (Chana)', ta: 'கொண்டைக்கடலை', hi: 'चना (Chickpea)' },
+    soybean: { en: 'Soybean', ta: 'சோயாபீன்', hi: 'सोयाबीन' },
+    horsegram: { en: 'Horse Gram (Kulthi)', ta: 'கொள்ளு (Horse Gram)', hi: 'कुलथी (Horse Gram)' },
+    clusterbean: { en: 'Cluster Bean (Guar)', ta: 'கொத்தவரங்காய் (Guar)', hi: 'ग्वारफली (Cluster Bean)' },
+    azolla: { en: 'Azolla Pinnata', ta: 'அசோலா உயிர் உரம்', hi: 'अजोला जैव उर्वरक' },
+    sesbania: { en: 'Sesbania (Dhaincha)', ta: 'தக்கைப்பூண்டு (சணப்பை)', hi: 'ढैंचा (हरी खाद)' },
+    pearlmillet: { en: 'Pearl Millet (Bajra)', ta: 'கம்பு (Bajra)', hi: 'बाजरा (Pearl Millet)' },
+    pigeonpea: { en: 'Pigeon Pea (Arhar / Tur)', ta: 'துவரை (Red Gram)', hi: 'अरहर / तूर दाल' },
+    sesame: { en: 'Sesame (Til)', ta: 'எள்ளு (Sesame)', hi: 'तिल (Sesame)' },
+    castor: { en: 'Castor', ta: 'ஆமணக்கு (விளக்கெண்ணெய் விதை)', hi: 'अरंडी (Castor)' }
+  },
+  tiers: {
+    high: { en: '⭐ Highly Recommended', ta: '⭐ மிகச் சிறந்த பரிந்துரை', hi: '⭐ अत्यधिक अनुशंसित' },
+    rec: { en: '👍 Recommended', ta: '👍 பரிந்துரைக்கப்படுகிறது', hi: '👍 अनुशंसित' },
+    alt: { en: '🌾 Feasible Alternative', ta: '🌾 சாத்தியமான மாற்றுப் பயிர்', hi: '🌾 व्यावहारिक विकल्प' }
+  },
+  ui: {
+    activePlan: { en: '✓ Active Plan', ta: '✓ தேர்ந்தெடுக்கப்பட்டது', hi: '✓ सक्रिय योजना' },
+    clickToSelect: { en: 'Click to Select', ta: 'தேர்வு செய்ய அழுத்தவும்', hi: 'चुनने के लिए क्लिक करें' },
+    simultaneousFor: { en: 'Simultaneous growing companion for', ta: 'இணைந்து வளரும் ஊடுபயிர்:', hi: 'के साथ एक साथ उगने वाली साथी फसल:' },
+    companionCycle: { en: 'Companion Cycle', ta: 'பயிர்க்காலம்', hi: 'साथी फसल अवधि' }
+  },
+  schedules: {
+    simultaneous: { en: 'Simultaneous on Day 0', ta: 'முதல் நாளில் உடனடி விதைப்பு', hi: 'दिन 0 पर एक साथ बुवाई' },
+    day7: { en: 'Inoculated on Day 7 after transplanting', ta: 'நடவு நட்ட 7-ம் நாள் இடவும்', hi: 'रोपाई के 7वें दिन छोड़ें' },
+    bundDay0: { en: 'Day 0 along field bunds', ta: 'வரப்புகளில் முதல் நாளில் நடுதல்', hi: 'मेड़ों पर दिन 0' },
+    relay: { en: 'Sown on bunds or broadcast into relay moisture', ta: 'நெல் அறுவடைக்கு முன் ஈரப்பதத்தில் விதைத்தல்', hi: 'कटाई से पहले गीली मिट्टी में' }
+  },
+  rootSynergy: {
+    deepTaproot: {
+      en: 'Deep taproot + Shallow fibrous root system',
+      ta: 'ஆழமான ஆணிவேர் மற்றும் மேல்மண் சல்லிவேர்களின் கூட்டு',
+      hi: 'गहरी मूसला जड़ व उथली रेशेदार जड़ों का बेहतर तालमेल'
+    },
+    shallowCanopy: {
+      en: 'Shallow root zone complements deep maize taproot',
+      ta: 'ஆழமற்ற வேர் அமைப்பு மக்காச்சோள வேர்களுக்கு இடமளிக்கிறது',
+      hi: 'उथली जड़ें मक्के की गहरी जड़ों को बाधित नहीं करतीं'
+    },
+    erectLegume: {
+      en: 'Erect cool-season legume architecture',
+      ta: 'குளிர்காலத்திற்கேற்ற நேரான கட்டமைப்பு',
+      hi: 'सर्दियों के अनुकूल सीधा ढांचा'
+    },
+    soilBinding: {
+      en: 'Fibrous soil-binding mulch layer',
+      ta: 'மண்ணை இறுகப் பிடிக்கும் வேர் மூடாக்கு',
+      hi: 'मिट्टी को बांधने वाली जड़ें'
+    },
+    vertisolMoisture: {
+      en: 'Shallow pulse zone utilizing moisture between 90cm cotton rows',
+      ta: 'பருத்தி வரிசைகளுக்கு இடையே உள்ள ஈரப்பதத்தை பயன்படுத்தும்',
+      hi: 'कपास की चौड़ी कतारों के बीच की नमी का सदुपयोग'
+    },
+    osmotic: {
+      en: 'Extreme osmotic adjustment for dry soils',
+      ta: 'வறட்சியைத் தாங்கும் ஆழமான வேர்',
+      hi: 'गहरी सूखा सहनशील जड़ें'
+    },
+    floatingSymbiosis: {
+      en: 'Floating aquatic symbiosis in standing water',
+      ta: 'தேங்கிய நீரில் மிதந்து வேர்களுக்கு குளிர்ச்சி தருகிறது',
+      hi: 'खड़े पानी में जड़ों को ठंडक देती है'
+    },
+    windbreakBarrier: {
+      en: 'Tall perimeter micro-climate barrier',
+      ta: 'காற்றுத் தடுப்பு சுவர்',
+      hi: 'हवा रोधक आवरण'
+    },
+    taprootPigeon: {
+      en: 'Deep taproot (1.5m) + Shallow groundnut peg layer (20cm)',
+      ta: 'துவரை ஆழமான வேர் (1.5 மீ) + வேர்க்கடலை மேல் வேர் (20 செ.மீ)',
+      hi: 'अरहर गहरी जड़ (1.5 मी) + मूंगफली ऊपरी जड़ (20 सेमी)'
+    }
+  }
+};
+
+const getLocalizedCropName = (cropKey, englishName, currentLang) => {
+  if (currentLang === 'en') return englishName || cropKey;
+  const k = String(cropKey || '').toLowerCase();
+  for (const [dictKey, val] of Object.entries(AGRONOMIC_TRANSLATIONS.crops)) {
+    if (k.includes(dictKey) || String(englishName || '').toLowerCase().includes(dictKey)) {
+      return val[currentLang] || val.en;
+    }
+  }
+  return englishName || cropKey;
+};
+
+const getLocalizedTier = (tierStr, currentLang) => {
+  const t = String(tierStr || '').toLowerCase();
+  if (t.includes('highly') || t.includes('சிறந்த') || t.includes('अत्यधिक')) {
+    return AGRONOMIC_TRANSLATIONS.tiers.high[currentLang] || AGRONOMIC_TRANSLATIONS.tiers.high.en;
+  }
+  if (t.includes('feasible') || t.includes('alternative') || t.includes('மாற்று') || t.includes('विकल्प')) {
+    return AGRONOMIC_TRANSLATIONS.tiers.alt[currentLang] || AGRONOMIC_TRANSLATIONS.tiers.alt.en;
+  }
+  return AGRONOMIC_TRANSLATIONS.tiers.rec[currentLang] || AGRONOMIC_TRANSLATIONS.tiers.rec.en;
+};
+
+const getLocalizedDuration = (durationStr, currentLang) => {
+  if (!durationStr || typeof durationStr !== 'string') return '';
+  if (currentLang === 'ta') {
+    return durationStr.replace(/days/gi, 'நாட்கள்').replace(/months/gi, 'மாதங்கள்');
+  }
+  if (currentLang === 'hi') {
+    return durationStr.replace(/days/gi, 'दिन').replace(/months/gi, 'महीने');
+  }
+  return durationStr;
+};
+
+const getLocalizedSchedule = (schedStr, currentLang) => {
+  if (!schedStr || currentLang === 'en') return schedStr || 'Simultaneous on Day 0';
+  const s = String(schedStr).toLowerCase();
+  if (s.includes('day 7') || s.includes('transplant')) return AGRONOMIC_TRANSLATIONS.schedules.day7[currentLang];
+  if (s.includes('bund') && s.includes('0')) return AGRONOMIC_TRANSLATIONS.schedules.bundDay0[currentLang];
+  if (s.includes('relay') || s.includes('broadcast')) return AGRONOMIC_TRANSLATIONS.schedules.relay[currentLang];
+  return AGRONOMIC_TRANSLATIONS.schedules.simultaneous[currentLang];
+};
+
+const getLocalizedSynergy = (synergyStr, currentLang) => {
+  if (!synergyStr || currentLang === 'en') return synergyStr || '';
+  const s = String(synergyStr).toLowerCase();
+  if (s.includes('deep taproot + shallow') || s.includes('fibrous')) return AGRONOMIC_TRANSLATIONS.rootSynergy.deepTaproot[currentLang];
+  if (s.includes('shallow root') || s.includes('complements deep')) return AGRONOMIC_TRANSLATIONS.rootSynergy.shallowCanopy[currentLang];
+  if (s.includes('erect') || s.includes('cool-season')) return AGRONOMIC_TRANSLATIONS.rootSynergy.erectLegume[currentLang];
+  if (s.includes('binding') || s.includes('mulch')) return AGRONOMIC_TRANSLATIONS.rootSynergy.soilBinding[currentLang];
+  if (s.includes('90cm') || s.includes('vertisol')) return AGRONOMIC_TRANSLATIONS.rootSynergy.vertisolMoisture[currentLang];
+  if (s.includes('osmotic') || s.includes('dry soils')) return AGRONOMIC_TRANSLATIONS.rootSynergy.osmotic[currentLang];
+  if (s.includes('floating') || s.includes('standing water')) return AGRONOMIC_TRANSLATIONS.rootSynergy.floatingSymbiosis[currentLang];
+  if (s.includes('barrier') || s.includes('micro-climate')) return AGRONOMIC_TRANSLATIONS.rootSynergy.windbreakBarrier[currentLang];
+  if (s.includes('1.5m') || s.includes('groundnut peg')) return AGRONOMIC_TRANSLATIONS.rootSynergy.taprootPigeon[currentLang];
+  return synergyStr;
+};
+
 const normalizeCompanion = (item, lang = 'en') => {
   if (!item) return null;
   const defaultDur = lang === 'ta' ? '65 - 75 நாட்கள்' : lang === 'hi' ? '65 - 75 दिन' : '65 - 75 Days';
@@ -288,7 +430,7 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
     pea: { en: 'Field Pea (Matar)', ta: 'பச்சை பட்டாணி', hi: 'मटर (Field Pea)' },
     chickpea: { en: 'Chickpea (Chana)', ta: 'கொண்டைக்கடலை', hi: 'चना (Chickpea)' },
     soybean: { en: 'Soybean', ta: 'சோயாபீன்', hi: 'सोयाबीन (Soybean)' },
-    horsegram: { en: 'Horse Gram (Kollu)', ta: 'கொள்ளு (Horse Gram)', hi: 'कुलथी (Horse Gram)' },
+    horsegram: { en: 'Horse Gram (Kulthi)', ta: 'கொள்ளு (Horse Gram)', hi: 'कुलथी (Horse Gram)' },
     clusterbean: { en: 'Cluster Bean (Guar)', ta: 'கொத்தவரங்காய் (Guar)', hi: 'ग्वारफली (Cluster Bean)' },
     azolla: { en: 'Azolla Pinnata (Biofertilizer)', ta: 'அசோலா உயிர் உரம்', hi: 'अजोला जैव उर्वरक' },
     sesbania: { en: 'Sesbania (Dhaincha)', ta: 'தக்கைப்பூண்டு (சணப்பை)', hi: 'ढैंचा (हरी खाद)' },
@@ -392,7 +534,7 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
     ];
   }
 
-  // Generic Safe Companion Set
+  // Safe Fallback Set
   return [
     {
       tier: t.high,
@@ -809,12 +951,12 @@ export default function App() {
     if (lang === 'ta') {
       textToRead = `முதன்மைப் பயிர்: ${advice.primaryCrop.name}. அறுவடை காலம்: ${duration}. அரசு ஆதார விலை MSP: குவிண்டாலுக்கு ₹${advice.marketData?.officialMsp}. `;
       if (advice.intercrop) {
-        textToRead += `பரிந்துரைக்கப்படும் உகந்த ஊடு பயிர்: ${advice.intercrop.name}. முன்னுரிமை தகுதி: ${advice.intercrop.tier}. பயிர் வரிசை அமைப்பு: ${advice.intercrop.rowRatio}. நில பயன்பாட்டு திறன்: ${advice.intercrop.lerScore}. பலன்: ${advice.intercrop.reasoning}.`;
+        textToRead += `பரிந்துரைக்கப்படும் உகந்த ஊடு பயிர்: ${getLocalizedCropName(advice.intercrop.key, advice.intercrop.name, 'ta')}. முன்னுரிமை தகுதி: ${getLocalizedTier(advice.intercrop.tier, 'ta')}. பயிர் வரிசை அமைப்பு: ${advice.intercrop.rowRatio}. நில பயன்பாட்டு திறன்: ${advice.intercrop.lerScore}. பலன்: ${advice.intercrop.reasoning}.`;
       }
     } else if (lang === 'hi') {
       textToRead = `मुख्य फसल: ${advice.primaryCrop.name}. कटाई अवधि: ${duration}. सरकारी MSP: ₹${advice.marketData?.officialMsp} प्रति क्विंटल. `;
       if (advice.intercrop) {
-        textToRead += `अनुशंसित साथी फसल: ${advice.intercrop.name}. प्राथमिकता स्तर: ${advice.intercrop.tier}. पंक्ति अनुपात: ${advice.intercrop.rowRatio}. भूमि दक्षता LER: ${advice.intercrop.lerScore}. लाभ: ${advice.intercrop.reasoning}.`;
+        textToRead += `अनुशंसित साथी फसल: ${getLocalizedCropName(advice.intercrop.key, advice.intercrop.name, 'hi')}. प्राथमिकता स्तर: ${getLocalizedTier(advice.intercrop.tier, 'hi')}. पंक्ति अनुपात: ${advice.intercrop.rowRatio}. भूमि दक्षता LER: ${advice.intercrop.lerScore}. लाभ: ${advice.intercrop.reasoning}.`;
       }
     } else {
       textToRead = `Primary crop: ${advice.primaryCrop.name}. Harvest duration: ${advice.primaryCrop.harvestDuration}. Government MSP floor rate: ₹${advice.marketData?.officialMsp} per quintal. `;
@@ -982,7 +1124,7 @@ export default function App() {
         </div>
       </div>
 
-      {/* Action Row: Field Diagnostics & Voice STT */}
+      {/* Action Row: Soil Photo Scanner & Voice Input */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         {/* Soil Image Diagnostics */}
         <div className="bg-white border p-3.5 rounded-xl shadow-sm space-y-2">
@@ -1067,7 +1209,7 @@ export default function App() {
         </div>
       </div>
 
-      {/* Main Grid: Selectors + Tabs */}
+      {/* Main Grid: Parameters + Results */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Form Selectors */}
         <div className="bg-white p-5 rounded-xl shadow-sm border space-y-4">
@@ -1109,7 +1251,7 @@ export default function App() {
             </select>
           </div>
 
-          {/* Farm Land Slider */}
+          {/* Farm Size Slider */}
           <div className="bg-emerald-50/70 p-3 rounded-lg border border-emerald-200">
             <div className="flex justify-between items-center mb-1.5">
               <label className="text-xs font-bold text-emerald-950">Farm Land Area</label>
@@ -1256,17 +1398,21 @@ export default function App() {
                             >
                               <div className="space-y-1">
                                 <div className="flex items-center justify-between">
-                                  {renderTierBadge(opt.tier)}
+                                  {renderTierBadge(getLocalizedTier(opt.tier, lang))}
                                   <span className="text-[10px] font-black text-gray-600">LER {opt.lerScore}</span>
                                 </div>
-                                <h4 className="text-sm font-black text-gray-900">{opt.name}</h4>
+                                <h4 className="text-sm font-black text-gray-900">
+                                  {getLocalizedCropName(opt.key, opt.name, lang)}
+                                </h4>
                                 <p className="text-[11px] text-gray-500 line-clamp-2">{opt.reasoning}</p>
                               </div>
 
                               <div className="mt-2.5 pt-1.5 border-t border-gray-200 flex justify-between items-center text-[10px] font-bold">
                                 <span className="text-emerald-800">+{opt.nitrogenFixed} kg N/ha</span>
                                 <span className={isSelected ? 'text-emerald-700' : 'text-gray-400'}>
-                                  {isSelected ? '✓ Active Plan' : 'Click to Select'}
+                                  {isSelected 
+                                    ? (AGRONOMIC_TRANSLATIONS.ui.activePlan[lang] || '✓ Active Plan') 
+                                    : (AGRONOMIC_TRANSLATIONS.ui.clickToSelect[lang] || 'Click to Select')}
                                 </span>
                               </div>
                             </div>
@@ -1285,13 +1431,13 @@ export default function App() {
                             <span className="bg-emerald-800 text-white text-[10px] font-black uppercase px-2.5 py-0.5 rounded tracking-wide">
                               {d.intercropOpt}
                             </span>
-                            {renderTierBadge(advice.intercrop.tier)}
+                            {renderTierBadge(getLocalizedTier(advice.intercrop.tier, lang))}
                           </div>
                           <h3 className="text-xl font-black text-green-950 mt-1.5">
-                            {advice.intercrop.name}
+                            {getLocalizedCropName(advice.intercrop.key, advice.intercrop.name, lang)}
                           </h3>
                           <p className="text-xs text-green-700 font-semibold">
-                            Simultaneous growing companion for {advice.primaryCrop.name}
+                            {AGRONOMIC_TRANSLATIONS.ui.simultaneousFor[lang] || 'Simultaneous growing companion for'} {advice.primaryCrop.name}
                           </p>
                         </div>
 
@@ -1325,20 +1471,24 @@ export default function App() {
                         </div>
 
                         <div className="bg-white/90 p-2.5 rounded-lg border border-emerald-100 shadow-2xs">
-                          <p className="text-[10px] text-gray-500 font-semibold">Companion Cycle</p>
-                          <p className="text-xs font-extrabold text-gray-800">{advice.intercrop.harvestDuration}</p>
+                          <p className="text-[10px] text-gray-500 font-semibold">{AGRONOMIC_TRANSLATIONS.ui.companionCycle[lang] || 'Companion Cycle'}</p>
+                          <p className="text-xs font-extrabold text-gray-800">{getLocalizedDuration(advice.intercrop.harvestDuration, lang)}</p>
                         </div>
                       </div>
 
-                      {/* Planting Schedules & Root Synergy */}
+                      {/* Sowing Schedule & Root Synergy */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
                         <div className="bg-white/90 p-3 rounded-lg border border-emerald-100">
                           <p className="text-[10px] text-gray-500 font-bold uppercase">{d.sowingSchedule}</p>
-                          <p className="font-bold text-green-950 mt-0.5">{advice.intercrop.sowingOffset}</p>
+                          <p className="font-bold text-green-950 mt-0.5">
+                            {getLocalizedSchedule(advice.intercrop.sowingOffset, lang)}
+                          </p>
                         </div>
                         <div className="bg-white/90 p-3 rounded-lg border border-emerald-100">
                           <p className="text-[10px] text-gray-500 font-bold uppercase">{d.rootSynergy}</p>
-                          <p className="font-bold text-green-950 mt-0.5">{advice.intercrop.rootZoneSynergy}</p>
+                          <p className="font-bold text-green-950 mt-0.5">
+                            {getLocalizedSynergy(advice.intercrop.rootZoneSynergy, lang)}
+                          </p>
                         </div>
                       </div>
 
@@ -1398,7 +1548,7 @@ export default function App() {
                         <div className="text-xs">
                           <span className="font-extrabold text-blue-950">💧 Soil Moisture & Irrigation Timing</span>
                           <p className="text-gray-600 mt-0.5">
-                            Inspect root zones of both {advice.primaryCrop.name} and {advice.intercrop?.name}. 
+                            Inspect root zones of both {advice.primaryCrop.name} and {getLocalizedCropName(advice.intercrop?.key, advice.intercrop?.name, lang)}. 
                             {waterStatus === 'Low'
                               ? ' Soil is rainfed/low moisture: mulch inter-row spacing to minimize surface evaporation.'
                               : ' Maintain consistent moisture without pooling to protect legume root nodules from suffocation.'}
@@ -1435,7 +1585,7 @@ export default function App() {
                         <div className="text-xs">
                           <span className="font-extrabold text-red-950">🐛 Pest Scouting & Trap Barrier Check</span>
                           <p className="text-gray-600 mt-0.5">
-                            Examine leaf undersides for egg clusters. Inspect companion rows ({advice.intercrop?.name}) to verify if trap boundaries are diverting pests.
+                            Examine leaf undersides for egg clusters. Inspect companion rows ({getLocalizedCropName(advice.intercrop?.key, advice.intercrop?.name, lang)}) to verify if trap boundaries are diverting pests.
                           </p>
                         </div>
                       </label>
@@ -1467,7 +1617,9 @@ export default function App() {
               {activeTab === 'economics' && fin && (
                 <div className="bg-white p-5 rounded-b-xl shadow-sm border space-y-4">
                   <div className="flex justify-between items-center border-b pb-2">
-                    <h3 className="text-sm font-black text-gray-800">Farm Financials for {acres} Acres ({advice.intercrop?.name})</h3>
+                    <h3 className="text-sm font-black text-gray-800">
+                      Farm Financials for {acres} Acres ({getLocalizedCropName(advice.intercrop?.key, advice.intercrop?.name, lang)})
+                    </h3>
                     <span className="text-xs bg-emerald-100 text-emerald-900 font-extrabold px-2.5 py-0.5 rounded">
                       B:C Ratio: {fin.benefitCostRatio}
                     </span>
@@ -1537,7 +1689,7 @@ export default function App() {
                       <span className="text-emerald-700">+{fert.nCreditPerAcre} kg Pure N / Acre</span>
                     </div>
                     <p className="text-gray-700">
-                      Because {advice.intercrop?.name} nodulates atmospheric nitrogen, you save <strong>{fert.ureaSavedBags} commercial Urea bag(s)</strong>, saving approximately <strong>₹{fert.savingsRupees}</strong> on input costs.
+                      Because {getLocalizedCropName(advice.intercrop?.key, advice.intercrop?.name, lang)} nodulates atmospheric nitrogen, you save <strong>{fert.ureaSavedBags} commercial Urea bag(s)</strong>, saving approximately <strong>₹{fert.savingsRupees}</strong> on input costs.
                     </p>
                   </div>
                 </div>
@@ -1593,7 +1745,9 @@ export default function App() {
                     {advice.intercrop && (
                       <div className="p-3.5 bg-emerald-50 rounded-lg border border-emerald-200 space-y-2">
                         <div className="flex justify-between items-center">
-                          <span className="font-black text-emerald-950">{advice.intercrop.name}</span>
+                          <span className="font-black text-emerald-950">
+                            {getLocalizedCropName(advice.intercrop.key, advice.intercrop.name, lang)}
+                          </span>
                           <span className="bg-emerald-200 text-emerald-900 text-[10px] font-bold px-2 py-0.5 rounded">Companion</span>
                         </div>
                         <p><strong>Safe Moisture Threshold:</strong> ≤ {advice.intercrop.postHarvest?.safeMoisturePct || 10}%</p>
@@ -1651,7 +1805,9 @@ export default function App() {
                 {historyList.map((item) => (
                   <div key={item.id} className="p-3 bg-gray-50 rounded border flex justify-between items-center text-xs">
                     <div>
-                      <p className="font-bold text-green-900 capitalize">{item.primary_crop} + {item.intercrop}</p>
+                      <p className="font-bold text-green-900 capitalize">
+                        {item.primary_crop} + {getLocalizedCropName(item.intercrop, item.intercrop, lang)}
+                      </p>
                       <p className="text-gray-500 text-[10px]">{item.season} • {item.soil_type} • {new Date(item.created_at).toLocaleDateString()}</p>
                     </div>
                     <button onClick={() => deleteHistoryItem(item.id)} className="text-red-600 hover:underline font-bold text-[11px]">

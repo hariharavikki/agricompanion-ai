@@ -127,7 +127,7 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
-// Helper: 3-tier hierarchy companion generator with trilingual localization
+// Helper: 3-tier hierarchy generator with trilingual localization
 function getTop3Companions(cropKey, szn, soil, water, lang = 'en') {
   const s = String(szn || '').toLowerCase();
   const so = String(soil || '').toLowerCase();
@@ -148,7 +148,7 @@ function getTop3Companions(cropKey, szn, soil, water, lang = 'en') {
     pea: { en: 'Field Pea (Matar)', ta: 'பச்சை பட்டாணி', hi: 'मटर (Field Pea)' },
     chickpea: { en: 'Chickpea (Chana)', ta: 'கொண்டைக்கடலை', hi: 'चना (Chickpea)' },
     soybean: { en: 'Soybean', ta: 'சோயாபீன்', hi: 'सोयाबीन (Soybean)' },
-    horsegram: { en: 'Horse Gram (Kollu)', ta: 'கொள்ளு (Horse Gram)', hi: 'कुलथी (Horse Gram)' },
+    horsegram: { en: 'Horse Gram (Kulthi)', ta: 'கொள்ளு (Horse Gram)', hi: 'कुलथी (Horse Gram)' },
     clusterbean: { en: 'Cluster Bean (Guar)', ta: 'கொத்தவரங்காய் (Guar)', hi: 'ग्वारफली (Cluster Bean)' },
     azolla: { en: 'Azolla Pinnata (Biofertilizer)', ta: 'அசோலா உயிர் உரம்', hi: 'अजोला जैव उर्वरक' },
     sesbania: { en: 'Sesbania (Dhaincha)', ta: 'தக்கைப்பூண்டு (சணப்பை)', hi: 'ढैंचा (हरी खाद)' },
@@ -247,6 +247,7 @@ function getTop3Companions(cropKey, szn, soil, water, lang = 'en') {
         }
       ];
     }
+    // Kharif Default
     return [
       {
         tier: t.high,
@@ -627,13 +628,13 @@ app.post('/api/recommend', async (req, res) => {
 
     const matchedCropKey = crops.length > 0 ? crops[0].crop_key : primaryCropKey;
 
-    // Mandi Rates & MSP
+    // Mandi Rates & MSP Benchmarks
     const CURRENT_MSP_DIRECTORY = {
-      paddy: { msp: 2441.00, mandi: 2520.00, date: '2026-06-15' },
-      rice: { msp: 2441.00, mandi: 2520.00, date: '2026-06-15' },
-      maize: { msp: 2410.00, mandi: 2490.00, date: '2026-06-15' },
-      cotton: { msp: 8267.00, mandi: 8450.00, date: '2026-06-15' },
-      groundnut: { msp: 7517.00, mandi: 7680.00, date: '2026-06-15' }
+      paddy: { msp: 2300.00, mandi: 2360.00, date: '2026-06-15' },
+      rice: { msp: 2300.00, mandi: 2360.00, date: '2026-06-15' },
+      maize: { msp: 2225.00, mandi: 2280.00, date: '2026-06-15' },
+      cotton: { msp: 7121.00, mandi: 7350.00, date: '2026-06-15' },
+      groundnut: { msp: 6783.00, mandi: 6940.00, date: '2026-06-15' }
     };
 
     const defaultCropMarket = CURRENT_MSP_DIRECTORY[normalizedKey] || CURRENT_MSP_DIRECTORY.maize;
