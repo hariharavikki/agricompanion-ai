@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import ReactDOM from 'react-dom/client';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5002';
 
@@ -1546,4 +1547,10 @@ export default function App() {
       )}
     </div>
   );
+}
+
+const rootElement = document.getElementById('root');
+if (rootElement && !rootElement._reactRootContainer) {
+  const root = ReactDOM.createRoot(rootElement);
+  root.render(<App />);
 }
