@@ -4,8 +4,7 @@ import ReactDOM from 'react-dom/client';
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5002';
 
 const CURRENT_MSP_DIRECTORY = {
-  paddy: { msp: 2441.00, mandi: 2520.00, date: '2026-06-15' },
-  rice: { msp: 2441.00, mandi: 2520.00, date: '2026-06-15' },
+  brinjal: { msp: 1800.00, mandi: 2200.00, date: '2026-06-15' },
   maize: { msp: 2410.00, mandi: 2490.00, date: '2026-06-15' },
   cotton: { msp: 8267.00, mandi: 8450.00, date: '2026-06-15' },
   groundnut: { msp: 7517.00, mandi: 7680.00, date: '2026-06-15' }
@@ -60,7 +59,7 @@ const DICTIONARY = {
     analyzingImage: '🔍 Analyzing soil pigment, moisture status, and companion suitability...',
     autoUpdated: 'Auto-Updated Form',
     mandiPrice: 'Mandi Price',
-    officialMsp: 'Govt. MSP Floor Rate',
+    officialMsp: 'Benchmark / Base Price',
     lastUpdated: 'Updated',
     days: 'days',
     months: 'Months',
@@ -73,7 +72,7 @@ const DICTIONARY = {
       maize: 'Maize / Corn',
       cotton: 'Cotton',
       groundnut: 'Groundnut',
-      rice: 'Paddy / Rice'
+      brinjal: 'Brinjal / Eggplant (Thanjavur Alluvium)'
     },
     seasons: {
       Kharif: 'Kharif (Monsoon)',
@@ -82,7 +81,7 @@ const DICTIONARY = {
     },
     soils: {
       Loamy: 'Loamy Soil',
-      Clay: 'Clay Soil',
+      Clay: 'Clay / Delta Alluvium',
       Sandy: 'Sandy Soil',
       Black: 'Black Soil'
     },
@@ -140,7 +139,7 @@ const DICTIONARY = {
     analyzingImage: '🔍 மண் தரம் மற்றும் பயிர் நிறமாலையை ஆய்வு செய்கிறது...',
     autoUpdated: 'தானாக புதுப்பிக்கப்பட்டது',
     mandiPrice: 'சந்தை விலை',
-    officialMsp: 'அரசு குறைந்தபட்ச ஆதார விலை (MSP)',
+    officialMsp: 'அடிப்படை ஆதார விலை',
     lastUpdated: 'தேதி',
     days: 'நாட்கள்',
     months: 'மாதங்கள்',
@@ -153,7 +152,7 @@ const DICTIONARY = {
       maize: 'மக்காச்சோளம் (Maize)',
       cotton: 'பருத்தி (Cotton)',
       groundnut: 'வேர்க்கடலை (Groundnut)',
-      rice: 'நெல் (Paddy / Rice)'
+      brinjal: 'கத்தரிக்காய் (Brinjal / Eggplant)'
     },
     seasons: {
       Kharif: 'காரிப் (மழைக்காலம்)',
@@ -162,7 +161,7 @@ const DICTIONARY = {
     },
     soils: {
       Loamy: 'வண்டல் மண்',
-      Clay: 'களிமண்',
+      Clay: 'களிமண் / டெல்டா வண்டல்',
       Sandy: 'மணல் மண்',
       Black: 'கரிசல் மண்'
     },
@@ -220,7 +219,7 @@ const DICTIONARY = {
     analyzingImage: '🔍 मिट्टी के प्रकार और उपयुक्त साथी फसल का विश्लेषण जारी है...',
     autoUpdated: 'अपडेट किया गया',
     mandiPrice: 'मंडी भाव',
-    officialMsp: 'सरकारी न्यूनतम समर्थन मूल्य (MSP)',
+    officialMsp: 'न्यूनतम समर्थन / आधार भाव',
     lastUpdated: 'दिनांक',
     days: 'दिन',
     months: 'महीने',
@@ -233,7 +232,7 @@ const DICTIONARY = {
       maize: 'मक्का (Maize)',
       cotton: 'कपास (Cotton)',
       groundnut: 'मूंगफली (Groundnut)',
-      rice: 'धान / चावल (Paddy / Rice)'
+      brinjal: 'बैंगन (Brinjal / Eggplant)'
     },
     seasons: {
       Kharif: 'खरीफ (मानसून)',
@@ -242,7 +241,7 @@ const DICTIONARY = {
     },
     soils: {
       Loamy: 'दोमट मिट्टी',
-      Clay: 'चिकनी मिट्टी',
+      Clay: 'चिकनी / डेल्टा मिट्टी',
       Sandy: 'बलुई मिट्टी',
       Black: 'काली मिट्टी'
     },
@@ -256,17 +255,16 @@ const DICTIONARY = {
 
 const AGRONOMIC_TRANSLATIONS = {
   crops: {
+    coriander: { en: 'Coriander (Kothamalli)', ta: 'கொத்தமல்லி (Coriander)', hi: 'धनिया (Coriander)' },
+    frenchbean: { en: 'French Bean (Bush Bean)', ta: 'பீன்ஸ் (French Bean)', hi: 'फ्रेंच बीन (राजमा)' },
+    radish: { en: 'Radish (Mullangi)', ta: 'முள்ளங்கி (Radish)', hi: 'मूली (Radish)' },
+    marigold: { en: 'Marigold (Trap Crop)', ta: 'செவ்வந்தி / சாமந்தி (கவர்ச்சிப் பயிர்)', hi: 'गेंदा (ट्रैप फसल)' },
     cowpea: { en: 'Cowpea (Lobia)', ta: 'காராமணி (தட்டப்பயறு)', hi: 'लोबिया (चौलाई)' },
     greengram: { en: 'Green Gram (Moong)', ta: 'பாசிப்பயறு (பச்சைப்பயறு)', hi: 'मूंग (Green Gram)' },
     blackgram: { en: 'Black Gram (Urad)', ta: 'உளுந்து (கருப்பு உளுந்து)', hi: 'उड़द (Black Gram)' },
-    frenchbean: { en: 'French Bean (Rajma)', ta: 'பீன்ஸ் / ராஜ்மா', hi: 'राजमा / फ्रेंच बीन' },
-    pea: { en: 'Field Pea (Matar)', ta: 'பச்சை பட்டாணி', hi: 'हरी मटर (Field Pea)' },
-    chickpea: { en: 'Chickpea (Chana)', ta: 'கொண்டைக்கடலை', hi: 'चना (Chickpea)' },
     soybean: { en: 'Soybean', ta: 'சோயாபீன்', hi: 'சோயாபீன்' },
     horsegram: { en: 'Horse Gram (Kulthi)', ta: 'கொள்ளு (Horse Gram)', hi: 'कुलथी (Horse Gram)' },
     clusterbean: { en: 'Cluster Bean (Guar)', ta: 'கொத்தவரங்காய் (Guar)', hi: 'ग्वारफली (Cluster Bean)' },
-    azolla: { en: 'Azolla Pinnata', ta: 'அசோலா உயிர் உரம்', hi: 'अजोला जैव उर्वरक' },
-    sesbania: { en: 'Sesbania (Dhaincha)', ta: 'தக்கைப்பூண்டு (சணப்பை)', hi: 'ढैंचा (हरी खाद)' },
     pearlmillet: { en: 'Pearl Millet (Bajra)', ta: 'கம்பு (Bajra)', hi: 'बाजरा (Pearl Millet)' },
     pigeonpea: { en: 'Pigeon Pea (Arhar / Tur)', ta: 'துவரை (Red Gram)', hi: 'अरहर / तूर दाल' },
     sesame: { en: 'Sesame (Til)', ta: 'எள்ளு (Sesame)', hi: 'तिल (Sesame)' },
@@ -282,59 +280,6 @@ const AGRONOMIC_TRANSLATIONS = {
     clickToSelect: { en: 'Click to Select', ta: 'தேர்வு செய்ய அழுத்தவும்', hi: 'चुनने के लिए क्लिक करें' },
     simultaneousFor: { en: 'Simultaneous growing companion for', ta: 'இணைந்து வளரும் ஊடுபயிர்:', hi: 'के साथ एक साथ उगने वाली साथी फसल:' },
     companionCycle: { en: 'Companion Cycle', ta: 'பயிர்க்காலம்', hi: 'साथी फसल अवधि' }
-  },
-  schedules: {
-    simultaneous: { en: 'Simultaneous on Day 0', ta: 'முதல் நாளில் உடனடி விதைப்பு', hi: 'दिन 0 पर एक साथ बुवाई' },
-    day7: { en: 'Inoculated on Day 7 after transplanting', ta: 'நடவு நட்ட 7-ம் நாள் இடவும்', hi: 'रोपाई के 7वें दिन छोड़ें' },
-    bundDay0: { en: 'Day 0 along field bunds', ta: 'வரப்புகளில் முதல் நாளில் நடுதல்', hi: 'मेड़ों पर दिन 0' },
-    relay: { en: 'Sown on bunds or broadcast into relay moisture', ta: 'நெல் அறுவடைக்கு முன் ஈரப்பதத்தில் விதைத்தல்', hi: 'कटाई से पहले गीली मिट्टी में' }
-  },
-  rootSynergy: {
-    deepTaproot: {
-      en: 'Deep taproot + Shallow fibrous root system',
-      ta: 'ஆழமான ஆணிவேர் மற்றும் மேல்மண் சல்லிவேர்களின் கூட்டு',
-      hi: 'गहरी मूसला जड़ व उथली रेशेदार जड़ों का बेहतर तालमेल'
-    },
-    shallowCanopy: {
-      en: 'Shallow root zone complements deep maize taproot',
-      ta: 'ஆழமற்ற வேர் அமைப்பு மக்காச்சோள வேர்களுக்கு இடமளிக்கிறது',
-      hi: 'उथली जड़ें मक्के की गहरी जड़ों को बाधित नहीं करतीं'
-    },
-    erectLegume: {
-      en: 'Erect cool-season legume architecture',
-      ta: 'குளிர்காலத்திற்கேற்ற நேரான கட்டமைப்பு',
-      hi: 'सर्दियों के अनुकूल सीधा ढांचा'
-    },
-    soilBinding: {
-      en: 'Fibrous soil-binding mulch layer',
-      ta: 'மண்ணை இறுகப் பிடிக்கும் வேர் மூடாக்கு',
-      hi: 'मिट्टी को बांधने वाली जड़ें'
-    },
-    vertisolMoisture: {
-      en: 'Shallow pulse zone utilizing moisture between 90cm cotton rows',
-      ta: 'பருத்தி வரிசைகளுக்கு இடையே உள்ள ஈரப்பதத்தை பயன்படுத்தும்',
-      hi: 'कपास की चौड़ी कतारों के बीच की नमी का सदुपयोग'
-    },
-    osmotic: {
-      en: 'Extreme osmotic adjustment for dry soils',
-      ta: 'வறட்சியைத் தாங்கும் ஆழமான வேர்',
-      hi: 'गहरी सूखा सहनशील जड़ें'
-    },
-    floatingSymbiosis: {
-      en: 'Floating aquatic symbiosis in standing water',
-      ta: 'தேங்கிய நீரில் மிதந்து வேர்களுக்கு குளிர்ச்சி தருகிறது',
-      hi: 'खड़े पानी में जड़ों को ठंडक देती है'
-    },
-    windbreakBarrier: {
-      en: 'Tall perimeter micro-climate barrier',
-      ta: 'காற்றுத் தடுப்பு சுவர்',
-      hi: 'हवा रोधक आवरण'
-    },
-    taprootPigeon: {
-      en: 'Deep taproot (1.5m) + Shallow groundnut peg layer (20cm)',
-      ta: 'துவரை ஆழமான வேர் (1.5 மீ) + வேர்க்கடலை மேல் வேர் (20 செ.மீ)',
-      hi: 'अरहर गहरी जड़ (1.5 मी) + मूंगफली ऊपरी जड़ (20 सेमी)'
-    }
   }
 };
 
@@ -371,44 +316,20 @@ const getLocalizedDuration = (durationStr, currentLang) => {
   return durationStr;
 };
 
-const getLocalizedSchedule = (schedStr, currentLang) => {
-  if (!schedStr || currentLang === 'en') return schedStr || 'Simultaneous on Day 0';
-  const s = String(schedStr).toLowerCase();
-  if (s.includes('day 7') || s.includes('transplant')) return AGRONOMIC_TRANSLATIONS.schedules.day7[currentLang];
-  if (s.includes('bund') && s.includes('0')) return AGRONOMIC_TRANSLATIONS.schedules.bundDay0[currentLang];
-  if (s.includes('relay') || s.includes('broadcast')) return AGRONOMIC_TRANSLATIONS.schedules.relay[currentLang];
-  return AGRONOMIC_TRANSLATIONS.schedules.simultaneous[currentLang];
-};
-
-const getLocalizedSynergy = (synergyStr, currentLang) => {
-  if (!synergyStr || currentLang === 'en') return synergyStr || '';
-  const s = String(synergyStr).toLowerCase();
-  if (s.includes('deep taproot + shallow') || s.includes('fibrous')) return AGRONOMIC_TRANSLATIONS.rootSynergy.deepTaproot[currentLang];
-  if (s.includes('shallow root') || s.includes('complements deep')) return AGRONOMIC_TRANSLATIONS.rootSynergy.shallowCanopy[currentLang];
-  if (s.includes('erect') || s.includes('cool-season')) return AGRONOMIC_TRANSLATIONS.rootSynergy.erectLegume[currentLang];
-  if (s.includes('binding') || s.includes('mulch')) return AGRONOMIC_TRANSLATIONS.rootSynergy.soilBinding[currentLang];
-  if (s.includes('90cm') || s.includes('vertisol')) return AGRONOMIC_TRANSLATIONS.rootSynergy.vertisolMoisture[currentLang];
-  if (s.includes('osmotic') || s.includes('dry soils')) return AGRONOMIC_TRANSLATIONS.rootSynergy.osmotic[currentLang];
-  if (s.includes('floating') || s.includes('standing water')) return AGRONOMIC_TRANSLATIONS.rootSynergy.floatingSymbiosis[currentLang];
-  if (s.includes('barrier') || s.includes('micro-climate')) return AGRONOMIC_TRANSLATIONS.rootSynergy.windbreakBarrier[currentLang];
-  if (s.includes('1.5m') || s.includes('groundnut peg')) return AGRONOMIC_TRANSLATIONS.rootSynergy.taprootPigeon[currentLang];
-  return synergyStr;
-};
-
 const normalizeCompanion = (item, lang = 'en') => {
   if (!item) return null;
-  const defaultDur = lang === 'ta' ? '65 - 75 நாட்கள்' : lang === 'hi' ? '65 - 75 দিন' : '65 - 75 Days';
+  const defaultDur = lang === 'ta' ? '40 - 50 நாட்கள்' : lang === 'hi' ? '40 - 50 दिन' : '40 - 50 Days';
   return {
     ...item,
-    rowRatio: item.rowRatio || item.ratio || '2:1',
+    rowRatio: item.rowRatio || item.ratio || '1:2',
     harvestDuration: item.harvestDuration || item.duration || defaultDur,
-    spacing: item.spacing || item.plantSpacing || '30 cm x 10 cm',
+    spacing: item.spacing || item.plantSpacing || '20 cm x 10 cm',
     nitrogenFixed: item.nitrogenFixed ?? item.nitro ?? 0,
-    lerScore: item.lerScore || item.ler || 1.25
+    lerScore: item.lerScore || item.ler || 1.28
   };
 };
 
-// MULTI-CROP CLIENT FALLBACK MATRIX (Distinct Companions for Every Crop)
+// 3-TIER MATRIX WITH BRINJAL (THANJAVUR VEGETABLE)
 const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
   const s = String(szn || '').toLowerCase();
   const so = String(soil || '').toLowerCase();
@@ -423,17 +344,16 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
   const t = TIER_LABELS[lang] || TIER_LABELS.en;
 
   const CROP_NAMES = {
+    coriander: { en: 'Coriander (Kothamalli)', ta: 'கொத்தமல்லி (Coriander)', hi: 'धनिया (Coriander)' },
+    frenchbean: { en: 'French Bean (Bush Bean)', ta: 'பீன்ஸ் (French Bean)', hi: 'फ्रेंच बीन (राजमा)' },
+    radish: { en: 'Radish (Mullangi)', ta: 'முள்ளங்கி (Radish)', hi: 'मूली (Radish)' },
+    marigold: { en: 'Marigold (Trap Crop)', ta: 'செவ்வந்தி / சாமந்தி (பூச்சி கவர்ச்சி)', hi: 'गेंदा (कीट ट्रैप)' },
     greengram: { en: 'Green Gram (Moong)', ta: 'பாசிப்பயறு (பச்சைப்பயறு)', hi: 'मूंग (Green Gram)' },
     cowpea: { en: 'Cowpea (Lobia)', ta: 'காராமணி (தட்டப்பயறு)', hi: 'लोबिया (चौलाई)' },
     blackgram: { en: 'Black Gram (Urad)', ta: 'உளுந்து (கருப்பு உளுந்து)', hi: 'उड़द (Black Gram)' },
-    frenchbean: { en: 'French Bean (Rajma)', ta: 'பீன்ஸ் / ராஜ்மா', hi: 'राजमा / फ्रेंच बीन' },
-    pea: { en: 'Field Pea (Matar)', ta: 'பச்சை பட்டாணி', hi: 'मटर (Field Pea)' },
-    chickpea: { en: 'Chickpea (Chana)', ta: 'கொண்டைக்கடலை', hi: 'चना (Chickpea)' },
-    soybean: { en: 'Soybean', ta: 'சோயாபீன்', hi: 'சோயாபீன் (Soybean)' },
+    soybean: { en: 'Soybean', ta: 'சோயாபீன்', hi: 'सोयाबीन (Soybean)' },
     horsegram: { en: 'Horse Gram (Kulthi)', ta: 'கொள்ளு (Horse Gram)', hi: 'कुलथी (Horse Gram)' },
     clusterbean: { en: 'Cluster Bean (Guar)', ta: 'கொத்தவரங்காய் (Guar)', hi: 'ग्वारफली (Cluster Bean)' },
-    azolla: { en: 'Azolla Pinnata (Biofertilizer)', ta: 'அசோலா உயிர் உரம்', hi: 'अजोला जैव उर्वरक' },
-    sesbania: { en: 'Sesbania (Dhaincha)', ta: 'தக்கைப்பூண்டு (சணப்பை)', hi: 'ढैंचा (हरी खाद)' },
     pearlmillet: { en: 'Pearl Millet (Bajra)', ta: 'கம்பு (Bajra)', hi: 'बाजरा (Pearl Millet)' },
     pigeonpea: { en: 'Pigeon Pea (Tur / Arhar)', ta: 'துவரை (Red Gram)', hi: 'अरहर / तूर दाल' },
     sesame: { en: 'Sesame (Til)', ta: 'எள்ளு (Sesame)', hi: 'तिल (Sesame)' },
@@ -441,7 +361,55 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
   };
   const getName = (k) => (CROP_NAMES[k] ? CROP_NAMES[k][lang] || CROP_NAMES[k].en : k);
 
-  // 1. MAIZE MATRIX
+  // 1. BRINJAL (THANJAVUR VEGETABLE MATRIX)
+  if (c.includes('brinjal') || c.includes('eggplant') || c.includes('aubergine')) {
+    return [
+      {
+        tier: t.high,
+        key: 'coriander',
+        name: getName('coriander'),
+        rowRatio: '1:2 (Between 75cm ridges)',
+        spacing: '15 cm x 5 cm',
+        nitrogenFixed: 0,
+        lerScore: 1.34,
+        harvestDuration: lang === 'ta' ? '35 - 45 நாட்கள்' : lang === 'hi' ? '35 - 45 दिन' : '35 - 45 Days',
+        sowingOffset: lang === 'ta' ? 'கத்தரி நடவு செய்த அன்றே பாத்திகளில் விதைக்க வேண்டும்' : lang === 'hi' ? 'बैंगन रोपाई के दिन ही मेड़ों के बीच' : 'Sown on Day 0 along ridge sides',
+        rootZoneSynergy: lang === 'ta' ? 'மேல்மண் சல்லிவேர்கள் கத்தரி வேரை பாதிக்காது' : lang === 'hi' ? 'उथली जड़ें बैंगन को नुकसान नहीं पहुंचातीं' : 'Ultra-shallow fibrous root zone with zero competition for brinjal taproots',
+        reasoning: lang === 'ta' ? 'தஞ்சாவூர் வண்டல் மண்ணில் 40 நாட்களில் அறுவடை முடிந்து கத்தரி கிளை விரிக்கும் முன்பே உடனடி வருமானம் தரும்.' : lang === 'hi' ? 'तंजावुर की दोमट मिट्टी में 40 दिनों में पहली नकदी देता है, बैंगन के फैलने से पहले कटाई पूरी।' : 'Harvested in 40 days before brinjal reaches peak canopy spread, generating immediate early cash flow from wide ridges.',
+        postHarvest: { safeMoisturePct: 12.0, ambientMonths: 1, coldMonths: 3 }
+      },
+      {
+        tier: t.rec,
+        key: 'frenchbean',
+        name: getName('frenchbean'),
+        rowRatio: '1:1 Alternate Plant',
+        spacing: '30 cm x 15 cm',
+        nitrogenFixed: 26,
+        lerScore: 1.29,
+        harvestDuration: lang === 'ta' ? '55 - 65 நாட்கள்' : lang === 'hi' ? '55 - 65 दिन' : '55 - 65 Days',
+        sowingOffset: lang === 'ta' ? 'கத்தரி நட்ட 3-ம் நாள்' : lang === 'hi' ? 'रोपाई के तीसरे दिन' : 'Sown on Day 3 after brinjal transplant',
+        rootZoneSynergy: lang === 'ta' ? 'கத்தரிக்கு தழைச்சத்து வழங்கும் பயறு வேர்' : lang === 'hi' ? 'बैंगन को जैविक नाइट्रोजन देती है' : 'Bush legume adding active atmospheric nitrogen into heavy-feeder brinjal rhizosphere',
+        reasoning: lang === 'ta' ? 'கத்தரி அதிக சத்து உறிஞ்சும் பயிர்; பீன்ஸ் வேர்கள் மண்ணில் தழைச்சத்தை சேர்த்து உரம் மிச்சப்படுத்தும்.' : lang === 'hi' ? 'बैंगन को भारी खाद चाहिए; बीन्स मिट्टी में नाइट्रोजन जोड़कर यूरिया का खर्च बचाती है।' : 'Brinjal is a heavy feeder; bush beans fix 26 kg N/ha, boosting brinjal fruit setting while giving high-value pods.',
+        postHarvest: { safeMoisturePct: 10.0, ambientMonths: 3, coldMonths: 6 }
+      },
+      {
+        tier: t.alt,
+        key: 'marigold',
+        name: getName('marigold'),
+        rowRatio: '1:6 Perimeter & Inter-plot',
+        spacing: '45 cm x 30 cm',
+        nitrogenFixed: 0,
+        lerScore: 1.25,
+        harvestDuration: lang === 'ta' ? '60 - 75 நாட்கள்' : lang === 'hi' ? '60 - 75 दिन' : '60 - 75 Days',
+        sowingOffset: lang === 'ta' ? 'வரப்புகளிலும் 6 கத்தரிக்கு ஒரு பூ செடியும்' : lang === 'hi' ? 'मेड़ों पर और प्रत्येक 6 पौधों के बाद' : 'Planted on borders and every 6th brinjal plant',
+        rootZoneSynergy: lang === 'ta' ? 'வேர்ப் புழுக்களை (Nematodes) அழிக்கும் வேர் சுரப்பு' : lang === 'hi' ? 'निमेटोड व कीटों को रोकने वाली जड़ें' : 'Exudes alpha-terthienyl, suppressing soil nematodes and attracting borers away',
+        reasoning: lang === 'ta' ? 'தஞ்சை பகுதியில் கத்தரிக்காயைத் தாக்கும் காய் துளைப்பான் மற்றும் வேர் நூற்புழுக்களை கட்டுப்படுத்தும் இயற்கை அரண்.' : lang === 'hi' ? 'बैंगन के तना व फल छेदक कीट को अपनी ओर खींचकर फसल को सुरक्षित रखता है।' : 'ICAR-recommended trap crop that lures fruit and shoot borers away from brinjal while suppressing root-knot nematodes.',
+        postHarvest: { safeMoisturePct: 14.0, ambientMonths: 1, coldMonths: 2 }
+      }
+    ];
+  }
+
+  // 2. MAIZE MATRIX
   if (c.includes('maize') || c.includes('corn')) {
     if (s.includes('zaid') || w.includes('high')) {
       return [
@@ -454,9 +422,9 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
           nitrogenFixed: 38,
           lerScore: 1.38,
           harvestDuration: lang === 'ta' ? '55 - 65 நாட்கள்' : lang === 'hi' ? '55 - 65 दिन' : '55 - 65 Days',
-          sowingOffset: lang === 'ta' ? 'முதல் நாளில் உடனடி விதைப்பு' : lang === 'hi' ? 'दिन 0 पर बुवाई' : 'Simultaneous on Day 0',
-          rootZoneSynergy: lang === 'ta' ? 'ஆழமற்ற வேர் அமைப்பு' : lang === 'hi' ? 'उथली जड़ें' : 'Shallow legume canopy shading',
-          reasoning: lang === 'ta' ? 'கோடை பாசனத்தில் (சையத்), 60 நாள் பாசிப்பயறு வெயில் உக்கிரமடைவதற்குள் விரைவாக பலன் தருகிறது.' : lang === 'hi' ? 'ग्रीष्मकालीन सिंचाई में मूंग तेज गर्मी से पहले तैयार होकर मिट्टी में नाइट्रोजन जोड़ती है।' : 'Fast 60-day Moong captures light between tall maize stalks before heat peaks, fixing high soil nitrogen.',
+          sowingOffset: 'Simultaneous on Day 0',
+          rootZoneSynergy: 'Shallow legume canopy shading',
+          reasoning: 'Fast 60-day Moong captures light between tall maize stalks before heat peaks, fixing high soil nitrogen.',
           postHarvest: { safeMoisturePct: 10.0, ambientMonths: 6, coldMonths: 18 }
         },
         {
@@ -468,9 +436,9 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
           nitrogenFixed: 35,
           lerScore: 1.32,
           harvestDuration: lang === 'ta' ? '65 - 75 நாட்கள்' : lang === 'hi' ? '65 - 75 दिन' : '65 - 75 Days',
-          sowingOffset: lang === 'ta' ? 'முதல் நாளில் விதைப்பு' : lang === 'hi' ? 'दिन 0 पर बुवाई' : 'Simultaneous on Day 0',
-          rootZoneSynergy: lang === 'ta' ? 'படரும் இலைகள்' : lang === 'hi' ? 'सघन पत्तियां' : 'Dense foliage mulch',
-          reasoning: lang === 'ta' ? 'கோடைகால களைகளைக் கட்டுப்படுத்தி தீவனம் மற்றும் தானிய மகசூலை வழங்குகிறது.' : lang === 'hi' ? 'गर्मियों में खरपतवार दबाती है और अतिरिक्त चारा प्रदान करती है।' : 'Provides heavy foliage to suppress summer weeds while offering dual food and fodder harvests.',
+          sowingOffset: 'Simultaneous on Day 0',
+          rootZoneSynergy: 'Dense foliage mulch',
+          reasoning: 'Provides heavy foliage to suppress summer weeds while offering dual food and fodder harvests.',
           postHarvest: { safeMoisturePct: 10.0, ambientMonths: 6, coldMonths: 18 }
         },
         {
@@ -482,9 +450,9 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
           nitrogenFixed: 30,
           lerScore: 1.27,
           harvestDuration: lang === 'ta' ? '70 - 75 நாட்கள்' : lang === 'hi' ? '70 - 75 दिन' : '70 - 75 Days',
-          sowingOffset: lang === 'ta' ? 'முதல் நாளில் விதைப்பு' : lang === 'hi' ? 'दिन 0 पर बुवाई' : 'Simultaneous on Day 0',
-          rootZoneSynergy: lang === 'ta' ? 'சமச்சீர் வேர்' : lang === 'hi' ? 'संतुलित जड़ें' : 'Compact pulse zone',
-          reasoning: lang === 'ta' ? 'சந்தையில் எளிதாக விற்பனையாகும் நிலையான மாற்று பயறு.' : lang === 'hi' ? 'मंडी में तुरंत बिकने वाली स्थिर दाल की फसल।' : 'Stable pulse option with high Mandi liquidity if Green Gram seed is unavailable.',
+          sowingOffset: 'Simultaneous on Day 0',
+          rootZoneSynergy: 'Compact pulse zone',
+          reasoning: 'Stable pulse option with high Mandi liquidity if Green Gram seed is unavailable.',
           postHarvest: { safeMoisturePct: 10.0, ambientMonths: 6, coldMonths: 18 }
         }
       ];
@@ -499,9 +467,9 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
         nitrogenFixed: 35,
         lerScore: 1.32,
         harvestDuration: lang === 'ta' ? '65 - 75 நாட்கள்' : lang === 'hi' ? '65 - 75 दिन' : '65 - 75 Days',
-        sowingOffset: lang === 'ta' ? 'முதல் நாளில் விதைப்பு' : lang === 'hi' ? 'दिन 0 पर बुवाई' : 'Simultaneous on Day 0',
-        rootZoneSynergy: lang === 'ta' ? 'ஆழமான மற்றும் சல்லி வேர்கள்' : lang === 'hi' ? 'गहरी व उथली जड़ें' : 'Deep taproot + Shallow fibrous root system',
-        reasoning: lang === 'ta' ? 'மழைக்கால களைகளை அடக்கி மண்ணிற்கு தழைச்சத்தை சேர்க்கிறது.' : lang === 'hi' ? 'मानसून के खरपतवार दबाती है और प्रचुर नाइट्रोजन जोड़ती है।' : 'Best monsoon cover: rapid vegetative canopy suffocates weeds and fixes biological nitrogen.',
+        sowingOffset: 'Simultaneous on Day 0',
+        rootZoneSynergy: 'Deep taproot + Shallow fibrous root system',
+        reasoning: 'Best monsoon cover: rapid vegetative canopy suffocates weeds and fixes biological nitrogen.',
         postHarvest: { safeMoisturePct: 10.0, ambientMonths: 6, coldMonths: 18 }
       },
       {
@@ -513,9 +481,9 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
         lerScore: 1.29,
         nitrogenFixed: 36,
         harvestDuration: lang === 'ta' ? '80 - 90 நாட்கள்' : lang === 'hi' ? '80 - 90 दिन' : '80 - 90 Days',
-        sowingOffset: lang === 'ta' ? 'முதல் நாளில் விதைப்பு' : lang === 'hi' ? 'दिन 0 पर बुवाई' : 'Simultaneous on Day 0',
-        rootZoneSynergy: lang === 'ta' ? 'நேரான தண்டு' : lang === 'hi' ? 'मजबूत तना' : 'Vertical erect profile reducing wind lodging',
-        reasoning: lang === 'ta' ? 'எண்ணெய்வித்து மூலம் அதிக வருமானம் மற்றும் மண்ணிற்கு ஊட்டச்சத்து.' : lang === 'hi' ? 'तिलहन से अतिरिक्त मुनाफा और दोमट मिट्टी में मजबूत नाइट्रोजन लाभ।' : 'Substantial commercial oilseed value with robust atmospheric nitrogen contribution.',
+        sowingOffset: 'Simultaneous on Day 0',
+        rootZoneSynergy: 'Vertical erect profile reducing wind lodging',
+        reasoning: 'Substantial commercial oilseed value with robust atmospheric nitrogen contribution.',
         postHarvest: { safeMoisturePct: 10.0, ambientMonths: 6, coldMonths: 18 }
       },
       {
@@ -527,15 +495,15 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
         nitrogenFixed: 28,
         lerScore: 1.26,
         harvestDuration: lang === 'ta' ? '80 - 90 நாட்கள்' : lang === 'hi' ? '80 - 90 दिन' : '80 - 90 Days',
-        sowingOffset: lang === 'ta' ? 'முதல் நாளில் விதைப்பு' : lang === 'hi' ? 'दिन 0 पर बुवाई' : 'Simultaneous on Day 0',
-        rootZoneSynergy: lang === 'ta' ? 'மண் பிடிப்பு வேர்கள்' : lang === 'hi' ? 'मिट्टी बांधक जड़ें' : 'Fibrous soil-binding mulch layer',
-        reasoning: lang === 'ta' ? 'வறட்சி மற்றும் மணல் பாங்கான நிலங்களில் தாங்கி வளரும் சிறந்த பயிர்.' : lang === 'hi' ? 'सूखे और रेतीली जमीन में बिना पानी के भी टिकने वाली फसल।' : 'Extreme drought insurance; thrives even if monsoon breaks occur or in coarse soils.',
+        sowingOffset: 'Simultaneous on Day 0',
+        rootZoneSynergy: 'Fibrous soil-binding mulch layer',
+        reasoning: 'Extreme drought insurance; thrives even if monsoon breaks occur or in coarse soils.',
         postHarvest: { safeMoisturePct: 10.0, ambientMonths: 6, coldMonths: 18 }
       }
     ];
   }
 
-  // 2. COTTON MATRIX
+  // 3. COTTON MATRIX
   if (c.includes('cotton')) {
     if (so.includes('black')) {
       return [
@@ -548,9 +516,9 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
           nitrogenFixed: 32,
           lerScore: 1.31,
           harvestDuration: lang === 'ta' ? '70 - 75 நாட்கள்' : lang === 'hi' ? '70 - 75 दिन' : '70 - 75 Days',
-          sowingOffset: lang === 'ta' ? 'முதல் நாளில் விதைப்பு' : lang === 'hi' ? 'दिन 0 पर बुवाई' : 'Simultaneous on Day 0',
-          rootZoneSynergy: lang === 'ta' ? 'பருத்தி வரிசைகளுக்கு இடையே உள்ள ஈரப்பதத்தை பயன்படுத்தும்' : lang === 'hi' ? 'कपास की चौड़ी कतारों के बीच की नमी का सदुपयोग' : 'Shallow pulse zone utilizing moisture between 90cm cotton rows',
-          reasoning: lang === 'ta' ? 'கரிசல் மண்ணின் ஈரப்பதத்தில் உளுந்து நன்கு வளரும், காய்ப்புழுக்களை கட்டுப்படுத்த வரப்பு பயிராகிறது.' : lang === 'hi' ? 'काली मिट्टी की नमी में उड़द जल्दी पकती है और गेंदा सुंडी को आकर्षित कर रोकता है।' : 'Deep Vertisols hold moisture to finish short Black Gram, maximizing cash return before cotton branches lock.',
+          sowingOffset: 'Simultaneous on Day 0',
+          rootZoneSynergy: 'Shallow pulse zone utilizing moisture between 90cm cotton rows',
+          reasoning: 'Deep Vertisols hold moisture to finish short Black Gram, maximizing cash return before cotton branches lock.',
           postHarvest: { safeMoisturePct: 10.0, ambientMonths: 6, coldMonths: 18 }
         },
         {
@@ -562,9 +530,9 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
           nitrogenFixed: 30,
           lerScore: 1.28,
           harvestDuration: lang === 'ta' ? '60 - 65 நாட்கள்' : lang === 'hi' ? '60 - 65 दिन' : '60 - 65 Days',
-          sowingOffset: lang === 'ta' ? 'முதல் நாளில் விதைப்பு' : lang === 'hi' ? 'दिन 0 पर बुवाई' : 'Simultaneous on Day 0',
-          rootZoneSynergy: lang === 'ta' ? 'பருத்தி கிளை விரிக்கும் முன் அறுவடை' : lang === 'hi' ? 'कपास के फैलने से पहले तुड़ाई' : 'Quick maturity before cotton branches wide',
-          reasoning: lang === 'ta' ? 'பருத்தி பெரிதாக வளர்வதற்கு முன்பே அறுவடை முடிந்து விடுகிறது.' : lang === 'hi' ? 'कपास के बड़े होने से पहले कटाई पूरी हो जाती है, जिससे धूप की कोई प्रतिस्पर्धा नहीं होती।' : 'Harvested in 60 days before cotton reaches peak vegetative branching, ensuring zero solar competition.',
+          sowingOffset: 'Simultaneous on Day 0',
+          rootZoneSynergy: 'Quick maturity before cotton branches wide',
+          reasoning: 'Harvested in 60 days before cotton reaches peak vegetative branching, ensuring zero solar competition.',
           postHarvest: { safeMoisturePct: 10.0, ambientMonths: 6, coldMonths: 18 }
         },
         {
@@ -576,9 +544,9 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
           nitrogenFixed: 34,
           lerScore: 1.26,
           harvestDuration: lang === 'ta' ? '80 - 90 நாட்கள்' : lang === 'hi' ? '80 - 90 दिन' : '80 - 90 Days',
-          sowingOffset: lang === 'ta' ? 'முதல் நாளில் விதைப்பு' : lang === 'hi' ? 'दिन 0 पर बुवाई' : 'Simultaneous on Day 0',
-          rootZoneSynergy: lang === 'ta' ? 'மண் அரிப்பை தடுக்கும் அடர்ந்த இலைகள்' : lang === 'hi' ? 'कतारों को ढकने वाला तना' : 'Mid-tier canopy cover protecting wide ridges',
-          reasoning: lang === 'ta' ? 'பருத்தி எடுப்பதற்கு முன்பே நல்ல கூடுதல் வருமானம் தரும் பயிர்.' : lang === 'hi' ? 'कपास की चुगाई शुरू होने से पहले ही अच्छी आमदनी देती है।' : 'Generates high cash income before cotton picking starts; requires timely harvest.',
+          sowingOffset: 'Simultaneous on Day 0',
+          rootZoneSynergy: 'Mid-tier canopy cover protecting wide ridges',
+          reasoning: 'Generates high cash income before cotton picking starts; requires timely harvest.',
           postHarvest: { safeMoisturePct: 10.0, ambientMonths: 6, coldMonths: 18 }
         }
       ];
@@ -593,9 +561,9 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
         nitrogenFixed: 25,
         lerScore: 1.24,
         harvestDuration: lang === 'ta' ? '85 - 95 நாட்கள்' : lang === 'hi' ? '85 - 95 दिन' : '85 - 95 Days',
-        sowingOffset: lang === 'ta' ? 'முதல் நாளில் விதைப்பு' : lang === 'hi' ? 'दिन 0 पर बुवाई' : 'Simultaneous on Day 0',
-        rootZoneSynergy: lang === 'ta' ? 'வறட்சியைத் தாங்கும் ஆழமான வேர்' : lang === 'hi' ? 'गहरी सूखा सहनशील जड़ें' : 'Extreme osmotic adjustment for dry soils',
-        reasoning: lang === 'ta' ? 'வறண்ட நிலத்திலும் வெயிலிலும் கூட பருத்தியுடன் இணைந்து நன்கு வளரும்.' : lang === 'hi' ? 'गंभीर सूखे और गर्मी में भी कपास को नुकसान पहुंचाए बिना टिकती है।' : 'Drought and heat resilience; deep taproot extracts nutrients without invading wide cotton roots.',
+        sowingOffset: 'Simultaneous on Day 0',
+        rootZoneSynergy: 'Extreme osmotic adjustment for dry soils',
+        reasoning: 'Drought and heat resilience; deep taproot extracts nutrients without invading wide cotton roots.',
         postHarvest: { safeMoisturePct: 10.0, ambientMonths: 6, coldMonths: 18 }
       },
       {
@@ -607,9 +575,9 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
         nitrogenFixed: 30,
         lerScore: 1.28,
         harvestDuration: lang === 'ta' ? '70 - 75 நாட்கள்' : lang === 'hi' ? '70 - 75 दिन' : '70 - 75 Days',
-        sowingOffset: lang === 'ta' ? 'முதல் நாளில் விதைப்பு' : lang === 'hi' ? 'दिन 0 पर बुवाई' : 'Simultaneous on Day 0',
-        rootZoneSynergy: lang === 'ta' ? 'மண்ணை மூடி ஈரத்தை காக்கும்' : lang === 'hi' ? 'जमीन को ढकने वाली फसल' : 'Low sprawling canopy reducing soil crusting',
-        reasoning: lang === 'ta' ? 'பருத்தி சிறியதாக இருக்கும் காலத்தில் களைகளைக் கட்டுப்படுத்துகிறது.' : lang === 'hi' ? 'शुरुआती दौर में खरपतवार को रोककर दलहन का अच्छा उत्पादन देती है।' : 'Commercial pulse intercrop that suppresses weeds during cotton’s slow early juvenile stage.',
+        sowingOffset: 'Simultaneous on Day 0',
+        rootZoneSynergy: 'Low sprawling canopy reducing soil crusting',
+        reasoning: 'Commercial pulse intercrop that suppresses weeds during cotton’s slow early juvenile stage.',
         postHarvest: { safeMoisturePct: 10.0, ambientMonths: 6, coldMonths: 18 }
       },
       {
@@ -621,103 +589,9 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
         nitrogenFixed: 32,
         lerScore: 1.22,
         harvestDuration: lang === 'ta' ? '65 - 75 நாட்கள்' : lang === 'hi' ? '65 - 75 दिन' : '65 - 75 Days',
-        sowingOffset: lang === 'ta' ? 'முதல் நாளில் விதைப்பு' : lang === 'hi' ? 'दिन 0 पर बुवाई' : 'Simultaneous on Day 0',
-        rootZoneSynergy: lang === 'ta' ? 'மண்ணிற்கு பாதுகாப்பு மூடாக்கு' : lang === 'hi' ? 'मृदा संरक्षण आवरण' : 'Aggressive topsoil shading',
-        reasoning: lang === 'ta' ? 'மண்ணை பாதுகாக்கும்; கொடிகள் பருத்தி மீது படராமல் கண்காணிக்க வேண்டும்.' : lang === 'hi' ? 'मिट्टी कटाव रोकती है, बस कपास पर बेल न चढ़ने दें।' : 'Effective living mulch against evaporation; prune if vines start climbing main stems.',
-        postHarvest: { safeMoisturePct: 10.0, ambientMonths: 6, coldMonths: 18 }
-      }
-    ];
-  }
-
-  // 3. PADDY / RICE MATRIX
-  if (c.includes('rice') || c.includes('paddy')) {
-    if (w.includes('high')) {
-      return [
-        {
-          tier: t.high,
-          key: 'azolla',
-          name: getName('azolla'),
-          rowRatio: lang === 'ta' ? 'நீரில் மிதக்கும் முறை' : lang === 'hi' ? 'पानी पर तैरती परत' : 'Inoculated Floating Blanket',
-          spacing: lang === 'ta' ? 'வயல் முழுவதும் தொடர் படர்ச்சி' : lang === 'hi' ? 'सतत बायोमास आवरण' : 'Continuous Biomass Layer',
-          nitrogenFixed: 45,
-          lerScore: 1.27,
-          harvestDuration: lang === 'ta' ? 'பயிர்க்காலம் முழுவதும்' : lang === 'hi' ? 'पूरी फसल अवधि' : 'Living Water Blanket',
-          sowingOffset: lang === 'ta' ? 'நடவு நட்ட 7-ம் நாள் இடவும்' : lang === 'hi' ? 'रोपाई के 7वें दिन छोड़ें' : 'Inoculated on Day 7 after transplanting',
-          rootZoneSynergy: lang === 'ta' ? 'நீரில் மிதந்து வேர்களுக்கு குளிர்ச்சி தருகிறது' : lang === 'hi' ? 'खड़े पानी में जड़ों को ठंडक देती है' : 'Floating aquatic symbiosis in standing water',
-          reasoning: lang === 'ta' ? 'தேங்கிய நீரில் 5 நாட்களில் இரட்டிப்பாகி, 45 கிலோ வரை தழைச்சத்து தருகிறது; பாசிகளை ஒழிக்கும்.' : lang === 'hi' ? 'खड़े पानी में तेजी से फैलकर 45 किलो नाइट्रोजन जोड़ती है और जलीय खरपतवार मिटाती है।' : 'Multiplies every 5 days on standing floodwater, fixing up to 45 kg N/ha and suffocating aquatic weed growth.',
-          postHarvest: { safeMoisturePct: 12.0, ambientMonths: 6, coldMonths: 18 }
-        },
-        {
-          tier: t.rec,
-          key: 'greengram',
-          name: getName('greengram'),
-          rowRatio: lang === 'ta' ? 'வரப்பு ஓரங்களில் நடுதல்' : lang === 'hi' ? 'मेड़ों पर बुवाई' : 'Bund & Perimeter Rows',
-          spacing: '20 cm x 10 cm',
-          nitrogenFixed: 25,
-          lerScore: 1.22,
-          harvestDuration: lang === 'ta' ? '60 - 65 நாட்கள்' : lang === 'hi' ? '60 - 65 दिन' : '60 - 65 Days',
-          sowingOffset: lang === 'ta' ? 'வரப்புகளில் முதல் நாளில்' : lang === 'hi' ? 'मेड़ों पर दिन 0' : 'Day 0 along field bunds',
-          rootZoneSynergy: lang === 'ta' ? 'வரப்பு மண்ணை பலப்படுத்துகிறது' : lang === 'hi' ? 'मेड़ की मिट्टी को मजबूत रखती है' : 'Perimeter pulse taking advantage of non-flooded edges',
-          reasoning: lang === 'ta' ? 'பயன்பாடற்ற வரப்புகளில் பயிர் செய்து கூடுதல் பயறு மகசூல் பெறலாம்.' : lang === 'hi' ? 'खाली मेड़ों का सदुपयोग करके बिना अतिरिक्त लागत दाल उत्पादन।' : 'Converts uncultivated bund margins into productive pulse ground without interfering with flooded basins.',
-          postHarvest: { safeMoisturePct: 10.0, ambientMonths: 6, coldMonths: 18 }
-        },
-        {
-          tier: t.alt,
-          key: 'blackgram',
-          name: getName('blackgram'),
-          rowRatio: lang === 'ta' ? 'வரப்பு அல்லது அறுவடைக்கு முன் விதைப்பு' : lang === 'hi' ? 'मेड़ या रिले बुवाई' : 'Bund or Relay Sowing',
-          spacing: '20 cm x 10 cm',
-          nitrogenFixed: 22,
-          lerScore: 1.18,
-          harvestDuration: lang === 'ta' ? '65 - 70 நாட்கள்' : lang === 'hi' ? '65 - 70 दिन' : '65 - 70 Days',
-          sowingOffset: lang === 'ta' ? 'நெல் அறுவடைக்கு முன் விதைத்தல்' : lang === 'hi' ? 'कटाई से पहले गीली मिट्टी में' : 'Sown on bunds or broadcast into relay moisture',
-          rootZoneSynergy: lang === 'ta' ? 'எஞ்சிய ஈரப்பதத்தை பயன்படுத்தும்' : lang === 'hi' ? 'अवशिष्ट नमी का उपयोग' : 'Utilizes residual soil moisture profile',
-          reasoning: lang === 'ta' ? 'பாரம்பரிய நெல் தரிசு உளுந்து சாகுபடி முறை.' : lang === 'hi' ? 'चावल कटाई के बाद खेत की बची हुई नमी में पकने वाली दलहन।' : 'Traditional rice-fallow relay companion that establishes in residual mud moisture right before harvest.',
-          postHarvest: { safeMoisturePct: 10.0, ambientMonths: 6, coldMonths: 18 }
-        }
-      ];
-    }
-    return [
-      {
-        tier: t.high,
-        key: 'greengram',
-        name: getName('greengram'),
-        rowRatio: lang === 'ta' ? 'வரப்பு ஓரங்களில் நடுதல்' : lang === 'hi' ? 'मेड़ों पर बुवाई' : 'Bund & Perimeter Rows',
-        spacing: '20 cm x 10 cm',
-        nitrogenFixed: 25,
-        lerScore: 1.22,
-        harvestDuration: lang === 'ta' ? '60 - 65 நாட்கள்' : lang === 'hi' ? '60 - 65 दिन' : '60 - 65 Days',
-        sowingOffset: lang === 'ta' ? 'முதல் நாளில் வரப்பில்' : lang === 'hi' ? 'मेड़ों पर दिन 0' : 'Day 0 along field bunds',
-        rootZoneSynergy: lang === 'ta' ? 'வரப்பு வேர் அமைப்பு' : lang === 'hi' ? 'मेड़ सुरक्षा जड़ें' : 'Perimeter root zone without flooding competition',
-        reasoning: lang === 'ta' ? 'வரப்புகளை மண் அரிப்பிலிருந்து காத்து கூடுதல் வருவாய் தரும்.' : lang === 'hi' ? 'मेड़ को सुरक्षित रखती है और दलहन की अतिरिक्त उपज देती है।' : 'Monetizes perimeter field bunds and stabilizes bund soil under partial irrigation.',
-        postHarvest: { safeMoisturePct: 10.0, ambientMonths: 6, coldMonths: 18 }
-      },
-      {
-        tier: t.rec,
-        key: 'blackgram',
-        name: getName('blackgram'),
-        rowRatio: lang === 'ta' ? 'வரப்பு வரிசைகள்' : lang === 'hi' ? 'மேड़ कतारें' : 'Bund Rows',
-        spacing: '25 cm x 10 cm',
-        nitrogenFixed: 22,
-        lerScore: 1.20,
-        harvestDuration: lang === 'ta' ? '70 - 75 நாட்கள்' : lang === 'hi' ? '70 - 75 दिन' : '70 - 75 Days',
-        sowingOffset: lang === 'ta' ? 'வரப்புகளில்' : lang === 'hi' ? 'मेड़ों पर' : 'Day 0 along field bunds',
-        rootZoneSynergy: lang === 'ta' ? 'வரப்பு ஓரங்களை நிலைநிறுத்தும்' : lang === 'hi' ? 'मेड़ को मजबूती' : 'Low canopy stabilizing farm path edges',
-        reasoning: lang === 'ta' ? 'குறைந்த பராமரிப்பில் வரப்புகளில் வளரக்கூடியது.' : lang === 'hi' ? 'बिना अतिरिक्त पानी के मेड़ों पर पनपने वाली मजबूत फसल।' : 'Resilient bund legume that thrives on canal seepage and minimal maintenance.',
-        postHarvest: { safeMoisturePct: 10.0, ambientMonths: 6, coldMonths: 18 }
-      },
-      {
-        tier: t.alt,
-        key: 'sesbania',
-        name: getName('sesbania'),
-        rowRatio: lang === 'ta' ? 'வரப்பு வேலி' : lang === 'hi' ? 'मेड़ सुरक्षा पट्टी' : 'Peripheral Windbreak',
-        spacing: '30 cm x 15 cm',
-        nitrogenFixed: 40,
-        lerScore: 1.16,
-        harvestDuration: lang === 'ta' ? 'தழை உரம் / எல்லை பயிர்' : lang === 'hi' ? 'हरी खाद पट्टी' : 'Green Manure / Border',
-        sowingOffset: lang === 'ta' ? 'முதல் நாளில்' : lang === 'hi' ? 'दिन 0' : 'Simultaneous on Day 0',
-        rootZoneSynergy: lang === 'ta' ? 'அதிக தழைச்சத்து முடிச்சுகள்' : lang === 'hi' ? 'प्रचुर नाइट्रोजन ग्रंथियां' : 'Deep nitrogen nodules on bund perimeters',
-        reasoning: lang === 'ta' ? 'காற்றைத் தடுத்து, பின்னர் வயலுக்கு தழை உரமாகவும் பயன்படும்.' : lang === 'hi' ? 'हवा से बचाती है और बाद में धान के खेत में हरी खाद का काम करती है।' : 'Bio-fence that buffers hot winds and provides biomass that can be trampled in as green manure.',
+        sowingOffset: 'Simultaneous on Day 0',
+        rootZoneSynergy: 'Aggressive topsoil shading',
+        reasoning: 'Effective living mulch against evaporation; prune if vines start climbing main stems.',
         postHarvest: { safeMoisturePct: 10.0, ambientMonths: 6, coldMonths: 18 }
       }
     ];
@@ -731,14 +605,14 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
           tier: t.high,
           key: 'pearlmillet',
           name: getName('pearlmillet'),
-          rowRatio: lang === 'ta' ? '6:1 அல்லது 8:1 வரப்பு வரிசை' : lang === 'hi' ? '6:1 या 8:1 सीमा कतारें' : '6:1 or 8:1 Border Rows',
+          rowRatio: '6:1 or 8:1 Border Rows',
           spacing: '45 cm x 15 cm',
           nitrogenFixed: 0,
           lerScore: 1.28,
           harvestDuration: lang === 'ta' ? '80 - 85 நாட்கள்' : lang === 'hi' ? '80 - 85 दिन' : '80 - 85 Days',
-          sowingOffset: lang === 'ta' ? 'முதல் நாளில் எல்லை வரிசை' : lang === 'hi' ? 'दिन 0 पर सीमा बुवाई' : 'Simultaneous on Day 0',
-          rootZoneSynergy: lang === 'ta' ? 'காற்றுத் தடுப்பு சுவர்' : lang === 'hi' ? 'हवा रोधक आवरण' : 'Tall perimeter micro-climate barrier',
-          reasoning: lang === 'ta' ? 'உயரமான கம்பு வெப்பக் காற்றைத் தடுத்து, வேர்க்கடலை விழுதுகள் இறங்க ஈரப்பதத்தைக் காக்கிறது.' : lang === 'hi' ? 'ऊंचा बाजरा गर्म हवा रोकता है, जिससे मूंगफली की सुइयां आसानी से जमीन में धंसती हैं।' : 'Tall Bajra border rows deflect dry winds in sandy zones, conserving humidity for groundnut pegging.',
+          sowingOffset: 'Simultaneous on Day 0',
+          rootZoneSynergy: 'Tall perimeter micro-climate barrier',
+          reasoning: 'Tall Bajra border rows deflect dry winds in sandy zones, conserving humidity for groundnut pegging.',
           postHarvest: { safeMoisturePct: 11.0, ambientMonths: 6, coldMonths: 18 }
         },
         {
@@ -750,9 +624,9 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
           nitrogenFixed: 40,
           lerScore: 1.34,
           harvestDuration: lang === 'ta' ? '130 - 150 நாட்கள்' : lang === 'hi' ? '130 - 150 दिन' : '130 - 150 Days',
-          sowingOffset: lang === 'ta' ? 'முதல் நாளில்' : lang === 'hi' ? 'दिन 0' : 'Simultaneous on Day 0',
-          rootZoneSynergy: lang === 'ta' ? 'ஆழமான ஆணிவேர்' : lang === 'hi' ? 'गहरी मूसला जड़' : 'Deep taproot foraging lower subsoil water',
-          reasoning: lang === 'ta' ? 'துவரை ஆழமான மண்ணிலிருந்து நீர் எடுப்பதால் வேர்க்கடலையுடன் போட்டி போடுவதில்லை.' : lang === 'hi' ? 'अरहर जमीन की गहराई से पानी लेती है, इसलिए मूंगफली से कोई प्रतिस्पर्धा नहीं होती।' : 'Pigeon Pea taproots tap deep moisture reserves without competing with shallow groundnut pods.',
+          sowingOffset: 'Simultaneous on Day 0',
+          rootZoneSynergy: 'Deep taproot foraging lower subsoil water',
+          reasoning: 'Pigeon Pea taproots tap deep moisture reserves without competing with shallow groundnut pods.',
           postHarvest: { safeMoisturePct: 10.0, ambientMonths: 6, coldMonths: 18 }
         },
         {
@@ -764,9 +638,9 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
           nitrogenFixed: 0,
           lerScore: 1.21,
           harvestDuration: lang === 'ta' ? '75 - 85 நாட்கள்' : lang === 'hi' ? '75 - 85 दिन' : '75 - 85 Days',
-          sowingOffset: lang === 'ta' ? 'முதல் நாளில்' : lang === 'hi' ? 'दिन 0' : 'Simultaneous on Day 0',
-          rootZoneSynergy: lang === 'ta' ? 'குறைந்த நீர் தேவை' : lang === 'hi' ? 'कम पानी में गहरी जड़ें' : 'Low water requirement oilseed canopy',
-          reasoning: lang === 'ta' ? 'மணல் பாங்கான நிலங்களில் குறைந்த நீரிலும் விளையக்கூடிய இரட்டை எண்ணெய்வித்து பயிர்.' : lang === 'hi' ? 'रेतीली जमीन में कम पानी पर भी पकने वाली दोहरी तिलहन जोड़ी।' : 'Drought-tolerant dual oilseed pairing that thrives in light sandy soils under restricted water.',
+          sowingOffset: 'Simultaneous on Day 0',
+          rootZoneSynergy: 'Low water requirement oilseed canopy',
+          reasoning: 'Drought-tolerant dual oilseed pairing that thrives in light sandy soils under restricted water.',
           postHarvest: { safeMoisturePct: 8.0, ambientMonths: 6, coldMonths: 18 }
         }
       ];
@@ -781,9 +655,9 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
         nitrogenFixed: 42,
         lerScore: 1.36,
         harvestDuration: lang === 'ta' ? '130 - 150 நாட்கள்' : lang === 'hi' ? '130 - 150 दिन' : '130 - 150 Days',
-        sowingOffset: lang === 'ta' ? 'முதல் நாளில்' : lang === 'hi' ? 'दिन 0' : 'Simultaneous on Day 0',
-        rootZoneSynergy: lang === 'ta' ? 'துவரை ஆழமான வேர் (1.5 மீ) + வேர்க்கடலை மேல் வேர் (20 செ.மீ)' : lang === 'hi' ? 'अरहर गहरी जड़ (1.5 मी) + मूंगफली ऊपरी जड़ (20 सेमी)' : 'Deep taproot (1.5m) + Shallow groundnut peg layer (20cm)',
-        reasoning: lang === 'ta' ? 'வேர்க்கடலை 105 நாட்களில் முடிந்ததும், துவரை முழு நிலத்தையும் பயன்படுத்தி அதிக மகசூல் தரும்.' : lang === 'hi' ? 'मूंगफली 105 दिन में कट जाती है, फिर अरहर को पूरी धूप व जमीन मिलती है।' : 'Classic ICAR pairing: groundnut finishes in 105 days, leaving Pigeon Pea to exploit late-season soil moisture and sunlight.',
+        sowingOffset: 'Simultaneous on Day 0',
+        rootZoneSynergy: 'Deep taproot (1.5m) + Shallow groundnut peg layer (20cm)',
+        reasoning: 'Classic ICAR pairing: groundnut finishes in 105 days, leaving Pigeon Pea to exploit late-season soil moisture and sunlight.',
         postHarvest: { safeMoisturePct: 10.0, ambientMonths: 6, coldMonths: 18 }
       },
       {
@@ -795,9 +669,9 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
         nitrogenFixed: 0,
         lerScore: 1.30,
         harvestDuration: lang === 'ta' ? '140 - 160 நாட்கள்' : lang === 'hi' ? '140 - 160 दिन' : '140 - 160 Days',
-        sowingOffset: lang === 'ta' ? 'முதல் நாளில்' : lang === 'hi' ? 'दिन 0' : 'Simultaneous on Day 0',
-        rootZoneSynergy: lang === 'ta' ? 'ஆழமான வேர் மற்றும் அகன்ற இலைகள்' : lang === 'hi' ? 'गहरी जड़ व चौड़ी छतरी' : 'Deep taproot with vertical canopy branching',
-        reasoning: lang === 'ta' ? 'அதிக வணிக வருவாய் தருவதுடன் புழுக்களுக்கு கவர்ச்சிப் பயிராகவும் செயல்படும்.' : lang === 'hi' ? 'उत्कृष्ट व्यावसायिक आमदनी और कीटों को आकर्षित करने वाली ट्रैप फसल।' : 'Castor provides heavy secondary commercial returns and acts as an effective trap crop for Spodoptera caterpillars.',
+        sowingOffset: 'Simultaneous on Day 0',
+        rootZoneSynergy: 'Deep taproot with vertical canopy branching',
+        reasoning: 'Castor provides heavy secondary commercial returns and acts as an effective trap crop for Spodoptera caterpillars.',
         postHarvest: { safeMoisturePct: 8.0, ambientMonths: 6, coldMonths: 18 }
       },
       {
@@ -809,29 +683,29 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
         nitrogenFixed: 28,
         lerScore: 1.23,
         harvestDuration: lang === 'ta' ? '65 - 75 நாட்கள்' : lang === 'hi' ? '65 - 75 दिन' : '65 - 75 Days',
-        sowingOffset: lang === 'ta' ? 'முதல் நாளில்' : lang === 'hi' ? 'दिन 0' : 'Simultaneous on Day 0',
-        rootZoneSynergy: lang === 'ta' ? 'விரைவான வேர் வளர்ச்சி' : lang === 'hi' ? 'शीघ्र पकने वाली जड़ें' : 'Fast pulse harvest before groundnut canopy locks',
-        reasoning: lang === 'ta' ? 'வேர்க்கடலை முதிர்வதற்கு முன்பே விரைவான பயறு அறுவடையைத் தருகிறது.' : lang === 'hi' ? 'मूंगफली पकने से पहले ही जल्दी दाल की कटाई पूरी हो जाती है।' : 'Short-duration pulse that gives an early grain harvest before groundnut pods mature.',
+        sowingOffset: 'Simultaneous on Day 0',
+        rootZoneSynergy: 'Fast pulse harvest before groundnut canopy locks',
+        reasoning: 'Short-duration pulse that gives an early grain harvest before groundnut pods mature.',
         postHarvest: { safeMoisturePct: 10.0, ambientMonths: 6, coldMonths: 18 }
       }
     ];
   }
 
-  // Generic fallback
+  // Fallback
   return [
     {
       tier: t.high,
-      key: 'greengram',
-      name: getName('greengram'),
-      rowRatio: '2:1',
-      spacing: '25 cm x 10 cm',
-      nitrogenFixed: 30,
-      lerScore: 1.28,
-      harvestDuration: lang === 'ta' ? '60 - 65 நாட்கள்' : lang === 'hi' ? '60 - 65 दिन' : '60 - 65 Days',
-      sowingOffset: lang === 'ta' ? 'முதல் நாளில்' : lang === 'hi' ? 'दिन 0' : 'Simultaneous on Day 0',
-      rootZoneSynergy: lang === 'ta' ? 'கூட்டு வேர் கட்டமைப்பு' : lang === 'hi' ? 'संतुलित जड़ प्रणाली' : 'Deep taproot + Shallow fibrous root system',
-      reasoning: lang === 'ta' ? 'இயற்கை தழைச்சத்து மற்றும் களை கட்டுப்பாடு.' : lang === 'hi' ? 'प्राकृतिक नाइट्रोजन और खरपतवार नियंत्रण।' : 'Dependable biological nitrogen fixation and weed suppression.',
-      postHarvest: { safeMoisturePct: 10.0, ambientMonths: 6, coldMonths: 18 }
+      key: 'coriander',
+      name: getName('coriander'),
+      rowRatio: '1:2',
+      spacing: '15 cm x 5 cm',
+      nitrogenFixed: 0,
+      lerScore: 1.30,
+      harvestDuration: '40 - 45 Days',
+      sowingOffset: 'Day 0 along ridge sides',
+      rootZoneSynergy: 'Shallow root zone',
+      reasoning: 'Fast intercrop with high local liquidity.',
+      postHarvest: { safeMoisturePct: 12.0, ambientMonths: 1, coldMonths: 3 }
     }
   ];
 };
@@ -841,9 +715,9 @@ export default function App() {
   const d = DICTIONARY[lang] || DICTIONARY.en;
 
   const [season, setSeason] = useState('Kharif');
-  const [soilType, setSoilType] = useState('Loamy');
+  const [soilType, setSoilType] = useState('Clay');
   const [waterStatus, setWaterStatus] = useState('Medium');
-  const [primaryCropKey, setPrimaryCropKey] = useState('maize');
+  const [primaryCropKey, setPrimaryCropKey] = useState('brinjal');
 
   const [acres, setAcres] = useState(2);
   const [activeTab, setActiveTab] = useState('intercrop');
@@ -904,7 +778,7 @@ export default function App() {
     }
   }, []);
 
-  // Live Location & Weather Fetcher (Defaults to Tiruchirappalli)
+  // Live Location & Weather Fetcher (Defaults to Trichy / Thanjavur basin)
   useEffect(() => {
     let isMounted = true;
 
@@ -925,7 +799,7 @@ export default function App() {
           }
 
           const data = await res.json();
-          cityName = data.city?.name || 'Local Farm Area';
+          cityName = data.city?.name || 'Thanjavur Delta Basin';
 
           const dailyMap = {};
           data.list.forEach((item) => {
@@ -961,11 +835,10 @@ export default function App() {
             };
           });
         } else {
-          // Fallback to Backend Proxy
           const proxyRes = await fetch(`${API_BASE}/api/weather?lat=${lat}&lon=${lon}&lang=${lang}`);
           if (!proxyRes.ok) throw new Error(`Proxy error status: ${proxyRes.status}`);
           const proxyData = await proxyRes.json();
-          cityName = proxyData.city || 'Local Farm Area';
+          cityName = proxyData.city || 'Thanjavur Delta Basin';
           forecastList = proxyData.forecast || [];
         }
 
@@ -975,32 +848,29 @@ export default function App() {
           setWeatherLoading(false);
         }
       } catch (err) {
-        console.error('Dynamic Weather Fetch Warning:', err.message);
+        console.error('Weather Fetch Warning:', err.message);
         if (isMounted) {
-          setLocationName('Trichy Weather Station (Baseline)');
+          setLocationName('Thanjavur Weather Station (Baseline)');
           setWeatherForecast([
-            { day: 'Day 1 (Today)', temp: 31, rainProb: 10, windKmh: 12, sprayRisk: 'Low' },
-            { day: 'Day 2', temp: 30, rainProb: 20, windKmh: 14, sprayRisk: 'Low' },
-            { day: 'Day 3', temp: 27, rainProb: 75, windKmh: 24, sprayRisk: 'High' },
-            { day: 'Day 4', temp: 26, rainProb: 65, windKmh: 20, sprayRisk: 'High' },
-            { day: 'Day 5', temp: 29, rainProb: 15, windKmh: 11, sprayRisk: 'Low' }
+            { day: 'Day 1 (Today)', temp: 32, rainProb: 10, windKmh: 12, sprayRisk: 'Low' },
+            { day: 'Day 2', temp: 31, rainProb: 20, windKmh: 14, sprayRisk: 'Low' },
+            { day: 'Day 3', temp: 28, rainProb: 70, windKmh: 22, sprayRisk: 'High' },
+            { day: 'Day 4', temp: 27, rainProb: 60, windKmh: 18, sprayRisk: 'High' },
+            { day: 'Day 5', temp: 30, rainProb: 15, windKmh: 11, sprayRisk: 'Low' }
           ]);
           setWeatherLoading(false);
         }
       }
     };
 
-    // Default coordinates: Tiruchirappalli (Trichy), Tamil Nadu
-    const defaultLat = 10.7905;
-    const defaultLon = 78.7047;
+    // Default coordinates: Thanjavur, Tamil Nadu (10.7870, 79.1378)
+    const defaultLat = 10.7870;
+    const defaultLon = 79.1378;
 
     if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
         (pos) => fetchLiveForecast(pos.coords.latitude, pos.coords.longitude),
-        (err) => {
-          console.warn('Geolocation denied or timed out:', err.message);
-          fetchLiveForecast(defaultLat, defaultLon);
-        },
+        () => fetchLiveForecast(defaultLat, defaultLon),
         { timeout: 7000 }
       );
     } else {
@@ -1014,14 +884,16 @@ export default function App() {
 
   const calculateEconomics = () => {
     if (!advice || !advice.primaryCrop) return null;
-    const yieldPerAcre = Number(advice.primaryCrop.avgYield || (primaryCropKey === 'cotton' ? 8.5 : primaryCropKey === 'groundnut' ? 12.0 : 18.0));
-    const mandiRate = Number(advice.marketData?.pricePerQuintal || 2490);
-    const costPerAcre = primaryCropKey === 'cotton' ? 21000 : 15500;
+    const yieldPerAcre = Number(
+      advice.primaryCrop.avgYield || (primaryCropKey === 'brinjal' ? 110.0 : primaryCropKey === 'cotton' ? 8.5 : primaryCropKey === 'groundnut' ? 12.0 : 18.0)
+    );
+    const mandiRate = Number(advice.marketData?.pricePerQuintal || (primaryCropKey === 'brinjal' ? 2200 : 2490));
+    const costPerAcre = primaryCropKey === 'brinjal' ? 26000 : primaryCropKey === 'cotton' ? 21000 : 15500;
 
     const primaryYield = yieldPerAcre * acres;
     const primaryRevenue = primaryYield * mandiRate;
 
-    const bonusPct = advice.intercrop ? (Number(advice.intercrop.lerScore || 1.25) - 1.0) * 0.75 : 0;
+    const bonusPct = advice.intercrop ? (Number(advice.intercrop.lerScore || 1.28) - 1.0) * 0.75 : 0;
     const intercropRevenue = primaryRevenue * bonusPct;
     const totalGrossRevenue = Math.round(primaryRevenue + intercropRevenue);
     const totalCost = costPerAcre * acres;
@@ -1041,11 +913,10 @@ export default function App() {
     if (!advice || !advice.primaryCrop) return null;
 
     const rdfTable = {
+      brinjal: { n: 40, p: 20, k: 12 },
       maize: { n: 48, p: 24, k: 20 },
       cotton: { n: 40, p: 20, k: 20 },
-      groundnut: { n: 10, p: 20, k: 30 },
-      rice: { n: 50, p: 20, k: 25 },
-      paddy: { n: 50, p: 20, k: 25 }
+      groundnut: { n: 10, p: 20, k: 30 }
     };
 
     const rdfKey = String(advice.primaryCrop.key || primaryCropKey).toLowerCase();
@@ -1112,7 +983,6 @@ export default function App() {
           bSum += b;
 
           const lum = 0.299 * r + 0.587 * g + 0.114 * b;
-          // Valid natural soil/ground exhibits natural earth pigmentation or crop green
           const isEarthTone = (r >= b && g >= b && lum >= 25 && lum <= 230);
           const isGreenCanopy = (g > r * 1.05 && g > b * 1.1);
 
@@ -1127,11 +997,9 @@ export default function App() {
         const avgLum = Math.round(0.299 * avgR + 0.587 * avgG + 0.114 * avgB);
         const soilRatio = soilPixelCount / totalPixels;
 
-        // Diagnostic output for F12 console
         console.log(`[Soil Scanner] Avg RGB: (${avgR}, ${avgG}, ${avgB}) | Lum: ${avgLum} | Soil Confidence: ${(soilRatio * 100).toFixed(1)}%`);
 
         setTimeout(() => {
-          // 0. Strict Non-Field Rejection Filter
           const isBlueDominant = (avgB > avgR * 1.1 && avgB > avgG);
           const isUnnaturalHue = Math.abs(avgR - avgB) < 6 && Math.abs(avgG - avgB) < 6 && (avgLum > 200 || avgLum < 30);
 
@@ -1146,33 +1014,33 @@ export default function App() {
             return;
           }
 
-          let detectedSoil = 'Loamy';
-          let detectedCrop = primaryCropKey;
+          let detectedSoil = 'Clay';
+          let detectedCrop = 'brinjal';
           let rationale = '';
           let confidence = 89;
 
-          // 1. Black Soil (Vertisol): Distinctly low luminance with desaturated earth tones
+          // 1. Black Soil (Vertisol)
           if (avgLum < 85 && Math.abs(avgR - avgG) <= 15 && Math.abs(avgG - avgB) <= 15) {
             detectedSoil = 'Black';
             detectedCrop = 'cotton';
-            rationale = 'Dark Vertisol (Black Cotton Soil) detected. High montmorillonite clay content and moisture retention ideal for Cotton + Black Gram / Moong.';
+            rationale = 'Dark Vertisol (Black Cotton Soil) detected. High moisture retention ideal for Cotton + Black Gram / Moong.';
             confidence = 94;
           }
-          // 2. Sandy Soil: Pale, dry, high-luminance yellow/tan sediment
+          // 2. Sandy Soil
           else if (avgLum > 155 && avgR > 140 && avgR > avgB * 1.35) {
             detectedSoil = 'Sandy';
             detectedCrop = 'groundnut';
             rationale = 'Light sandy texture detected with porous drainage. Optimal for Groundnut pegging and drought-hardy companion rows.';
             confidence = 91;
           }
-          // 3. Clay Soil: Distinctly rich reddish-brown / heavy ferruginous alluvium
+          // 3. Clay / Delta Alluvium: Ideal for Thanjavur Brinjal
           else if (avgR > avgB * 1.55 && (avgR - avgG) >= 20 && avgLum >= 80 && avgLum <= 150) {
             detectedSoil = 'Clay';
-            detectedCrop = 'rice';
-            rationale = 'Heavy clay/alluvial soil with fine grain and dense moisture-holding capacity detected. Optimal for Paddy and wetland rotations.';
-            confidence = 92;
+            detectedCrop = 'brinjal';
+            rationale = 'Heavy clay/alluvial delta soil detected. Highly fertile with moisture retention, ideal for Thanjavur Brinjal + Coriander / Bush Bean.';
+            confidence = 93;
           }
-          // 4. Loamy Soil: Balanced, organic brown medium loam
+          // 4. Loamy Soil default
           else {
             detectedSoil = 'Loamy';
             detectedCrop = 'maize';
@@ -1210,8 +1078,8 @@ export default function App() {
     const t = text.toLowerCase();
 
     let newCrop = primaryCropKey;
-    if (t.includes('cotton') || t.includes('பருத்தி') || t.includes('कपास')) newCrop = 'cotton';
-    else if (t.includes('rice') || t.includes('paddy') || t.includes('நெல்') || t.includes('धान') || t.includes('चावल')) newCrop = 'rice';
+    if (t.includes('brinjal') || t.includes('eggplant') || t.includes('கத்தரி') || t.includes('बैंगन')) newCrop = 'brinjal';
+    else if (t.includes('cotton') || t.includes('பருத்தி') || t.includes('कपास')) newCrop = 'cotton';
     else if (t.includes('groundnut') || t.includes('peanut') || t.includes('வேர்க்கடலை') || t.includes('मूंगफली')) newCrop = 'groundnut';
     else if (t.includes('maize') || t.includes('corn') || t.includes('மக்காச்சோளம்') || t.includes('मक्का')) newCrop = 'maize';
     setPrimaryCropKey(newCrop);
@@ -1280,14 +1148,13 @@ export default function App() {
   const loadAdvice = async (targetLang = lang, overrideParams = null) => {
     const activeLang = typeof targetLang === 'string' ? targetLang : lang;
     const cropLookup = overrideParams?.primaryCropKey || primaryCropKey;
-    const normKey = cropLookup === 'rice' ? 'paddy' : cropLookup;
     const sVar = overrideParams?.season || season;
     const soVar = overrideParams?.soilType || soilType;
     const wVar = overrideParams?.waterStatus || waterStatus;
 
     try {
       const payload = overrideParams || {
-        primaryCropKey: normKey,
+        primaryCropKey: cropLookup,
         season: sVar,
         soilType: soVar,
         waterStatus: wVar
@@ -1303,40 +1170,38 @@ export default function App() {
       const data = await res.json();
       if (!data || !data.primaryCrop) throw new Error('Invalid response structure');
 
-      const fallback3 = getClientTop3Companions(normKey, sVar, soVar, wVar, activeLang).map(item => normalizeCompanion(item, activeLang));
+      const fallback3 = getClientTop3Companions(cropLookup, sVar, soVar, wVar, activeLang).map(item => normalizeCompanion(item, activeLang));
       const rawOptions = (data.companionOptions && data.companionOptions.length > 0)
         ? data.companionOptions
         : fallback3;
 
       data.companionOptions = rawOptions.map(item => normalizeCompanion(item, activeLang));
-      // Lock the active intercrop banner to the #1 recommended companion for this primary crop
       data.intercrop = data.companionOptions[0];
 
       setAdvice(data);
       setActiveTab('intercrop');
     } catch (err) {
       console.warn('Backend fetch fallback engaged:', err);
-      const companionList = getClientTop3Companions(normKey, sVar, soVar, wVar, activeLang).map(item => normalizeCompanion(item, activeLang));
-      const cropRates = CURRENT_MSP_DIRECTORY[normKey] || CURRENT_MSP_DIRECTORY.maize;
+      const companionList = getClientTop3Companions(cropLookup, sVar, soVar, wVar, activeLang).map(item => normalizeCompanion(item, activeLang));
+      const cropRates = CURRENT_MSP_DIRECTORY[cropLookup] || CURRENT_MSP_DIRECTORY.brinjal;
 
       const primaryNames = {
+        brinjal: { en: 'Brinjal / Eggplant (Thanjavur)', ta: 'கத்தரிக்காய் (Brinjal)', hi: 'बैंगन (Brinjal)' },
         maize: { en: 'Maize / Corn', ta: 'மக்காச்சோளம்', hi: 'मक्का' },
         cotton: { en: 'Cotton', ta: 'பருத்தி', hi: 'कपास' },
-        groundnut: { en: 'Groundnut', ta: 'வேர்க்கடலை', hi: 'मूंगफली' },
-        paddy: { en: 'Paddy / Rice', ta: 'நெல்', hi: 'धान / चावल' },
-        rice: { en: 'Paddy / Rice', ta: 'நெல்', hi: 'धान / चावल' }
+        groundnut: { en: 'Groundnut', ta: 'வேர்க்கடலை', hi: 'मूंगफली' }
       };
-      const pName = (primaryNames[normKey] && primaryNames[normKey][activeLang]) || primaryNames[normKey]?.en || normKey;
+      const pName = (primaryNames[cropLookup] && primaryNames[cropLookup][activeLang]) || primaryNames[cropLookup]?.en || cropLookup;
 
       setAdvice({
         primaryCrop: {
-          key: normKey,
+          key: cropLookup,
           name: pName,
-          harvestDuration: activeLang === 'ta' ? '3 - 4 மாதங்கள்' : activeLang === 'hi' ? '3 - 4 महीने' : '3 - 4 Months',
-          avgYield: normKey === 'cotton' ? 8.5 : normKey === 'groundnut' ? 12.0 : 18.0,
-          safeMoisturePct: 12.0,
-          ambientShelfLifeMonths: 6,
-          coldShelfLifeMonths: 18
+          harvestDuration: activeLang === 'ta' ? '4 - 5 மாதங்கள்' : activeLang === 'hi' ? '4 - 5 महीने' : '4 - 5 Months',
+          avgYield: cropLookup === 'brinjal' ? 110.0 : cropLookup === 'cotton' ? 8.5 : cropLookup === 'groundnut' ? 12.0 : 18.0,
+          safeMoisturePct: cropLookup === 'brinjal' ? 85.0 : 12.0,
+          ambientShelfLifeMonths: cropLookup === 'brinjal' ? 0.3 : 6,
+          coldShelfLifeMonths: cropLookup === 'brinjal' ? 1 : 18
         },
         marketData: {
           pricePerQuintal: cropRates.mandi,
@@ -1347,12 +1212,12 @@ export default function App() {
         companionOptions: companionList,
         pests: [
           {
-            pestName: activeLang === 'ta' ? 'படைப்புழு / காய் துளைப்பான்' : activeLang === 'hi' ? 'फॉल आर्मीवर्म / फल छेदक' : 'Fall Armyworm / Pod Borer',
-            cultural: activeLang === 'ta' ? 'ஆழ உழவு மற்றும் தூய விதைப்படுக்கை' : activeLang === 'hi' ? 'गहरी जुताई व शुद्ध क्यारी' : 'Deep summer ploughing and clean seedbed tillage.',
-            bio: activeLang === 'ta' ? 'வேப்ப எண்ணெய் கரைசல் (5 மிலி/லி)' : activeLang === 'hi' ? 'नीम तेल स्प्रे (5ml/L)' : 'Neem seed kernel extract (NSKE 5%) or Trichogramma cards.',
-            chemical: 'Emamectin benzoate 5% SG @ 4g/10L water.',
+            pestName: activeLang === 'ta' ? 'காய் மற்றும் தண்டு துளைப்பான் (Leucinodes)' : activeLang === 'hi' ? 'तना व फल छेदक (Shoot & Fruit Borer)' : 'Shoot and Fruit Borer (Leucinodes orbonalis)',
+            cultural: activeLang === 'ta' ? 'பாதிக்கப்பட்ட குருத்துகளை உடனுக்குடன் அகற்றி அழித்தல், சாமந்தி செடிகளை வரப்புகளில் நடுதல்' : activeLang === 'hi' ? 'संक्रमित टहनियों को काटना व गेंदा की ट्रैप फसल लगाना' : 'Prompt clipping and destruction of wilted shoots; plant Marigold trap borders.',
+            bio: activeLang === 'ta' ? 'வேப்பெண்ணெய் கரைசல் (3%) அல்லது பேசிலஸ் துரிஞ்சியென்சிஸ் (Bt)' : activeLang === 'hi' ? 'नीम का तेल (3%) या बीटी (Bt) स्प्रे' : 'Neem oil 3% or Bacillus thuringiensis (Bt) @ 2g/L water.',
+            chemical: 'Chlorantraniliprole 18.5% SC @ 0.3 ml/L water.',
             toxicity: 'Moderate',
-            phiDays: 14
+            phiDays: 3
           }
         ]
       });
@@ -1383,17 +1248,17 @@ export default function App() {
     const duration = advice?.primaryCrop?.harvestDuration || '';
 
     if (lang === 'ta') {
-      textToRead = `முதன்மைப் பயிர்: ${advice.primaryCrop.name}. அறுவடை காலம்: ${duration}. அரசு ஆதார விலை MSP: குவிண்டாலுக்கு ₹${advice.marketData?.officialMsp}. `;
+      textToRead = `முதன்மைப் பயிர்: ${advice.primaryCrop.name}. அறுவடை காலம்: ${duration}. சராசரி சந்தை விலை: குவிண்டாலுக்கு ₹${advice.marketData?.pricePerQuintal}. `;
       if (advice.intercrop) {
         textToRead += `பரிந்துரைக்கப்படும் உகந்த ஊடு பயிர்: ${getLocalizedCropName(advice.intercrop.key, advice.intercrop.name, 'ta')}. முன்னுரிமை தகுதி: ${getLocalizedTier(advice.intercrop.tier, 'ta')}. பயிர் வரிசை அமைப்பு: ${advice.intercrop.rowRatio}. நில பயன்பாட்டு திறன்: ${advice.intercrop.lerScore}. பலன்: ${advice.intercrop.reasoning}.`;
       }
     } else if (lang === 'hi') {
-      textToRead = `मुख्य फसल: ${advice.primaryCrop.name}. कटाई अवधि: ${duration}. सरकारी MSP: ₹${advice.marketData?.officialMsp} प्रति क्विंटल. `;
+      textToRead = `मुख्य फसल: ${advice.primaryCrop.name}. कटाई अवधि: ${duration}. औसत मंडी भाव: ₹${advice.marketData?.pricePerQuintal} प्रति क्विंटल. `;
       if (advice.intercrop) {
         textToRead += `अनुशंसित साथी फसल: ${getLocalizedCropName(advice.intercrop.key, advice.intercrop.name, 'hi')}. प्राथमिकता स्तर: ${getLocalizedTier(advice.intercrop.tier, 'hi')}. पंक्ति अनुपात: ${advice.intercrop.rowRatio}. भूमि दक्षता LER: ${advice.intercrop.lerScore}. लाभ: ${advice.intercrop.reasoning}.`;
       }
     } else {
-      textToRead = `Primary crop: ${advice.primaryCrop.name}. Harvest duration: ${advice.primaryCrop.harvestDuration}. Government MSP floor rate: ₹${advice.marketData?.officialMsp} per quintal. `;
+      textToRead = `Primary crop: ${advice.primaryCrop.name}. Harvest duration: ${advice.primaryCrop.harvestDuration}. Market benchmark price: ₹${advice.marketData?.pricePerQuintal} per quintal. `;
       if (advice.intercrop) {
         textToRead += `Recommended companion crop: ${advice.intercrop.name}. Recommendation tier: ${advice.intercrop.tier}. Row pattern: ${advice.intercrop.rowRatio}. Land Equivalent Ratio: ${advice.intercrop.lerScore}. Rationale: ${advice.intercrop.reasoning}.`;
       }
@@ -1633,7 +1498,7 @@ export default function App() {
             </p>
           ) : (
             <p className="text-[11px] text-gray-400 mt-2">
-              {lang === 'ta' ? 'உதா: "பருத்தி கரிசல் மண் காரிப் பருவம்"' : lang === 'hi' ? 'उदा: "कपास काली मिट्टी खरीफ सीजन"' : 'Try: "Cotton black soil kharif season"'}
+              {lang === 'ta' ? 'உதா: "கத்தரிக்காய் களிமண் காரிப் பருவம்"' : lang === 'hi' ? 'उदा: "बैंगन चिकनी मिट्टी खरीफ सीजन"' : 'Try: "Brinjal clay soil kharif season"'}
             </p>
           )}
         </div>
@@ -1657,10 +1522,10 @@ export default function App() {
               }} 
               className="w-full border p-2 rounded text-sm bg-white font-semibold"
             >
+              <option value="brinjal">{d.crops.brinjal}</option>
               <option value="maize">{d.crops.maize}</option>
               <option value="cotton">{d.crops.cotton}</option>
               <option value="groundnut">{d.crops.groundnut}</option>
-              <option value="rice">{d.crops.rice}</option>
             </select>
           </div>
 
@@ -1676,8 +1541,8 @@ export default function App() {
           <div>
             <label className="text-xs font-bold text-gray-700 block mb-1">{d.soil}</label>
             <select value={soilType} onChange={(e) => setSoilType(e.target.value)} className="w-full border p-2 rounded text-sm bg-white">
-              <option value="Loamy">{d.soils.Loamy}</option>
               <option value="Clay">{d.soils.Clay}</option>
+              <option value="Loamy">{d.soils.Loamy}</option>
               <option value="Sandy">{d.soils.Sandy}</option>
               <option value="Black">{d.soils.Black}</option>
             </select>
@@ -1686,8 +1551,8 @@ export default function App() {
           <div>
             <label className="text-xs font-bold text-gray-700 block mb-1">{d.water}</label>
             <select value={waterStatus} onChange={(e) => setWaterStatus(e.target.value)} className="w-full border p-2 rounded text-sm bg-white">
-              <option value="Low">{d.waters.Low}</option>
               <option value="Medium">{d.waters.Medium}</option>
+              <option value="Low">{d.waters.Low}</option>
               <option value="High">{d.waters.High}</option>
             </select>
           </div>
@@ -1739,7 +1604,7 @@ export default function App() {
                 </div>
                 <div className="text-right">
                   <div className="bg-amber-100 text-amber-900 text-xs px-2.5 py-1 rounded font-black inline-block">
-                    {d.officialMsp}: ₹{advice.marketData?.officialMsp}{d.perQtl}
+                    {d.mandiPrice}: ₹{advice.marketData?.pricePerQuintal}{d.perQtl}
                   </div>
                   <p className="text-[10px] text-gray-400 font-medium mt-0.5">
                     {d.lastUpdated}: {advice.marketData?.lastUpdated}
@@ -1846,7 +1711,9 @@ export default function App() {
                               </div>
 
                               <div className="mt-2.5 pt-1.5 border-t border-gray-200 flex justify-between items-center text-[10px] font-bold">
-                                <span className="text-emerald-800">+{opt.nitrogenFixed} kg N/ha</span>
+                                <span className="text-emerald-800">
+                                  {Number(opt.nitrogenFixed) > 0 ? `+${opt.nitrogenFixed} kg N/ha` : 'Vegetable Catch'}
+                                </span>
                                 <span className={isSelected ? 'text-emerald-700' : 'text-gray-400'}>
                                   {isSelected 
                                     ? (AGRONOMIC_TRANSLATIONS.ui.activePlan[lang] || '✓ Active Plan') 
@@ -1883,7 +1750,7 @@ export default function App() {
                             LER: {advice.intercrop.lerScore}
                           </span>
                           <p className="text-[10px] text-green-800 font-extrabold mt-1">
-                            +{Math.round((Number(advice.intercrop.lerScore || 1.25) - 1) * 100)}% {d.efficiencyGain}
+                            +{Math.round((Number(advice.intercrop.lerScore || 1.28) - 1) * 100)}% {d.efficiencyGain}
                           </p>
                         </div>
                       </div>
@@ -1902,7 +1769,7 @@ export default function App() {
                         <div className="bg-white/90 p-2.5 rounded-lg border border-emerald-100 shadow-2xs">
                           <p className="text-[10px] text-gray-500 font-semibold">{d.nFix}</p>
                           <p className="text-xs font-extrabold text-emerald-800">
-                            {Number(advice.intercrop.nitrogenFixed) > 0 ? `+${advice.intercrop.nitrogenFixed} kg N/ha` : 'Trap Barrier'}
+                            {Number(advice.intercrop.nitrogenFixed) > 0 ? `+${advice.intercrop.nitrogenFixed} kg N/ha` : 'Trap / Cover Crop'}
                           </p>
                         </div>
 
@@ -1915,15 +1782,11 @@ export default function App() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
                         <div className="bg-white/90 p-3 rounded-lg border border-emerald-100">
                           <p className="text-[10px] text-gray-500 font-bold uppercase">{d.sowingSchedule}</p>
-                          <p className="font-bold text-green-950 mt-0.5">
-                            {getLocalizedSchedule(advice.intercrop.sowingOffset, lang)}
-                          </p>
+                          <p className="font-bold text-green-950 mt-0.5">{advice.intercrop.sowingOffset}</p>
                         </div>
                         <div className="bg-white/90 p-3 rounded-lg border border-emerald-100">
                           <p className="text-[10px] text-gray-500 font-bold uppercase">{d.rootSynergy}</p>
-                          <p className="font-bold text-green-950 mt-0.5">
-                            {getLocalizedSynergy(advice.intercrop.rootZoneSynergy, lang)}
-                          </p>
+                          <p className="font-bold text-green-950 mt-0.5">{advice.intercrop.rootZoneSynergy}</p>
                         </div>
                       </div>
 
@@ -1980,12 +1843,9 @@ export default function App() {
                           className="w-4 h-4 mt-0.5 accent-blue-600 rounded"
                         />
                         <div className="text-xs">
-                          <span className="font-extrabold text-blue-950">💧 Soil Moisture & Irrigation Timing</span>
+                          <span className="font-extrabold text-blue-950">💧 Irrigation & Furrow Maintenance</span>
                           <p className="text-gray-600 mt-0.5">
-                            Inspect root zones of both {advice.primaryCrop.name} and {getLocalizedCropName(advice.intercrop?.key, advice.intercrop?.name, lang)}. 
-                            {waterStatus === 'Low'
-                              ? ' Soil is rainfed/low moisture: mulch inter-row spacing to minimize surface evaporation.'
-                              : ' Maintain consistent moisture without pooling to protect legume root nodules from suffocation.'}
+                            Inspect root zones of {advice.primaryCrop.name} and {getLocalizedCropName(advice.intercrop?.key, advice.intercrop?.name, lang)}. Ensure ridge furrows drain excess water quickly to prevent damping-off.
                           </p>
                         </div>
                       </label>
@@ -2002,7 +1862,7 @@ export default function App() {
                         <div className="text-xs">
                           <span className="font-extrabold text-sky-950">🌦️ Weather Check Prior to Field Spraying</span>
                           <p className="text-gray-600 mt-0.5">
-                            Check 5-day wind and precipitation risks before chemical or biological application. Never spray if rain is forecast within 24 hours.
+                            Check 5-day delta wind and rain risks before application. Never spray if rain is forecast within 24 hours.
                           </p>
                         </div>
                       </label>
@@ -2017,9 +1877,9 @@ export default function App() {
                           className="w-4 h-4 mt-0.5 accent-red-600 rounded"
                         />
                         <div className="text-xs">
-                          <span className="font-extrabold text-red-950">🐛 Pest Scouting & Trap Barrier Check</span>
+                          <span className="font-extrabold text-red-950">🐛 Borer & Wilt Scouting</span>
                           <p className="text-gray-600 mt-0.5">
-                            Examine leaf undersides for egg clusters. Inspect companion rows ({getLocalizedCropName(advice.intercrop?.key, advice.intercrop?.name, lang)}) to verify if trap boundaries are diverting pests.
+                            Clip any drooping terminal shoots. Check Marigold trap plants to confirm borers are being lured away from main vegetable beds.
                           </p>
                         </div>
                       </label>
@@ -2037,7 +1897,7 @@ export default function App() {
                           <div className="text-xs">
                             <span className="font-extrabold text-amber-950">⏳ Harvest Safety Countdown (PHI Compliance)</span>
                             <p className="text-gray-600 mt-0.5">
-                              Ensure at least {advice.pests[0]?.phiDays || 14} days have elapsed since the last spray before picking companion pods or harvesting {advice.primaryCrop.name}.
+                              Ensure at least {advice.pests[0]?.phiDays || 3} days have elapsed since the last spray before picking vegetable flushes for market sale.
                             </p>
                           </div>
                         </label>
@@ -2081,7 +1941,7 @@ export default function App() {
                   </div>
 
                   <div className="bg-emerald-50/60 p-3 rounded-lg border border-emerald-200 text-xs text-emerald-900 leading-relaxed">
-                    💵 <strong>Revenue Breakdown:</strong> Gross Mandi sales reach <strong>₹{fin.totalGrossRevenue.toLocaleString('en-IN')}</strong>, powered by simultaneous companion intercropping delivering an extra <strong>₹{fin.bonusRevenue.toLocaleString('en-IN')}</strong> above mono-cropping.
+                    💵 <strong>Revenue Breakdown:</strong> Gross Mandi vegetable sales reach <strong>₹{fin.totalGrossRevenue.toLocaleString('en-IN')}</strong>, powered by simultaneous companion intercropping delivering an extra <strong>₹{fin.bonusRevenue.toLocaleString('en-IN')}</strong> above mono-cropping.
                   </div>
                 </div>
               )}
@@ -2121,7 +1981,7 @@ export default function App() {
                       <span className="text-emerald-700">+{fert.nCreditPerAcre} kg Pure N / Acre</span>
                     </div>
                     <p className="text-gray-700">
-                      Because {getLocalizedCropName(advice.intercrop?.key, advice.intercrop?.name, lang)} nodulates atmospheric nitrogen, you save <strong>{fert.ureaSavedBags} commercial Urea bag(s)</strong>, saving approximately <strong>₹{fert.savingsRupees}</strong> on input costs.
+                      If pairing with a legume companion, atmospheric nitrogen nodulation saves <strong>{fert.ureaSavedBags} commercial Urea bag(s)</strong>, saving approximately <strong>₹{fert.savingsRupees}</strong> on input costs.
                     </p>
                   </div>
                 </div>
@@ -2173,7 +2033,7 @@ export default function App() {
                   <div className="flex justify-between items-center border-b pb-2">
                     <h3 className="text-sm font-black text-gray-800">Post-Harvest Storage & Shelf-Life Longevity</h3>
                     <span className="text-xs bg-amber-100 text-amber-900 font-black px-2.5 py-0.5 rounded">
-                      Storage Guidance
+                      Vegetable Storage Guidance
                     </span>
                   </div>
 
@@ -2181,11 +2041,11 @@ export default function App() {
                     <div className="p-3.5 bg-gray-50 rounded-lg border space-y-2">
                       <div className="flex justify-between items-center">
                         <span className="font-black text-gray-900">{advice.primaryCrop.name}</span>
-                        <span className="bg-blue-100 text-blue-900 text-[10px] font-bold px-2 py-0.5 rounded">Primary</span>
+                        <span className="bg-blue-100 text-blue-900 text-[10px] font-bold px-2 py-0.5 rounded">Perishable Vegetable</span>
                       </div>
-                      <p><strong>Safe Moisture Threshold:</strong> ≤ {advice.primaryCrop.safeMoisturePct}% (Sun dry thoroughly)</p>
-                      <p><strong>Ambient Godown Life:</strong> {advice.primaryCrop.ambientShelfLifeMonths} Months</p>
-                      <p><strong>Hermetic / Cold Storage:</strong> Up to {advice.primaryCrop.coldShelfLifeMonths} Months</p>
+                      <p><strong>Storage Condition:</strong> High relative humidity (85–90%), well-aerated crates</p>
+                      <p><strong>Ambient Shelf-Life:</strong> 3 – 5 Days</p>
+                      <p><strong>Cold Storage (10°C–12°C):</strong> Up to 3 – 4 Weeks</p>
                     </div>
 
                     {advice.intercrop && (
@@ -2196,8 +2056,8 @@ export default function App() {
                           </span>
                           <span className="bg-emerald-200 text-emerald-900 text-[10px] font-bold px-2 py-0.5 rounded">Companion</span>
                         </div>
-                        <p><strong>Safe Moisture Threshold:</strong> ≤ {advice.intercrop.postHarvest?.safeMoisturePct || 10}%</p>
-                        <p><strong>Ambient Storage:</strong> {advice.intercrop.postHarvest?.ambientMonths || 6} Months</p>
+                        <p><strong>Harvest Form:</strong> Fresh market bunches</p>
+                        <p><strong>Ambient Storage:</strong> 2 – 4 Days</p>
                       </div>
                     )}
                   </div>
