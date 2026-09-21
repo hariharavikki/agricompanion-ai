@@ -708,8 +708,8 @@ app.get('/api/weather', async (req, res) => {
     return res.status(500).json({ error: 'Server weather API key is not configured in .env' });
   }
 
-  const latitude = lat || '28.6139';
-  const longitude = lon || '77.2090';
+  const latitude = lat || '10.7905';
+  const longitude = lon || '78.7047';
 
   try {
     const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&units=metric&appid=${apiKey}`;

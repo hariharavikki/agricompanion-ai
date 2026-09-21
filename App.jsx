@@ -705,8 +705,8 @@ export default function App() {
       }
     };
 
-    const defaultLat = 28.6139;
-    const defaultLon = 77.2090;
+    const defaultLat = 10.7905;
+    const defaultLon = 78.7047;
 
     if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
