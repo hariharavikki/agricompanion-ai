@@ -397,7 +397,7 @@ const getLocalizedSynergy = (synergyStr, currentLang) => {
 
 const normalizeCompanion = (item, lang = 'en') => {
   if (!item) return null;
-  const defaultDur = lang === 'ta' ? '65 - 75 நாட்கள்' : lang === 'hi' ? '65 - 75 दिन' : '65 - 75 Days';
+  const defaultDur = lang === 'ta' ? '65 - 75 நாட்கள்' : lang === 'hi' ? '65 - 75 দিন' : '65 - 75 Days';
   return {
     ...item,
     rowRatio: item.rowRatio || item.ratio || '2:1',
@@ -696,7 +696,7 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
         tier: t.rec,
         key: 'blackgram',
         name: getName('blackgram'),
-        rowRatio: lang === 'ta' ? 'வரப்பு வரிசைகள்' : lang === 'hi' ? 'मेड़ कतारें' : 'Bund Rows',
+        rowRatio: lang === 'ta' ? 'வரப்பு வரிசைகள்' : lang === 'hi' ? 'மேड़ कतारें' : 'Bund Rows',
         spacing: '25 cm x 10 cm',
         nitrogenFixed: 22,
         lerScore: 1.20,
@@ -1099,7 +1099,7 @@ export default function App() {
         }
 
         let rSum = 0, gSum = 0, bSum = 0;
-        let blackCount = 0, clayCount = 0, sandyCount = 0, greenCount = 0;
+        let soilPixelCount = 0;
         const totalPixels = imgData.length / 4;
 
         for (let i = 0; i < imgData.length; i += 4) {
@@ -1112,22 +1112,12 @@ export default function App() {
           bSum += b;
 
           const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+          // Valid natural soil/ground exhibits natural earth pigmentation or crop green
+          const isEarthTone = (r >= b && g >= b && lum >= 25 && lum <= 230);
+          const isGreenCanopy = (g > r * 1.05 && g > b * 1.1);
 
-          // Black Soil: Dark tones under sunlight (luminance < 125, low chromatic spread)
-          if (lum < 125 && Math.abs(r - g) < 28 && Math.abs(g - b) < 28) {
-            blackCount++;
-          }
-          // Clay / Reddish Alluvial: Red-dominant warm earth tone
-          else if (r > b * 1.2 && r >= g && lum >= 70 && lum <= 165) {
-            clayCount++;
-          }
-          // Sandy Soil: High brightness, yellow/tan sediment
-          else if (lum > 140 && r > 125 && r > b * 1.25) {
-            sandyCount++;
-          }
-          // Vegetation/Green
-          else if (g > r * 1.05 && g > b * 1.08) {
-            greenCount++;
+          if (isEarthTone || isGreenCanopy) {
+            soilPixelCount++;
           }
         }
 
@@ -1135,42 +1125,54 @@ export default function App() {
         const avgG = Math.round(gSum / totalPixels);
         const avgB = Math.round(bSum / totalPixels);
         const avgLum = Math.round(0.299 * avgR + 0.587 * avgG + 0.114 * avgB);
+        const soilRatio = soilPixelCount / totalPixels;
 
-        const darkPct = (blackCount / totalPixels) * 100;
-        const clayPct = (clayCount / totalPixels) * 100;
-        const sandPct = (sandyCount / totalPixels) * 100;
-
-        console.log(`[Soil Scanner] Avg RGB: (${avgR}, ${avgG}, ${avgB}) | Lum: ${avgLum}`);
-        console.log(`[Soil Scanner] Match Ratios -> Black: ${darkPct.toFixed(1)}% | Clay: ${clayPct.toFixed(1)}% | Sand: ${sandPct.toFixed(1)}%`);
+        // Diagnostic output for F12 console
+        console.log(`[Soil Scanner] Avg RGB: (${avgR}, ${avgG}, ${avgB}) | Lum: ${avgLum} | Soil Confidence: ${(soilRatio * 100).toFixed(1)}%`);
 
         setTimeout(() => {
+          // 0. Strict Non-Field Rejection Filter
+          const isBlueDominant = (avgB > avgR * 1.1 && avgB > avgG);
+          const isUnnaturalHue = Math.abs(avgR - avgB) < 6 && Math.abs(avgG - avgB) < 6 && (avgLum > 200 || avgLum < 30);
+
+          if (soilRatio < 0.45 || isBlueDominant || isUnnaturalHue) {
+            setImageAnalysisResult({
+              isValid: false,
+              errorTitle: 'Non-Field / Unrecognized Photo',
+              rationale: 'Could not detect clear soil pigment or crop canopy patterns. Please upload a clear photo of your field ground or crop rows.',
+              confidence: 'N/A'
+            });
+            setIsAnalyzingImage(false);
+            return;
+          }
+
           let detectedSoil = 'Loamy';
           let detectedCrop = primaryCropKey;
           let rationale = '';
           let confidence = 89;
 
-          // 1. Black Soil Priority
-          if (darkPct > 20 || (avgLum < 120 && Math.abs(avgR - avgG) < 25 && Math.abs(avgG - avgB) < 25)) {
+          // 1. Black Soil (Vertisol): Distinctly low luminance with desaturated earth tones
+          if (avgLum < 85 && Math.abs(avgR - avgG) <= 15 && Math.abs(avgG - avgB) <= 15) {
             detectedSoil = 'Black';
             detectedCrop = 'cotton';
-            rationale = 'Dark Vertisol (Black Cotton Soil) detected. High moisture retention ideal for Cotton + Black Gram / Moong.';
+            rationale = 'Dark Vertisol (Black Cotton Soil) detected. High montmorillonite clay content and moisture retention ideal for Cotton + Black Gram / Moong.';
             confidence = 94;
           }
-          // 2. Clay Soil
-          else if (clayPct > 20 || (avgR > avgB * 1.25 && avgG > avgB * 1.05 && avgLum <= 150)) {
-            detectedSoil = 'Clay';
-            detectedCrop = 'rice';
-            rationale = 'Heavy clay/alluvial soil with fine grain and moisture capacity detected. Optimal for Paddy and wetland rotations.';
-            confidence = 92;
-          }
-          // 3. Sandy Soil
-          else if (sandPct > 20 || (avgLum > 145 && avgR > avgB * 1.3)) {
+          // 2. Sandy Soil: Pale, dry, high-luminance yellow/tan sediment
+          else if (avgLum > 155 && avgR > 140 && avgR > avgB * 1.35) {
             detectedSoil = 'Sandy';
             detectedCrop = 'groundnut';
-            rationale = 'Light sandy texture detected with porous drainage. Optimal for Groundnut pegging and pulse companions.';
+            rationale = 'Light sandy texture detected with porous drainage. Optimal for Groundnut pegging and drought-hardy companion rows.';
             confidence = 91;
           }
-          // 4. Loamy Soil default
+          // 3. Clay Soil: Distinctly rich reddish-brown / heavy ferruginous alluvium
+          else if (avgR > avgB * 1.55 && (avgR - avgG) >= 20 && avgLum >= 80 && avgLum <= 150) {
+            detectedSoil = 'Clay';
+            detectedCrop = 'rice';
+            rationale = 'Heavy clay/alluvial soil with fine grain and dense moisture-holding capacity detected. Optimal for Paddy and wetland rotations.';
+            confidence = 92;
+          }
+          // 4. Loamy Soil: Balanced, organic brown medium loam
           else {
             detectedSoil = 'Loamy';
             detectedCrop = 'maize';
@@ -1307,7 +1309,8 @@ export default function App() {
         : fallback3;
 
       data.companionOptions = rawOptions.map(item => normalizeCompanion(item, activeLang));
-      data.intercrop = normalizeCompanion(data.intercrop, activeLang) || data.companionOptions[0];
+      // Lock the active intercrop banner to the #1 recommended companion for this primary crop
+      data.intercrop = data.companionOptions[0];
 
       setAdvice(data);
       setActiveTab('intercrop');
@@ -1640,7 +1643,20 @@ export default function App() {
         <div className="bg-white p-5 rounded-xl shadow-sm border space-y-4">
           <div>
             <label className="text-xs font-bold text-gray-700 block mb-1">{d.crop}</label>
-            <select value={primaryCropKey} onChange={(e) => setPrimaryCropKey(e.target.value)} className="w-full border p-2 rounded text-sm bg-white font-semibold">
+            <select 
+              value={primaryCropKey} 
+              onChange={(e) => {
+                const selected = e.target.value;
+                setPrimaryCropKey(selected);
+                loadAdvice(lang, {
+                  primaryCropKey: selected,
+                  season,
+                  soilType,
+                  waterStatus
+                });
+              }} 
+              className="w-full border p-2 rounded text-sm bg-white font-semibold"
+            >
               <option value="maize">{d.crops.maize}</option>
               <option value="cotton">{d.crops.cotton}</option>
               <option value="groundnut">{d.crops.groundnut}</option>
@@ -1698,7 +1714,10 @@ export default function App() {
             </div>
           </div>
 
-          <button onClick={() => loadAdvice(lang)} className="w-full bg-green-800 text-white font-extrabold text-sm py-2.5 rounded-lg hover:bg-green-900 transition shadow">
+          <button 
+            onClick={() => loadAdvice(lang, { primaryCropKey, season, soilType, waterStatus })} 
+            className="w-full bg-green-800 text-white font-extrabold text-sm py-2.5 rounded-lg hover:bg-green-900 transition shadow"
+          >
             {d.btnGet}
           </button>
         </div>
