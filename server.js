@@ -159,7 +159,6 @@ function getTop3Companions(cropKey, szn, soil, water, lang = 'en') {
   };
   const getName = (k) => (CROP_NAMES[k] ? CROP_NAMES[k][lang] || CROP_NAMES[k].en : k);
 
-  // 1. MAIZE MATRIX
   if (cropKey === 'maize') {
     if (s.includes('zaid') || w.includes('high')) {
       return [
@@ -290,7 +289,6 @@ function getTop3Companions(cropKey, szn, soil, water, lang = 'en') {
     ];
   }
 
-  // 2. COTTON MATRIX
   if (cropKey === 'cotton') {
     if (so.includes('black')) {
       return [
@@ -378,7 +376,6 @@ function getTop3Companions(cropKey, szn, soil, water, lang = 'en') {
     ];
   }
 
-  // 3. PADDY / RICE MATRIX
   if (cropKey === 'paddy') {
     if (w.includes('high')) {
       return [
@@ -435,7 +432,7 @@ function getTop3Companions(cropKey, szn, soil, water, lang = 'en') {
         harvestDuration: lang === 'ta' ? '60 - 65 நாட்கள்' : lang === 'hi' ? '60 - 65 दिन' : '60 - 65 Days',
         sowingOffset: lang === 'ta' ? 'முதல் நாளில் வரப்பில்' : lang === 'hi' ? 'मेड़ों पर दिन 0' : 'Day 0 along field bunds',
         rootZoneSynergy: lang === 'ta' ? 'வரப்பு வேர் அமைப்பு' : lang === 'hi' ? 'मेड़ सुरक्षा जड़ें' : 'Perimeter root zone without flooding competition',
-        reasoning: lang === 'ta' ? 'வரப்புகளை மண் அரிப்பிலிருந்து காத்து கூடுதல் வருவாய் தரும்.' : lang === 'hi' ? 'मेड़ को सुरक्षित रखती है और दलहन की अतिरिक्त उपज देती है।' : 'Monetizes raised bunds and binds bund soil against erosion under partial irrigation regimes.'
+        reasoning: lang === 'ta' ? 'வரப்புகளை மண் அரிப்பிலிருந்து காத்து கூடுதல் வருவாய் தரும்.' : lang === 'hi' ? 'மேड़ को सुरक्षित रखती है और दलहन की अतिरिक्त उपज देती है।' : 'Monetizes raised bunds and binds bund soil against erosion under partial irrigation regimes.'
       },
       {
         tier: t.rec,
@@ -466,7 +463,6 @@ function getTop3Companions(cropKey, szn, soil, water, lang = 'en') {
     ];
   }
 
-  // 4. GROUNDNUT MATRIX
   if (cropKey === 'groundnut') {
     if (w.includes('low') || so.includes('sandy')) {
       return [
@@ -699,7 +695,7 @@ app.post('/api/recommend', async (req, res) => {
   }
 });
 
-// 3. SECURE WEATHER PROXY ENDPOINT
+// 3. SECURE WEATHER PROXY ENDPOINT (Defaulted to Tiruchirappalli)
 app.get('/api/weather', async (req, res) => {
   const { lat, lon, lang = 'en' } = req.query;
   const apiKey = process.env.OPENWEATHER_API_KEY || process.env.WEATHER_API_KEY || process.env.VITE_WEATHER_API_KEY;
@@ -708,6 +704,7 @@ app.get('/api/weather', async (req, res) => {
     return res.status(500).json({ error: 'Server weather API key is not configured in .env' });
   }
 
+  // Fallback defaults to Tiruchirappalli (Trichy), Tamil Nadu
   const latitude = lat || '10.7905';
   const longitude = lon || '78.7047';
 
@@ -719,7 +716,7 @@ app.get('/api/weather', async (req, res) => {
     }
 
     const data = await response.json();
-    const city = data.city?.name || 'Local Farm Station';
+    const city = data.city?.name || 'Trichy Area Field';
 
     const dailyMap = {};
     data.list.forEach((item) => {
