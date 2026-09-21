@@ -258,7 +258,7 @@ const AGRONOMIC_TRANSLATIONS = {
   crops: {
     cowpea: { en: 'Cowpea (Lobia)', ta: 'காராமணி (தட்டப்பயறு)', hi: 'लोबिया (चौलाई)' },
     greengram: { en: 'Green Gram (Moong)', ta: 'பாசிப்பயறு (பச்சைப்பயறு)', hi: 'मूंग (Green Gram)' },
-    blackgram: { en: 'Black Gram (Urad)', ta: 'உளுந்து (கருப்பு உளுந்து)', hi: 'உड़द (Black Gram)' },
+    blackgram: { en: 'Black Gram (Urad)', ta: 'உளுந்து (கருப்பு உளுந்து)', hi: 'उड़द (Black Gram)' },
     frenchbean: { en: 'French Bean (Rajma)', ta: 'பீன்ஸ் / ராஜ்மா', hi: 'राजमा / फ्रेंच बीन' },
     pea: { en: 'Field Pea (Matar)', ta: 'பச்சை பட்டாணி', hi: 'हरी मटर (Field Pea)' },
     chickpea: { en: 'Chickpea (Chana)', ta: 'கொண்டைக்கடலை', hi: 'चना (Chickpea)' },
@@ -424,7 +424,7 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
   const CROP_NAMES = {
     greengram: { en: 'Green Gram (Moong)', ta: 'பாசிப்பயறு (பச்சைப்பயறு)', hi: 'मूंग (Green Gram)' },
     cowpea: { en: 'Cowpea (Lobia)', ta: 'காராமணி (தட்டப்பயறு)', hi: 'लोबिया (चौलाई)' },
-    blackgram: { en: 'Black Gram (Urad)', ta: 'உளுந்து (கருப்பு உளுந்து)', hi: 'உड़द (Black Gram)' },
+    blackgram: { en: 'Black Gram (Urad)', ta: 'உளுந்து (கருப்பு உளுந்து)', hi: 'उड़द (Black Gram)' },
     frenchbean: { en: 'French Bean (Rajma)', ta: 'பீன்ஸ் / ராஜ்மா', hi: 'राजमा / फ्रेंच बीन' },
     pea: { en: 'Field Pea (Matar)', ta: 'பச்சை பட்டாணி', hi: 'मटर (Field Pea)' },
     chickpea: { en: 'Chickpea (Chana)', ta: 'கொண்டைக்கடலை', hi: 'चना (Chickpea)' },
@@ -494,8 +494,8 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
         name: getName('cowpea'),
         rowRatio: '2:1',
         spacing: '30 cm x 10 cm',
-        nitrogenFixed: 35,
         lerScore: 1.32,
+        nitrogenFixed: 35,
         harvestDuration: lang === 'ta' ? '65 - 75 நாட்கள்' : lang === 'hi' ? '65 - 75 दिन' : '65 - 75 Days',
         sowingOffset: lang === 'ta' ? 'முதல் நாளில் விதைப்பு' : lang === 'hi' ? 'दिन 0 पर बुवाई' : 'Simultaneous on Day 0',
         rootZoneSynergy: lang === 'ta' ? 'ஆழமான மற்றும் சல்லி வேர்கள்' : lang === 'hi' ? 'गहरी व उथली जड़ें' : 'Deep taproot + Shallow fibrous root system',
@@ -783,130 +783,140 @@ export default function App() {
     };
   };
 
-  // Calibrated Relative Chromatic & Luminance Classifier
+  // Robust In-Memory FileReader + Calibrated Soil Chromatic Classifier
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    const previewUrl = URL.createObjectURL(file);
-    setFieldImage(previewUrl);
-    setIsAnalyzingImage(true);
-    setImageAnalysisResult(null);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target.result;
+      setFieldImage(dataUrl);
+      setIsAnalyzingImage(true);
+      setImageAnalysisResult(null);
 
-    const img = new Image();
-    img.src = previewUrl;
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = 64;
-      canvas.height = 64;
-      ctx.drawImage(img, 0, 0, 64, 64);
-      const imgData = ctx.getImageData(0, 0, 64, 64).data;
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        
+        canvas.width = 48;
+        canvas.height = 48;
+        ctx.drawImage(img, 0, 0, 48, 48);
 
-      let rTotal = 0, gTotal = 0, bTotal = 0;
-      let greenPixels = 0, darkSoilPixels = 0, clayRedPixels = 0, sandyPixels = 0;
-      const totalPixels = imgData.length / 4;
-
-      for (let i = 0; i < imgData.length; i += 4) {
-        const r = imgData[i], g = imgData[i + 1], b = imgData[i + 2];
-        rTotal += r; gTotal += g; bTotal += b;
-
-        const lum = 0.299 * r + 0.587 * g + 0.114 * b;
-
-        // Detect green crops/vegetation
-        if (g > r * 1.08 && g > b * 1.1) {
-          greenPixels++;
-        }
-        // Detect dark vertisols (black soil: low luminance, low color variance)
-        else if (lum < 105 && Math.abs(r - g) < 22 && Math.abs(g - b) < 22) {
-          darkSoilPixels++;
-        }
-        // Detect clay/alluvial (moderate lum, red-dominant earth tone)
-        else if (r > b * 1.25 && r >= g && lum >= 75 && lum <= 150) {
-          clayRedPixels++;
-        }
-        // Detect sandy soil (high lum, bright yellow/tan sediment)
-        else if (lum > 140 && r > 130 && r > b * 1.3) {
-          sandyPixels++;
-        }
-      }
-
-      const avgR = rTotal / totalPixels;
-      const avgG = gTotal / totalPixels;
-      const avgB = bTotal / totalPixels;
-      const avgLum = 0.299 * avgR + 0.587 * avgG + 0.114 * avgB;
-
-      const darkRatio = darkSoilPixels / totalPixels;
-      const clayRatio = clayRedPixels / totalPixels;
-      const sandRatio = sandyPixels / totalPixels;
-      const greenRatio = greenPixels / totalPixels;
-
-      setTimeout(() => {
-        if (darkRatio + clayRatio + sandRatio + greenRatio < 0.20) {
-          setImageAnalysisResult({
-            isValid: false,
-            errorTitle: 'Non-Field / Unrecognized Photo',
-            rationale: 'Could not detect clear soil pigment or crop canopy patterns. Please upload a clear photo of your field ground or crop rows.',
-            confidence: 'N/A'
-          });
+        let imgData;
+        try {
+          imgData = ctx.getImageData(0, 0, 48, 48).data;
+        } catch (err) {
+          console.error('Canvas pixel extraction error:', err);
           setIsAnalyzingImage(false);
           return;
         }
 
-        let detectedSoil = 'Loamy';
-        let detectedCrop = primaryCropKey;
-        let rationale = '';
-        let confidence = 88;
+        let rSum = 0, gSum = 0, bSum = 0;
+        let blackCount = 0, clayCount = 0, sandyCount = 0, greenCount = 0;
+        const totalPixels = imgData.length / 4;
 
-        // 1. Black Soil (Vertisol)
-        if (darkRatio > 0.25 || (avgLum < 110 && Math.abs(avgR - avgG) < 20 && Math.abs(avgG - avgB) < 20)) {
-          detectedSoil = 'Black';
-          detectedCrop = 'cotton';
-          rationale = 'Dark Vertisol (Black Cotton Soil) detected with high montmorillonite clay content. Excellent moisture retention suited for Cotton + Black Gram / Moong.';
-          confidence = 94;
-        }
-        // 2. Clay Soil
-        else if (clayRatio > 0.25 || greenRatio > 0.35 || (avgR > avgB * 1.2 && avgG > avgB * 1.1 && avgLum >= 80 && avgLum <= 135)) {
-          detectedSoil = 'Clay';
-          detectedCrop = 'rice';
-          rationale = 'Heavy clay/alluvial soil with high water-holding capacity detected. Optimal for Paddy or wetland legume systems.';
-          confidence = 91;
-        }
-        // 3. Sandy Soil
-        else if (sandRatio > 0.25 || (avgLum > 145 && avgR > avgB * 1.3)) {
-          detectedSoil = 'Sandy';
-          detectedCrop = 'groundnut';
-          rationale = 'Light sandy loam texture detected with loose porosity. Ideal for Groundnut peg penetration and deep-root companions.';
-          confidence = 90;
-        }
-        // 4. Loamy Soil (balanced default)
-        else {
-          detectedSoil = 'Loamy';
-          detectedCrop = 'maize';
-          rationale = 'Balanced organic loam soil detected with neutral drainage. Well suited for Maize cereal-legume intercropping.';
-          confidence = 89;
+        for (let i = 0; i < imgData.length; i += 4) {
+          const r = imgData[i];
+          const g = imgData[i + 1];
+          const b = imgData[i + 2];
+
+          rSum += r;
+          gSum += g;
+          bSum += b;
+
+          const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+
+          // Black Soil: Dark tones under sunlight (luminance < 125, low chromatic spread)
+          if (lum < 125 && Math.abs(r - g) < 28 && Math.abs(g - b) < 28) {
+            blackCount++;
+          }
+          // Clay / Reddish Alluvial: Red-dominant warm earth tone
+          else if (r > b * 1.2 && r >= g && lum >= 70 && lum <= 165) {
+            clayCount++;
+          }
+          // Sandy Soil: High brightness, yellow/tan sediment
+          else if (lum > 140 && r > 125 && r > b * 1.25) {
+            sandyCount++;
+          }
+          // Vegetation/Green
+          else if (g > r * 1.05 && g > b * 1.08) {
+            greenCount++;
+          }
         }
 
-        setImageAnalysisResult({
-          isValid: true,
-          soilType: detectedSoil,
-          suggestedCrop: detectedCrop,
-          confidence: `${confidence}%`,
-          rationale
-        });
+        const avgR = Math.round(rSum / totalPixels);
+        const avgG = Math.round(gSum / totalPixels);
+        const avgB = Math.round(bSum / totalPixels);
+        const avgLum = Math.round(0.299 * avgR + 0.587 * avgG + 0.114 * avgB);
 
-        setSoilType(detectedSoil);
-        setPrimaryCropKey(detectedCrop);
-        setIsAnalyzingImage(false);
+        const darkPct = (blackCount / totalPixels) * 100;
+        const clayPct = (clayCount / totalPixels) * 100;
+        const sandPct = (sandyCount / totalPixels) * 100;
 
-        loadAdvice(lang, {
-          primaryCropKey: detectedCrop,
-          season,
-          soilType: detectedSoil,
-          waterStatus
-        });
-      }, 900);
+        console.log(`[Soil Scanner] Avg RGB: (${avgR}, ${avgG}, ${avgB}) | Lum: ${avgLum}`);
+        console.log(`[Soil Scanner] Match Ratios -> Black: ${darkPct.toFixed(1)}% | Clay: ${clayPct.toFixed(1)}% | Sand: ${sandPct.toFixed(1)}%`);
+
+        setTimeout(() => {
+          let detectedSoil = 'Loamy';
+          let detectedCrop = primaryCropKey;
+          let rationale = '';
+          let confidence = 89;
+
+          // 1. Black Soil Priority
+          if (darkPct > 20 || (avgLum < 120 && Math.abs(avgR - avgG) < 25 && Math.abs(avgG - avgB) < 25)) {
+            detectedSoil = 'Black';
+            detectedCrop = 'cotton';
+            rationale = 'Dark Vertisol (Black Cotton Soil) detected. High moisture retention ideal for Cotton + Black Gram / Moong.';
+            confidence = 94;
+          }
+          // 2. Clay Soil
+          else if (clayPct > 20 || (avgR > avgB * 1.25 && avgG > avgB * 1.05 && avgLum <= 150)) {
+            detectedSoil = 'Clay';
+            detectedCrop = 'rice';
+            rationale = 'Heavy clay/alluvial soil with fine grain and moisture capacity detected. Optimal for Paddy and wetland rotations.';
+            confidence = 92;
+          }
+          // 3. Sandy Soil
+          else if (sandPct > 20 || (avgLum > 145 && avgR > avgB * 1.3)) {
+            detectedSoil = 'Sandy';
+            detectedCrop = 'groundnut';
+            rationale = 'Light sandy texture detected with porous drainage. Optimal for Groundnut pegging and pulse companions.';
+            confidence = 91;
+          }
+          // 4. Loamy Soil default
+          else {
+            detectedSoil = 'Loamy';
+            detectedCrop = 'maize';
+            rationale = 'Balanced organic loam soil detected with neutral drainage. Well suited for Maize cereal-legume intercropping.';
+            confidence = 88;
+          }
+
+          setImageAnalysisResult({
+            isValid: true,
+            soilType: detectedSoil,
+            suggestedCrop: detectedCrop,
+            confidence: `${confidence}%`,
+            rationale
+          });
+
+          setSoilType(detectedSoil);
+          setPrimaryCropKey(detectedCrop);
+          setIsAnalyzingImage(false);
+
+          loadAdvice(lang, {
+            primaryCropKey: detectedCrop,
+            season,
+            soilType: detectedSoil,
+            waterStatus
+          });
+        }, 600);
+      };
+      img.src = dataUrl;
     };
+
+    reader.readAsDataURL(file);
   };
 
   const parseVoiceInput = (text) => {
