@@ -316,141 +316,13 @@ const TN_38_CROPS = {
 
 const CATEGORIES = ['All', 'Vegetables', 'Pulses', 'Oilseeds', 'Millets & Cereals', 'Cash & Fiber', 'Spices & Tubers'];
 
-// LER & PROFIT TUG-OF-WAR GAUGE
-function ProfitTugOfWarGauge({ fin, advice, acres, isFieldMode }) {
-  if (!fin || !advice || !advice.primaryCrop || !advice.intercrop) return null;
-
-  const monoRevenue = Math.round(Number(fin.primaryYieldKgRaw || (fin.primaryYield * 100)) * Number(advice.marketData?.pricePerKg || 24.50));
-  const monoProfit = monoRevenue - fin.totalCost;
-  const intercropProfit = fin.netProfit;
-  const deltaRupees = fin.bonusRevenue;
-  const deltaPercent = monoProfit > 0 ? Math.round((deltaRupees / monoProfit) * 100) : 0;
-
-  const lerValue = Number(advice.intercrop?.lerScore || 1.28);
-  const lerProgressPct = Math.min(100, Math.max(0, ((lerValue - 1.0) / 0.5) * 100));
-
-  return (
-    <div className={`border rounded-xl p-5 shadow-sm space-y-4 ${isFieldMode ? 'bg-black border-amber-400 text-white' : 'bg-white'}`}>
-      <div className="flex justify-between items-center border-b pb-3">
-        <div>
-          <h3 className="text-sm font-black flex items-center gap-2">
-            <span>⚖️</span> LER & Comparative Profit Gauge
-          </h3>
-          <p className={`text-[11px] ${isFieldMode ? 'text-gray-300' : 'text-gray-500'}`}>
-            Monoculture vs. AgriCompanion Blueprint on {acres} Acres.
-          </p>
-        </div>
-        <span className="text-xs bg-emerald-600 text-white font-black px-3 py-1 rounded-full">
-          +{deltaPercent}% Profit Surge
-        </span>
-      </div>
-
-      <div className="space-y-3">
-        <div>
-          <div className="flex justify-between text-xs font-bold mb-1">
-            <span className={isFieldMode ? 'text-gray-300' : 'text-gray-600'}>Pure Monoculture ({advice.primaryCrop.name})</span>
-            <span className="font-black">₹{monoProfit.toLocaleString('en-IN')} Net</span>
-          </div>
-          <div className="h-5 bg-gray-200 rounded-full overflow-hidden p-0.5 border border-gray-400">
-            <div
-              className="h-full bg-slate-500 rounded-full transition-all duration-700"
-              style={{ width: `${Math.max(10, Math.round((monoProfit / (intercropProfit || 1)) * 100))}%` }}
-            ></div>
-          </div>
-        </div>
-
-        <div>
-          <div className="flex justify-between text-xs font-bold mb-1">
-            <span className="font-extrabold text-emerald-500 flex items-center gap-1">
-              <span>🚀</span> AgriCompanion Blueprint (+{advice.intercrop.name})
-            </span>
-            <span className="text-emerald-400 font-black text-sm">₹{intercropProfit.toLocaleString('en-IN')} Net</span>
-          </div>
-          <div className="h-6 bg-emerald-950 rounded-full overflow-hidden p-0.5 border border-emerald-500">
-            <div
-              className="h-full bg-gradient-to-r from-emerald-600 to-teal-400 rounded-full transition-all duration-700 flex items-center justify-end pr-2 text-[10px] font-black text-white"
-              style={{ width: '100%' }}
-            >
-              +₹{deltaRupees.toLocaleString('en-IN')} Extra Value
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
-        <div className={`p-3 rounded-xl border flex items-center gap-3 ${isFieldMode ? 'bg-zinc-900 border-zinc-700' : 'bg-emerald-50 border-emerald-200'}`}>
-          <div className="relative w-14 h-14 flex-shrink-0 flex items-center justify-center">
-            <svg viewBox="0 0 36 36" className="w-14 h-14 transform -rotate-90">
-              <path className="text-gray-400" strokeWidth="3.5" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-              <path className="text-emerald-500" strokeDasharray={`${lerProgressPct}, 100`} strokeWidth="3.8" strokeLinecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-            </svg>
-            <div className="absolute text-center">
-              <span className="text-xs font-black">{lerValue}</span>
-              <p className="text-[7px] uppercase font-bold text-gray-400">LER</p>
-            </div>
-          </div>
-          <div className="text-xs">
-            <p className="font-black text-emerald-400">Biological Synergy</p>
-            <p className="text-[10px] text-gray-300">Yields like {(acres * lerValue).toFixed(2)} solitary acres.</p>
-          </div>
-        </div>
-
-        <div className={`p-3 rounded-xl border flex flex-col justify-center ${isFieldMode ? 'bg-zinc-900 border-zinc-700' : 'bg-blue-50 border-blue-200'}`}>
-          <p className="text-[10px] text-blue-400 font-bold uppercase">Added Margin Per Acre</p>
-          <p className="text-lg font-black mt-0.5">+₹{Math.round(deltaRupees / acres).toLocaleString('en-IN')}</p>
-          <p className="text-[10px] text-gray-400">Pure economic bonus over mono-crop</p>
-        </div>
-
-        <div className={`p-3 rounded-xl border flex flex-col justify-center ${isFieldMode ? 'bg-zinc-900 border-zinc-700' : 'bg-amber-50 border-amber-200'}`}>
-          <p className="text-[10px] text-amber-400 font-bold uppercase">Benefit-Cost Ratio (BCR)</p>
-          <p className="text-lg font-black mt-0.5">{fin.benefitCostRatio}</p>
-          <p className="text-[10px] text-gray-400">Gross ₹{fin.benefitCostRatio} generated per ₹1.00 cost</p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// FLOATING VOICE ORB
-function FloatingVoiceOrb({ onToggleListen, isListening, lastTranscript }) {
-  return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2">
-      {lastTranscript && (
-        <div className="bg-gray-900/90 text-white text-[11px] px-3 py-1.5 rounded-full shadow-lg max-w-xs truncate border border-gray-700">
-          🗣️ "{lastTranscript}"
-        </div>
-      )}
-
-      <div className="relative flex items-center justify-center">
-        {isListening && (
-          <>
-            <span className="absolute w-20 h-20 rounded-full bg-red-500/30 animate-ping"></span>
-            <span className="absolute w-16 h-16 rounded-full bg-emerald-500/40 animate-pulse"></span>
-          </>
-        )}
-
-        <button
-          onClick={onToggleListen}
-          className={`relative w-14 h-14 rounded-full shadow-2xl flex items-center justify-center text-white transition-transform hover:scale-105 active:scale-95 ${
-            isListening ? 'bg-gradient-to-tr from-red-600 to-rose-500 ring-4 ring-red-400' : 'bg-gradient-to-tr from-emerald-700 to-teal-500 ring-4 ring-emerald-500/20'
-          }`}
-          title="State your crop, soil, or acres"
-        >
-          <span className="text-xl">🎙️️</span>
-        </button>
-      </div>
-    </div>
-  );
-}
-
-// MAIN APPLICATION
 export default function App() {
   const [lang, setLang] = useState('en');
   const [isFieldMode, setIsFieldMode] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Dual-Level District and Constituency / Taluk Selectors
+  // Dual District & Constituency Selectors
   const [selectedDistrict, setSelectedDistrict] = useState('thanjavur');
   const [selectedUnit, setSelectedUnit] = useState('Thanjavur');
 
@@ -488,7 +360,7 @@ export default function App() {
   const [locationName, setLocationName] = useState('Detecting GPS grid...');
 
   // Live Satellite Weather Streamer
-  const fetchLiveForecast = async (lat, lon) => {
+  const fetchLiveForecast = async (lat, lon, unitLabel = selectedUnit, distLabel = TN_38_DISTRICTS[selectedDistrict]?.name) => {
     try {
       const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,precipitation_probability_max,wind_speed_10m_max&timezone=auto`;
       const res = await fetch(url);
@@ -511,7 +383,7 @@ export default function App() {
         });
 
         setWeatherForecast(list);
-        setLocationName(`${selectedUnit}, ${TN_38_DISTRICTS[selectedDistrict]?.name} (${lat.toFixed(2)}°N, ${lon.toFixed(2)}°E)`);
+        setLocationName(`${unitLabel}, ${distLabel} (${lat.toFixed(2)}°N, ${lon.toFixed(2)}°E)`);
         setWeatherLoading(false);
       }
     } catch {
@@ -539,8 +411,8 @@ export default function App() {
       const firstUnit = dist.units[0];
       setSelectedUnit(firstUnit);
       setSoilType(dist.defaultSoil);
-      fetchLiveForecast(dist.coords[0], dist.coords[1]);
-      loadAdvice(lang, { soilType: dist.defaultSoil, primaryCropKey, season, waterStatus });
+      fetchLiveForecast(dist.coords[0], dist.coords[1], firstUnit, dist.name);
+      loadAdvice(lang, { districtKey: distKey, soilType: dist.defaultSoil, primaryCropKey, season, waterStatus });
     }
   };
 
@@ -549,28 +421,41 @@ export default function App() {
     setSelectedUnit(unitName);
     const dist = TN_38_DISTRICTS[selectedDistrict];
     if (dist) {
-      fetchLiveForecast(dist.coords[0], dist.coords[1]);
+      fetchLiveForecast(dist.coords[0], dist.coords[1], unitName, dist.name);
+      loadAdvice(lang, { districtKey: selectedDistrict, soilType, primaryCropKey, season, waterStatus });
     }
   };
 
-  // Robust Client-Side Fallback Generator
-  const generateClientFallback = (cropKey, sType) => {
+  // Client-Side Distinct Fallback Generator
+  const generateClientFallback = (cropKey, distKey, sType) => {
     const cMeta = TN_38_CROPS[cropKey] || TN_38_CROPS.brinjal;
     const cName = cMeta.name;
+    const dUpper = (TN_38_DISTRICTS[distKey]?.name || distKey).toUpperCase();
 
-    let companion = { tier: '⭐ Highly Recommended', key: 'frenchbean', name: 'French Bush Bean', rowRatio: '1:1', spacing: '30 cm x 15 cm', nitrogenFixed: 28, lerScore: 1.34, harvestDuration: '55 - 65 Days', storageLife: 'Crates 4 Days, Cold store 20 Days', reasoning: 'Supplies biological nitrogen directly without canopy shading.' };
+    let companion = { tier: '⭐ Highly Recommended', key: 'frenchbean', name: 'French Bush Bean', rowRatio: '1:1', spacing: '30 cm x 15 cm', nitrogenFixed: 28, lerScore: 1.34, harvestDuration: '55 - 65 Days', storageLife: 'Crates 4 Days, Cold store 20 Days', reasoning: `Biological nitrogen fixer pairing that provides early pod returns in ${dUpper}.` };
     let cOptions = [
       companion,
-      { tier: '👍 Recommended', key: 'coriander', name: 'Coriander (Kothamalli)', rowRatio: '1:2', spacing: '15 cm x 5 cm', nitrogenFixed: 0, lerScore: 1.30, harvestDuration: '40 Days', storageLife: 'Fresh bundles 3 Days, Seed 6 Months', reasoning: 'Ultra-fast catch crop yielding cash flow within weeks.' },
+      { tier: '👍 Recommended', key: 'coriander', name: 'Coriander (Kothamalli)', rowRatio: '1:2', spacing: '15 cm x 5 cm', nitrogenFixed: 0, lerScore: 1.30, harvestDuration: '40 Days', storageLife: 'Fresh bundles 3 Days, Seed 6 Months', reasoning: 'Ultra-fast catch crop harvested before primary canopies lock.' },
       { tier: '🌾 Feasible Alternative', key: 'marigold', name: 'Marigold (Trap Crop)', rowRatio: '1:6 Border', spacing: '45 cm x 30 cm', nitrogenFixed: 0, lerScore: 1.25, harvestDuration: '65 Days', storageLife: 'Fresh flowers 3 Days', reasoning: 'Suppresses root-knot nematodes and diverts fruit borers away.' }
     ];
 
     if (cropKey.includes('cotton')) {
-      companion = { tier: '⭐ Highly Recommended', key: 'blackgram', name: 'Black Gram (Urad)', rowRatio: '1:2', spacing: '30 cm x 10 cm', nitrogenFixed: 32, lerScore: 1.31, harvestDuration: '70 - 75 Days', storageLife: 'Ambient 8 Months, Hermetic 18 Months', reasoning: 'Maximizes cash return in Vertisols before wide cotton branches lock.' };
+      companion = { tier: '⭐ Highly Recommended', key: 'blackgram', name: 'Black Gram (Urad)', rowRatio: '1:2', spacing: '30 cm x 10 cm', nitrogenFixed: 32, lerScore: 1.32, harvestDuration: '70 - 75 Days', storageLife: 'Ambient 8 Months, Hermetic 18 Months', reasoning: `In ${dUpper}'s Vertisols, Black Gram matures in 70 days, maximizing cash return before wide cotton branches lock.` };
       cOptions = [companion, { tier: '👍 Recommended', key: 'greengram', name: 'Green Gram (Moong)', rowRatio: '1:2', spacing: '25 cm x 10 cm', nitrogenFixed: 30, lerScore: 1.28, harvestDuration: '60 Days', storageLife: 'Ambient 8 Months', reasoning: 'Quick 60-day maturity with zero solar competition.' }];
     } else if (cropKey.includes('groundnut')) {
-      companion = { tier: '⭐ Highly Recommended', key: 'pigeonpea', name: 'Pigeon Pea (Arhar / Tur)', rowRatio: '6:1', spacing: '60 cm x 15 cm', nitrogenFixed: 42, lerScore: 1.36, harvestDuration: '140 Days', storageLife: 'Ambient 10 Months', reasoning: 'Deep-rooted relay crop that exploits late season sunlight.' };
-      cOptions = [companion, { tier: '👍 Recommended', key: 'castor', name: 'Castor', rowRatio: '8:1', spacing: '90 cm x 30 cm', nitrogenFixed: 0, lerScore: 1.30, harvestDuration: '150 Days', storageLife: 'Godown 8 Months', reasoning: 'Commercial oilseed bonus and Spodoptera caterpillar trap line.' }];
+      if (sType === 'Sandy' || distKey === 'villupuram' || distKey === 'cuddalore') {
+        companion = { tier: '⭐ Highly Recommended', key: 'pearlmillet', name: 'Pearl Millet (Bajra)', rowRatio: '6:1 Border', spacing: '45 cm x 15 cm', nitrogenFixed: 0, lerScore: 1.34, harvestDuration: '80 - 85 Days', storageLife: 'Ambient 8 Months', reasoning: `Tall border Bajra rows deflect coastal drying winds in ${dUpper}, preserving micro-humidity for groundnut pegging.` };
+        cOptions = [companion, { tier: '👍 Recommended', key: 'pigeonpea', name: 'Pigeon Pea (Arhar / Tur)', rowRatio: '6:1', spacing: '60 cm x 15 cm', nitrogenFixed: 42, lerScore: 1.36, harvestDuration: '140 Days', storageLife: 'Ambient 10 Months', reasoning: 'Deep-rooted relay crop that exploits late season sunlight.' }];
+      } else {
+        companion = { tier: '⭐ Highly Recommended', key: 'pigeonpea', name: 'Pigeon Pea (Arhar / Tur)', rowRatio: '6:1', spacing: '60 cm x 15 cm', nitrogenFixed: 42, lerScore: 1.36, harvestDuration: '140 Days', storageLife: 'Ambient 10 Months', reasoning: 'Deep-rooted relay crop exploiting post-harvest subsoil moisture.' };
+        cOptions = [companion, { tier: '👍 Recommended', key: 'castor', name: 'Castor', rowRatio: '8:1', spacing: '90 cm x 30 cm', nitrogenFixed: 0, lerScore: 1.30, harvestDuration: '150 Days', storageLife: 'Godown 8 Months', reasoning: 'Commercial oilseed bonus and Spodoptera caterpillar trap line.' }];
+      }
+    } else if (cropKey.includes('chilli')) {
+      companion = { tier: '⭐ Highly Recommended', key: 'onion', name: 'Small Onion (Shallot)', rowRatio: '1:2', spacing: '15 cm x 10 cm', nitrogenFixed: 0, lerScore: 1.36, harvestDuration: '70 Days', storageLife: 'Aerated racks 90 Days', reasoning: `In ${dUpper}, shallot sulfur volatiles repel thrips while bulbs mature before peak chilli flushes.` };
+      cOptions = [companion, { tier: '👍 Recommended', key: 'coriander', name: 'Coriander (Kothamalli)', rowRatio: '1:1', spacing: '15 cm x 5 cm', nitrogenFixed: 0, lerScore: 1.30, harvestDuration: '40 Days', storageLife: 'Fresh 3 Days', reasoning: 'Quick shallow-rooted companion yielding cash within 4 weeks.' }];
+    } else if (cropKey.includes('maize') || cropKey.includes('sorghum') || cropKey.includes('millet')) {
+      companion = { tier: '⭐ Highly Recommended', key: 'cowpea', name: 'Cowpea (Lobia)', rowRatio: '2:1', spacing: '30 cm x 10 cm', nitrogenFixed: 35, lerScore: 1.35, harvestDuration: '65 - 75 Days', storageLife: 'Ambient 7 Months', reasoning: `Erect stalks allow dense Cowpea foliage to smother weed flushes and fix biological nitrogen in ${dUpper}.` };
+      cOptions = [companion, { tier: '👍 Recommended', key: 'greengram', name: 'Green Gram (Moong)', rowRatio: '1:2', spacing: '25 cm x 10 cm', nitrogenFixed: 30, lerScore: 1.30, harvestDuration: '60 Days', storageLife: 'Ambient 8 Months', reasoning: 'Harvested in 60 days before tall stalks close the canopy.' }];
     }
 
     return {
@@ -595,10 +480,10 @@ export default function App() {
         after: { availableN: '232 kg/ha (+22 kg Bio-N)', availableP: '20 kg/ha (Buffered)', availableK: '275 kg/ha (Buffered)', organicCarbon: '0.63% (+21%)', rhizosphereMicrobialIndex: '84 / 100 (+22 pts)' }
       },
       pests: [{
-        pestName: 'Fruit & Shoot Borer Complex',
-        cultural: 'Clip damaged shoots promptly; plant Marigold trap borders.',
+        pestName: 'Crop-Specific Pest Complex',
+        cultural: 'Clip damaged shoots promptly; plant recommended border traps.',
         bio: 'Neem seed kernel extract (NSKE 5%) or Bt spray @ 2g/L.',
-        chemical: 'Chlorantraniliprole 18.5% SC @ 0.3 ml/L water.',
+        chemical: 'Targeted TNAU approved spray @ label dose.',
         toxicity: 'Moderate',
         phiDays: 3
       }]
@@ -680,7 +565,7 @@ export default function App() {
           setSoilType(detectedSoil);
           setPrimaryCropKey(detectedCrop);
           setIsAnalyzingImage(false);
-          loadAdvice(lang, { primaryCropKey: detectedCrop, season, soilType: detectedSoil, waterStatus });
+          loadAdvice(lang, { districtKey: selectedDistrict, primaryCropKey: detectedCrop, season, soilType: detectedSoil, waterStatus });
         }, 600);
       };
       img.src = dataUrl;
@@ -702,22 +587,23 @@ export default function App() {
       const text = e.results[0][0].transcript.toLowerCase();
       setSpokenTranscript(text);
       for (const k of Object.keys(TN_38_CROPS)) { if (text.includes(k)) { setPrimaryCropKey(k); break; } }
-      loadAdvice(lang, { primaryCropKey, season, soilType, waterStatus });
+      loadAdvice(lang, { districtKey: selectedDistrict, primaryCropKey, season, soilType, waterStatus });
     };
     recognition.onend = () => setIsListening(false);
     recognition.start();
   };
 
-  // Safe loadAdvice with Verified Fallback
+  // Safe loadAdvice with Verified Distinct Recommendations
   const loadAdvice = async (targetLang = lang, overrideParams = null) => {
     const cropLookup = overrideParams?.primaryCropKey || primaryCropKey;
+    const dKey = overrideParams?.districtKey || selectedDistrict;
     const sType = overrideParams?.soilType || soilType;
 
     try {
       const res = await fetch(`${API_BASE}/api/recommend`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ primaryCropKey: cropLookup, soilType: sType, lang: targetLang })
+        body: JSON.stringify({ primaryCropKey: cropLookup, districtKey: dKey, soilType: sType, lang: targetLang })
       });
 
       if (!res.ok) throw new Error(`Server returned ${res.status}`);
@@ -726,8 +612,8 @@ export default function App() {
 
       setAdvice(data);
     } catch (err) {
-      console.warn('Backend unavailable or errored; applying robust client-side fallback:', err.message);
-      const fallbackData = generateClientFallback(cropLookup, sType);
+      console.warn('Backend unavailable or errored; applying robust distinct fallback:', err.message);
+      const fallbackData = generateClientFallback(cropLookup, dKey, sType);
       setAdvice(fallbackData);
     }
   };
@@ -1017,7 +903,7 @@ export default function App() {
               onClick={() => {
                 setPrimaryCropKey(k);
                 setSoilType(c.defaultSoil);
-                loadAdvice(lang, { primaryCropKey: k, season, soilType: c.defaultSoil, waterStatus });
+                loadAdvice(lang, { districtKey: selectedDistrict, primaryCropKey: k, season, soilType: c.defaultSoil, waterStatus });
               }}
               className={`p-2 rounded-lg text-left border text-xs font-bold truncate transition ${
                 primaryCropKey === k ? 'bg-emerald-600 text-white border-emerald-400' : isFieldMode ? 'bg-zinc-900 border-zinc-800' : 'bg-gray-50 border-gray-200'
@@ -1038,7 +924,7 @@ export default function App() {
             </div>
             <input type="range" min="0.5" max="15" step="0.5" value={acres} onChange={(e) => setAcres(parseFloat(e.target.value))} className="w-full accent-emerald-500" />
           </div>
-          <button onClick={() => loadAdvice(lang, { primaryCropKey, season, soilType, waterStatus })} className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-5 py-3 rounded-lg shadow">
+          <button onClick={() => loadAdvice(lang, { districtKey: selectedDistrict, primaryCropKey, season, soilType, waterStatus })} className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-5 py-3 rounded-lg shadow">
             Generate Blueprint 🚀
           </button>
         </div>

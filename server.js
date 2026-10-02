@@ -11,7 +11,7 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 5002;
 
-// In-Memory Fallback Stores for resilient hosting
+// In-Memory Fallback Stores
 const memoryUsers = new Map();
 const memoryHistory = [];
 
@@ -48,6 +48,8 @@ const initDatabase = async () => {
         user_id INT NOT NULL,
         primary_crop VARCHAR(50) NOT NULL,
         intercrop VARCHAR(50) NOT NULL,
+        district VARCHAR(50),
+        constituency VARCHAR(50),
         season VARCHAR(20) NOT NULL,
         soil_type VARCHAR(50) NOT NULL,
         water_status VARCHAR(20) NOT NULL,
@@ -116,7 +118,7 @@ export const STATEWIDE_CROP_DIRECTORY = {
   coriander: { name: 'Coriander (Seed & Herb)', category: 'Spices & Tubers', avgYield: 4.5, mandiRate: 92.00, msp: 75.00, costPerAcre: 9000, defaultSoil: 'Black', harvestDur: '35 - 45 Days', safeMoisturePct: 9.0, ambientDays: 180, coldDays: 365 }
 };
 
-// IPM Protocols
+// IPM Protocol Engine
 const PEST_REGISTRY = {
   borer: { pestName: 'Fruit & Shoot Borer Complex (Leucinodes / Helicoverpa)', cultural: 'Prompt clipping of wilted shoots; install pheromone traps (5/acre) and Marigold trap borders.', bio: 'Neem seed kernel extract (NSKE 5%) or Bacillus thuringiensis (Bt) @ 2g/L.', chemical: 'Chlorantraniliprole 18.5% SC @ 0.3 ml/L water.', toxicity: 'Moderate', phiDays: 3 },
   bollworm: { pestName: 'Bollworm Complex & Whitefly (Bemisia tabaci)', cultural: 'Erect 15 yellow sticky cards per acre; remove alternate weed hosts.', bio: 'Beauveria bassiana @ 10g/L or release Chrysoperla predator larvae.', chemical: 'Flonicamid 50% WG @ 4g/10L water.', toxicity: 'Moderate', phiDays: 21 },
@@ -124,7 +126,7 @@ const PEST_REGISTRY = {
   general: { pestName: 'Sucking Pest Complex (Aphids, Thrips, Mites)', cultural: 'Mulch inter-rows with pulse canopy to eliminate exposed soil reflection.', bio: 'Spray 3% neem oil with soap water emulsifier.', chemical: 'Imidacloprid 17.8% SL @ 0.5 ml/L water (Last resort).', toxicity: 'Severe', phiDays: 10 }
 };
 
-// Soil Chemical Evolution (Before vs After Intercropping)
+// Soil Chemistry Audit Engine
 const calculateSoilChemistryEvolution = (primaryCropKey, intercropNFixed = 25, soilType = 'Loamy') => {
   const baseChem = {
     Clay: { n: 210, p: 18, k: 280, oc: 0.52, microbialScore: 62 },
@@ -155,9 +157,11 @@ const calculateSoilChemistryEvolution = (primaryCropKey, intercropNFixed = 25, s
   };
 };
 
-// Distinct Companion Crop Mapping
-const getDistinctCompanions = (cropKey, lang = 'en') => {
+// Agro-Climatic and Crop-Specific Distinct Companion Decision Engine
+const getAgronomicDistinctCompanions = (cropKey, districtKey = 'thanjavur', soilType = 'Clay', lang = 'en') => {
   const c = String(cropKey || 'brinjal').toLowerCase();
+  const d = String(districtKey || 'thanjavur').toLowerCase();
+  const s = String(soilType || 'Loamy').toLowerCase();
 
   const labels = {
     high: lang === 'ta' ? '⭐ மிகச் சிறந்த பரிந்துரை' : lang === 'hi' ? '⭐ अत्यधिक अनुशंसित' : '⭐ Highly Recommended',
@@ -165,52 +169,133 @@ const getDistinctCompanions = (cropKey, lang = 'en') => {
     alt: lang === 'ta' ? '🌾 சாத்தியமான மாற்றுப் பயிர்' : lang === 'hi' ? '🌾 व्यावहारिक विकल्प' : '🌾 Feasible Alternative'
   };
 
+  // 1. COTTON
   if (c.includes('cotton')) {
+    if (s.includes('black') || d.includes('virudhunagar') || d.includes('thoothukudi') || d.includes('tirunelveli')) {
+      return [
+        { tier: labels.high, key: 'blackgram', name: 'Black Gram (Urad)', rowRatio: '1:2', spacing: '30 cm x 10 cm', nitrogenFixed: 32, lerScore: 1.32, harvestDuration: '70 - 75 Days', storageLife: 'Ambient 8 Months (≤10% moisture)', reasoning: `In ${districtKey.toUpperCase()}'s deep black cotton soils, fast-maturing Black Gram completes its cycle before cotton branches lock, giving an early cash harvest.` },
+        { tier: labels.rec, key: 'greengram', name: 'Green Gram (Moong)', rowRatio: '1:2', spacing: '25 cm x 10 cm', nitrogenFixed: 30, lerScore: 1.28, harvestDuration: '60 - 65 Days', storageLife: 'Ambient 8 Months (≤10% moisture)', reasoning: 'Ultra-fast 60-day legume with zero solar competition against juvenile cotton.' },
+        { tier: labels.alt, key: 'clusterbean', name: 'Cluster Bean (Guar)', rowRatio: '1:1', spacing: '45 cm x 15 cm', nitrogenFixed: 25, lerScore: 1.24, harvestDuration: '85 - 95 Days', storageLife: 'Pod fresh 4 days, seed 12 Months', reasoning: 'Drought-tolerant taproot legume resilient to semi-arid Southern Zone heat breaks.' }
+      ];
+    }
     return [
-      { tier: labels.high, key: 'blackgram', name: 'Black Gram (Urad)', rowRatio: '1:2', spacing: '30 cm x 10 cm', nitrogenFixed: 32, lerScore: 1.31, harvestDuration: '70 - 75 Days', storageLife: 'Ambient 8 Months, Hermetic 18 Months (≤10% moisture)', reasoning: 'Deep Vertisols finish short Black Gram, maximizing cash return before wide cotton branches lock.' },
-      { tier: labels.rec, key: 'greengram', name: 'Green Gram (Moong)', rowRatio: '1:2', spacing: '25 cm x 10 cm', nitrogenFixed: 30, lerScore: 1.28, harvestDuration: '60 - 65 Days', storageLife: 'Ambient 8 Months (≤10% moisture)', reasoning: 'Quick 60-day maturity with zero solar competition against slow early cotton growth.' },
-      { tier: labels.alt, key: 'clusterbean', name: 'Cluster Bean (Guar)', rowRatio: '1:1', spacing: '45 cm x 15 cm', nitrogenFixed: 25, lerScore: 1.24, harvestDuration: '85 - 95 Days', storageLife: 'Pod harvest fresh 4 days, Seed 12 Months', reasoning: 'Extreme drought insurance; deep taproots extract subsoil moisture.' }
+      { tier: labels.high, key: 'greengram', name: 'Green Gram (Moong)', rowRatio: '1:2', spacing: '25 cm x 10 cm', nitrogenFixed: 30, lerScore: 1.29, harvestDuration: '60 - 65 Days', storageLife: 'Ambient 8 Months', reasoning: 'Well suited for irrigated red loams, providing rapid weed suppression and nitrogen fixation.' },
+      { tier: labels.rec, key: 'cowpea', name: 'Cowpea (Lobia)', rowRatio: '1:1 Border', spacing: '30 cm x 10 cm', nitrogenFixed: 28, lerScore: 1.25, harvestDuration: '65 - 75 Days', storageLife: 'Ambient 7 Months', reasoning: 'Suppresses furrow weeds and prevents topsoil moisture evaporation.' },
+      { tier: labels.alt, key: 'coriander', name: 'Coriander (Kothamalli)', rowRatio: '1:2', spacing: '15 cm x 5 cm', nitrogenFixed: 0, lerScore: 1.22, harvestDuration: '35 - 45 Days', storageLife: 'Fresh 3 Days', reasoning: 'Quick catch crop providing revenue within 40 days of sowing.' }
     ];
   }
 
+  // 2. GROUNDNUT
   if (c.includes('groundnut')) {
+    if (d.includes('villupuram') || d.includes('cuddalore') || s.includes('sandy')) {
+      return [
+        { tier: labels.high, key: 'pearlmillet', name: 'Pearl Millet (Bajra)', rowRatio: '6:1 Border', spacing: '45 cm x 15 cm', nitrogenFixed: 0, lerScore: 1.34, harvestDuration: '80 - 85 Days', storageLife: 'Ambient 8 Months (≤11% moisture)', reasoning: `In ${districtKey.toUpperCase()}'s coastal/sandy tracts, tall Bajra border rows deflect hot drying winds, preserving crucial micro-humidity for groundnut peg entry.` },
+        { tier: labels.rec, key: 'pigeonpea', name: 'Pigeon Pea (Arhar / Tur)', rowRatio: '6:1', spacing: '60 cm x 15 cm', nitrogenFixed: 42, lerScore: 1.36, harvestDuration: '130 - 150 Days', storageLife: 'Ambient 10 Months (≤10% moisture)', reasoning: 'Groundnut completes pod development in 105 days, leaving deep taproot Pigeon Pea to exploit late-season moisture.' },
+        { tier: labels.alt, key: 'castor', name: 'Castor', rowRatio: '8:1', spacing: '90 cm x 30 cm', nitrogenFixed: 0, lerScore: 1.30, harvestDuration: '140 - 160 Days', storageLife: 'Godown 8 Months', reasoning: 'Commercial oilseed bonus that acts as a natural oviposition trap crop for Spodoptera caterpillars.' }
+      ];
+    }
     return [
-      { tier: labels.high, key: 'pigeonpea', name: 'Pigeon Pea (Arhar / Tur)', rowRatio: '6:1', spacing: '60 cm x 15 cm', nitrogenFixed: 42, lerScore: 1.36, harvestDuration: '130 - 150 Days', storageLife: 'Ambient 10 Months (≤10% moisture)', reasoning: 'Groundnut finishes in 105 days, leaving deep-rooted Pigeon Pea to exploit late-season sun and subsoil water.' },
-      { tier: labels.rec, key: 'castor', name: 'Castor', rowRatio: '8:1', spacing: '90 cm x 30 cm', nitrogenFixed: 0, lerScore: 1.30, harvestDuration: '140 - 160 Days', storageLife: 'Dry Godown 8 Months (≤8% moisture)', reasoning: 'Commercial oilseed bonus and acts as an effective oviposition trap crop for Spodoptera caterpillars.' },
-      { tier: labels.alt, key: 'pearlmillet', name: 'Pearl Millet (Bajra)', rowRatio: '6:1', spacing: '45 cm x 15 cm', nitrogenFixed: 0, lerScore: 1.28, harvestDuration: '80 - 85 Days', storageLife: 'Ambient 8 Months (≤11% moisture)', reasoning: 'Tall border barriers deflect drying wind in sandy tracts, preserving micro-humidity for groundnut pegging.' }
+      { tier: labels.high, key: 'pigeonpea', name: 'Pigeon Pea (Arhar / Tur)', rowRatio: '6:1', spacing: '60 cm x 15 cm', nitrogenFixed: 42, lerScore: 1.37, harvestDuration: '130 - 150 Days', storageLife: 'Ambient 10 Months', reasoning: 'Classic ICAR recommendation for red loamy uplands; deep taproots forage subsoil water without peg zone competition.' },
+      { tier: labels.rec, key: 'castor', name: 'Castor', rowRatio: '8:1', spacing: '90 cm x 30 cm', nitrogenFixed: 0, lerScore: 1.31, harvestDuration: '140 - 160 Days', storageLife: 'Godown 8 Months', reasoning: 'Substantial commercial seed value while trapping defoliating pests.' },
+      { tier: labels.alt, key: 'sesame', name: 'Sesame (Til)', rowRatio: '4:1', spacing: '30 cm x 10 cm', nitrogenFixed: 0, lerScore: 1.23, harvestDuration: '75 - 85 Days', storageLife: 'Godown 8 Months', reasoning: 'Drought-tolerant dual oilseed pairing suited for low water availability.' }
     ];
   }
 
+  // 3. MAIZE, SORGHUM & MILLETS
   if (c.includes('maize') || c.includes('sorghum') || c.includes('millet') || c.includes('ragi')) {
     return [
-      { tier: labels.high, key: 'cowpea', name: 'Cowpea (Lobia)', rowRatio: '2:1', spacing: '30 cm x 10 cm', nitrogenFixed: 35, lerScore: 1.35, harvestDuration: '65 - 75 Days', storageLife: 'Ambient 7 Months, Seed 16 Months (≤10% moisture)', reasoning: 'Dense legume canopy suppresses weeds between cereal stalks and enriches soil with biological nitrogen.' },
-      { tier: labels.rec, key: 'greengram', name: 'Green Gram (Moong)', rowRatio: '1:2', spacing: '25 cm x 10 cm', nitrogenFixed: 30, lerScore: 1.30, harvestDuration: '60 - 65 Days', storageLife: 'Ambient 8 Months (≤10% moisture)', reasoning: 'Fast pulse crop harvested before tall stalks create deep canopy shadows.' },
-      { tier: labels.alt, key: 'soybean', name: 'Soybean', rowRatio: '2:2', spacing: '30 cm x 10 cm', nitrogenFixed: 36, lerScore: 1.29, harvestDuration: '85 - 90 Days', storageLife: 'Ambient 7 Months (≤10% moisture)', reasoning: 'High commercial oilseed return and lodging prevention through erect root architecture.' }
+      { tier: labels.high, key: 'cowpea', name: 'Cowpea (Lobia)', rowRatio: '2:1', spacing: '30 cm x 10 cm', nitrogenFixed: 35, lerScore: 1.35, harvestDuration: '65 - 75 Days', storageLife: 'Ambient 7 Months (≤10% moisture)', reasoning: `Erect cereal stalks allow dense Cowpea ground foliage to smother weed flushes and fix active biological nitrogen in ${districtKey.toUpperCase()}.` },
+      { tier: labels.rec, key: 'greengram', name: 'Green Gram (Moong)', rowRatio: '1:2', spacing: '25 cm x 10 cm', nitrogenFixed: 30, lerScore: 1.30, harvestDuration: '60 - 65 Days', storageLife: 'Ambient 8 Months (≤10% moisture)', reasoning: 'Harvested in 60 days before tall cereal leaves close their upper canopy.' },
+      { tier: labels.alt, key: 'soybean', name: 'Soybean', rowRatio: '2:2 Strip', spacing: '30 cm x 10 cm', nitrogenFixed: 36, lerScore: 1.29, harvestDuration: '85 - 90 Days', storageLife: 'Ambient 7 Months (≤10% moisture)', reasoning: 'Robust oilseed income with complementary erect rooting architecture.' }
     ];
   }
 
-  if (c.includes('turmeric') || c.includes('ginger') || c.includes('sugarcane')) {
+  // 4. CHILLI
+  if (c.includes('chilli')) {
     return [
-      { tier: labels.high, key: 'onion', name: 'Small Onion (Shallot)', rowRatio: '1:2', spacing: '15 cm x 10 cm', nitrogenFixed: 0, lerScore: 1.37, harvestDuration: '70 Days', storageLife: 'Aerated racks 90 Days, Cold store 7 Months', reasoning: 'Onions mature in 70 days, paying off bed preparation and weeding costs before main rhizomes swell.' },
-      { tier: labels.rec, key: 'frenchbean', name: 'French Bush Bean', rowRatio: '1:2', spacing: '30 cm x 15 cm', nitrogenFixed: 26, lerScore: 1.31, harvestDuration: '60 Days', storageLife: 'Fresh market crates 4 Days, Cold store 20 Days', reasoning: 'Supplies biological nitrogen directly into the heavy-feeder rhizosphere.' },
-      { tier: labels.alt, key: 'coriander', name: 'Coriander (Kothamalli)', rowRatio: '1:2', spacing: '15 cm x 5 cm', nitrogenFixed: 0, lerScore: 1.28, harvestDuration: '40 Days', storageLife: 'Fresh bundles 3 Days, Seed 6 Months', reasoning: 'Ultra-fast catch crop harvested before rhizome shoot elongation begins.' }
+      { tier: labels.high, key: 'onion', name: 'Small Onion (Shallot)', rowRatio: '1:2', spacing: '15 cm x 10 cm', nitrogenFixed: 0, lerScore: 1.36, harvestDuration: '70 Days', storageLife: 'Aerated racks 90 Days', reasoning: `In ${districtKey.toUpperCase()}, Shallot's pungent sulfur volatiles deter thrips and aphids, while bulbs mature before peak chilli harvests.` },
+      { tier: labels.rec, key: 'coriander', name: 'Coriander (Kothamalli)', rowRatio: '1:1', spacing: '15 cm x 5 cm', nitrogenFixed: 0, lerScore: 1.30, harvestDuration: '40 Days', storageLife: 'Fresh bundles 3 Days', reasoning: 'Quick shallow-rooted intercrop providing early revenue within 4 weeks.' },
+      { tier: labels.alt, key: 'marigold', name: 'Marigold (Trap Crop)', rowRatio: '1:6 Border', spacing: '45 cm x 30 cm', nitrogenFixed: 0, lerScore: 1.26, harvestDuration: '65 Days', storageLife: 'Cut flowers 3 Days', reasoning: 'Roots secrete alpha-terthienyl, neutralizing root-knot nematodes in sandy/black tracts.' }
     ];
   }
 
-  // Vegetables default (Brinjal, Tomato, Chilli, Bhendi)
+  // 5. TOMATO
+  if (c.includes('tomato')) {
+    return [
+      { tier: labels.high, key: 'frenchbean', name: 'French Bush Bean', rowRatio: '1:1', spacing: '30 cm x 15 cm', nitrogenFixed: 28, lerScore: 1.34, harvestDuration: '55 - 65 Days', storageLife: 'Crates 4 Days, Cold store 20 Days', reasoning: 'Bush legume adds atmospheric nitrogen into heavy-feeder tomato beds without tangling trellises.' },
+      { tier: labels.rec, key: 'marigold', name: 'Marigold (Trap Crop)', rowRatio: '1:6 Border', spacing: '45 cm x 30 cm', nitrogenFixed: 0, lerScore: 1.31, harvestDuration: '65 Days', storageLife: 'Fresh 3 Days', reasoning: 'TNAU-recommended trap crop that lures Helicoverpa fruit borers away from tomato clusters.' },
+      { tier: labels.alt, key: 'radish', name: 'Radish', rowRatio: '1:2', spacing: '20 cm x 10 cm', nitrogenFixed: 0, lerScore: 1.25, harvestDuration: '45 Days', storageLife: 'Fresh 3 Days, Cold 21 Days', reasoning: 'Quick root crop pulled in 45 days along bed shoulders before tomato vines spread wide.' }
+    ];
+  }
+
+  // 6. TAPIOCA (CASSAVA)
+  if (c.includes('tapioca')) {
+    return [
+      { tier: labels.high, key: 'groundnut', name: 'Groundnut (Peanut)', rowRatio: '1:2', spacing: '30 cm x 10 cm', nitrogenFixed: 25, lerScore: 1.41, harvestDuration: '105 Days', storageLife: 'Ambient 6 Months', reasoning: `Exploits wide 90cm spaces between tapioca setts in ${districtKey.toUpperCase()}, generating immediate revenue while tapioca establishes.` },
+      { tier: labels.rec, key: 'blackgram', name: 'Black Gram (Urad)', rowRatio: '1:2', spacing: '30 cm x 10 cm', nitrogenFixed: 30, lerScore: 1.33, harvestDuration: '70 Days', storageLife: 'Ambient 8 Months', reasoning: 'Suppresses early weeds and leaves organic nitrogen residues in red loamy soils.' },
+      { tier: labels.alt, key: 'cowpea', name: 'Cowpea (Lobia)', rowRatio: '1:2', spacing: '30 cm x 10 cm', nitrogenFixed: 32, lerScore: 1.29, harvestDuration: '65 Days', storageLife: 'Ambient 7 Months', reasoning: 'Living mulch that conserves topsoil moisture during early juvenile growth.' }
+    ];
+  }
+
+  // 7. TURMERIC / GINGER
+  if (c.includes('turmeric') || c.includes('ginger')) {
+    return [
+      { tier: labels.high, key: 'onion', name: 'Small Onion (Shallot)', rowRatio: '1:2 Raised Bed', spacing: '15 cm x 10 cm', nitrogenFixed: 0, lerScore: 1.37, harvestDuration: '70 Days', storageLife: 'Aerated racks 90 Days', reasoning: `In ${districtKey.toUpperCase()}'s raised beds, onions mature in 70 days, paying off bed prep costs before turmeric rhizomes expand.` },
+      { tier: labels.rec, key: 'frenchbean', name: 'French Bush Bean', rowRatio: '1:2', spacing: '30 cm x 15 cm', nitrogenFixed: 26, lerScore: 1.31, harvestDuration: '60 Days', storageLife: 'Fresh 4 Days', reasoning: 'Bio-nitrogen enrichment directly feeding the rhizome root zone.' },
+      { tier: labels.alt, key: 'coriander', name: 'Coriander (Kothamalli)', rowRatio: '1:2', spacing: '15 cm x 5 cm', nitrogenFixed: 0, lerScore: 1.28, harvestDuration: '40 Days', storageLife: 'Fresh 3 Days', reasoning: 'Fast catch crop harvested in 40 days before vegetative shoots emerge.' }
+    ];
+  }
+
+  // 8. COCONUT
+  if (c.includes('coconut')) {
+    return [
+      { tier: labels.high, key: 'drumstick', name: 'Drumstick (Moringa)', rowRatio: 'Inter-Basin Alley', spacing: '2.5m x 2.5m', nitrogenFixed: 0, lerScore: 1.52, harvestDuration: 'Perennial', storageLife: 'Fresh pods 5 Days', reasoning: 'High-yielding agroforestry companion maximizing sunlight in wide palm alleys.' },
+      { tier: labels.rec, key: 'banana', name: 'Banana (Plantain)', rowRatio: 'Inter-row Matrix', spacing: '2m x 2m', nitrogenFixed: 0, lerScore: 1.45, harvestDuration: '11 Months', storageLife: 'Fresh bunches 10 Days', reasoning: 'Retains microclimate humidity, suppresses understory weeds, and provides steady bunch sales.' },
+      { tier: labels.alt, key: 'turmeric', name: 'Turmeric', rowRatio: 'Shaded Basin Beds', spacing: '30 cm x 20 cm', nitrogenFixed: 0, lerScore: 1.38, harvestDuration: '9 Months', storageLife: 'Cured rhizomes 12 Months', reasoning: 'Shade-tolerant spice crop thriving in palm understory leaf litter.' }
+    ];
+  }
+
+  // 9. SUGARCANE
+  if (c.includes('sugarcane')) {
+    return [
+      { tier: labels.high, key: 'soybean', name: 'Soybean', rowRatio: '1:2', spacing: '30 cm x 10 cm', nitrogenFixed: 36, lerScore: 1.39, harvestDuration: '85 Days', storageLife: 'Ambient 7 Months', reasoning: 'Soybean thrives in wide 120cm cane rows during the 90-day slow tillering phase, adding organic nitrogen.' },
+      { tier: labels.rec, key: 'frenchbean', name: 'French Bush Bean', rowRatio: '1:2', spacing: '30 cm x 15 cm', nitrogenFixed: 26, lerScore: 1.32, harvestDuration: '60 Days', storageLife: 'Fresh 4 Days', reasoning: 'High-value fresh pod harvest before the main cane canopy closes.' },
+      { tier: labels.alt, key: 'sunnhemp', name: 'Sunn Hemp', rowRatio: '1:1 Ridge base', spacing: '20 cm x 10 cm', nitrogenFixed: 40, lerScore: 1.25, harvestDuration: '50 Days (Mulch)', storageLife: 'Green manure incorporated in-situ', reasoning: 'Trampled into furrows at 50 days as green manure, slashing commercial fertilizer requirements.' }
+    ];
+  }
+
+  // 10. PULSES (Black Gram, Green Gram, Red Gram, Cowpea, Horse Gram, Chickpea)
+  if (c.includes('gram') || c.includes('pigeonpea') || c.includes('cowpea') || c.includes('horsegram') || c.includes('chickpea')) {
+    return [
+      { tier: labels.high, key: 'sesame', name: 'Sesame (Til)', rowRatio: '3:1', spacing: '30 cm x 10 cm', nitrogenFixed: 0, lerScore: 1.32, harvestDuration: '75 Days', storageLife: 'Godown 8 Months', reasoning: 'High-value dual oilseed-pulse pairing: erect sesame stems complement sprawling pulse canopies.' },
+      { tier: labels.rec, key: 'pearlmillet', name: 'Pearl Millet (Bajra)', rowRatio: '4:1 Border', spacing: '45 cm x 15 cm', nitrogenFixed: 0, lerScore: 1.28, harvestDuration: '80 Days', storageLife: 'Ambient 8 Months', reasoning: 'Tall border barrier protecting pulse flowers from desiccation by dry summer winds.' },
+      { tier: labels.alt, key: 'castor', name: 'Castor', rowRatio: '6:1 Perimeter', spacing: '90 cm x 30 cm', nitrogenFixed: 0, lerScore: 1.25, harvestDuration: '140 Days', storageLife: 'Godown 8 Months', reasoning: 'Deep subsoil water foraging and effective pest diversion border.' }
+    ];
+  }
+
+  // 11. GENERAL VEGETABLES & BRINJAL (Cauvery Delta vs. Other Zones)
+  if (d.includes('thanjavur') || d.includes('tiruvarur') || d.includes('mayiladuthurai') || s.includes('clay')) {
+    return [
+      { tier: labels.high, key: 'coriander', name: 'Coriander (Kothamalli)', rowRatio: '1:2', spacing: '15 cm x 5 cm', nitrogenFixed: 0, lerScore: 1.34, harvestDuration: '35 - 45 Days', storageLife: 'Fresh 3 Days, Seed 6 Months', reasoning: `In ${districtKey.toUpperCase()}'s fertile riverbed alluvium, Coriander matures in 40 days between 75cm ridges, generating immediate early income before brinjal branches spread.` },
+      { tier: labels.rec, key: 'frenchbean', name: 'French Bush Bean', rowRatio: '1:1', spacing: '30 cm x 15 cm', nitrogenFixed: 26, lerScore: 1.29, harvestDuration: '55 - 65 Days', storageLife: 'Crates 4 Days, Cold store 20 Days', reasoning: 'Bush legume adding active atmospheric nitrogen into heavy-feeder brinjal rhizosphere.' },
+      { tier: labels.alt, key: 'marigold', name: 'Marigold (Trap Crop)', rowRatio: '1:6 Border', spacing: '45 cm x 30 cm', nitrogenFixed: 0, lerScore: 1.25, harvestDuration: '60 - 75 Days', storageLife: 'Fresh flowers 3 Days', reasoning: 'ICAR-recommended trap crop diverting shoot/fruit borers and suppressing root-knot nematodes.' }
+    ];
+  }
+
   return [
-    { tier: labels.high, key: 'coriander', name: 'Coriander (Kothamalli)', rowRatio: '1:2', spacing: '15 cm x 5 cm', nitrogenFixed: 0, lerScore: 1.34, harvestDuration: '35 - 45 Days', storageLife: 'Fresh 3 Days, Seed Godown 6 Months (≤9% moisture)', reasoning: 'Ultra-shallow fibrous root zone with zero competition for primary taproots, giving early cash flow.' },
-    { tier: labels.rec, key: 'frenchbean', name: 'French Bush Bean', rowRatio: '1:1', spacing: '30 cm x 15 cm', nitrogenFixed: 26, lerScore: 1.29, harvestDuration: '55 - 65 Days', storageLife: 'Crates 4 Days, Cold storage (10°C) 20 Days', reasoning: 'Bush legume adding active atmospheric nitrogen into heavy-feeder vegetable root zones.' },
-    { tier: labels.alt, key: 'marigold', name: 'Marigold (Trap Crop)', rowRatio: '1:6 Border', spacing: '45 cm x 30 cm', nitrogenFixed: 0, lerScore: 1.25, harvestDuration: '60 - 75 Days', storageLife: 'Fresh cut flowers 3 Days', reasoning: 'Suppresses root-knot nematodes and lures fruit and shoot borers away from main harvest rows.' }
+    { tier: labels.high, key: 'frenchbean', name: 'French Bush Bean', rowRatio: '1:1', spacing: '30 cm x 15 cm', nitrogenFixed: 28, lerScore: 1.33, harvestDuration: '55 - 65 Days', storageLife: 'Crates 4 Days, Cold store 20 Days', reasoning: 'Bush legume adding nitrogen directly into vegetable beds without canopy shading.' },
+    { tier: labels.rec, key: 'coriander', name: 'Coriander (Kothamalli)', rowRatio: '1:2', spacing: '15 cm x 5 cm', nitrogenFixed: 0, lerScore: 1.29, harvestDuration: '35 - 45 Days', storageLife: 'Fresh bundles 3 Days', reasoning: 'Ultra-fast catch crop yielding cash flow within 5 weeks of planting.' },
+    { tier: labels.alt, key: 'marigold', name: 'Marigold (Trap Crop)', rowRatio: '1:6 Border', spacing: '45 cm x 30 cm', nitrogenFixed: 0, lerScore: 1.25, harvestDuration: '60 - 75 Days', storageLife: 'Fresh flowers 3 Days', reasoning: 'Natural pest diversion barrier protecting flowering flushes.' }
   ];
 };
 
 // Recommendation Endpoint
 app.post('/api/recommend', async (req, res) => {
   try {
-    const { primaryCropKey, soilType, lang } = req.body;
+    const { primaryCropKey, districtKey, soilType, lang } = req.body;
     const currentLang = lang || 'en';
     const cKey = String(primaryCropKey || 'brinjal').toLowerCase();
+    const dKey = String(districtKey || 'thanjavur').toLowerCase();
 
     const cropMeta = STATEWIDE_CROP_DIRECTORY[cKey] || STATEWIDE_CROP_DIRECTORY.brinjal;
     const sType = soilType || cropMeta.defaultSoil || 'Loamy';
@@ -231,7 +316,7 @@ app.post('/api/recommend', async (req, res) => {
       lastUpdated: '2026-10-01'
     };
 
-    const companionOptions = getDistinctCompanions(cKey, currentLang);
+    const companionOptions = getAgronomicDistinctCompanions(cKey, dKey, sType, currentLang);
     const activeCompanion = companionOptions[0];
 
     // Compute Soil Chemical Audit
@@ -336,14 +421,14 @@ app.post('/api/auth/login', async (req, res) => {
 
 // History Management
 app.post('/api/history/save', async (req, res) => {
-  const { userId, primaryCrop, intercrop, season, soilType, waterStatus } = req.body;
+  const { userId, primaryCrop, intercrop, district, constituency, season, soilType, waterStatus } = req.body;
   if (!userId || !primaryCrop) return res.status(400).json({ error: 'Missing required fields' });
 
   try {
-    await pool.query('INSERT INTO crop_history (user_id, primary_crop, intercrop, season, soil_type, water_status) VALUES (?, ?, ?, ?, ?, ?)', [userId, primaryCrop, intercrop, season, soilType, waterStatus]);
+    await pool.query('INSERT INTO crop_history (user_id, primary_crop, intercrop, district, constituency, season, soil_type, water_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [userId, primaryCrop, intercrop, district, constituency, season, soilType, waterStatus]);
     return res.json({ success: true });
   } catch {
-    memoryHistory.unshift({ id: Date.now(), user_id: userId, primary_crop: primaryCrop, intercrop, season, soil_type: soilType, water_status: waterStatus, created_at: new Date().toISOString() });
+    memoryHistory.unshift({ id: Date.now(), user_id: userId, primary_crop: primaryCrop, intercrop, district, constituency, season, soil_type: soilType, water_status: waterStatus, created_at: new Date().toISOString() });
     return res.json({ success: true });
   }
 });
