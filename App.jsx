@@ -560,7 +560,7 @@ export default function App() {
   const [acres, setAcres] = useState(2);
   const [activeTab, setActiveTab] = useState('intercrop');
 
-  // Blueprint advice is NULL initially (does not auto-generate on load)
+  // Advice starts as null to prevent premature rendering
   const [advice, setAdvice] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -639,123 +639,7 @@ export default function App() {
     }
   };
 
-  // CLIENT-SIDE 3-TIER HIERARCHY FALLBACK MAP
-  const generateClientFallback = (cropKey, targetLang) => {
-    const cropMeta = TN_38_CROPS[cropKey] || TN_38_CROPS.brinjal;
-    const isTa = targetLang === 'ta';
-
-    const fullMatrix = {
-      brinjal: [
-        { key: 'coriander', name: 'Coriander (Kothamalli)', name_ta: 'கொத்தமல்லி', ler: 1.34, nFixed: 0, ratio: '1:2', sp: '15 cm x 5 cm', dur: '35 - 45 Days', dur_ta: '35 - 45 நாட்கள்', why: 'Quick catch crop providing fast revenue before brinjal canopies close.', why_ta: 'கத்தரி கிளை பரப்பும் முன்பே 40 நாட்களில் உடனடி பண வரவு தரும் குறுகிய காலப் பயிர்.' },
-        { key: 'frenchbean', name: 'French Bush Bean', name_ta: 'பீன்ஸ்', ler: 1.29, nFixed: 26, ratio: '1:1', sp: '30 cm x 15 cm', dur: '55 - 65 Days', dur_ta: '55 - 65 நாட்கள்', why: 'Biological nitrogen fixer enriching heavy-feeder brinjal rhizosphere.', why_ta: 'கத்தரிக்குத் தேவையான தழைச்சத்தை வேர் முடிச்சுகள் மூலம் நிலைநிறுத்துகிறது.' },
-        { key: 'marigold', name: 'Marigold (Trap Crop)', name_ta: 'சாமந்தி (கவர்ச்சிப் பயிர்)', ler: 1.24, nFixed: 0, ratio: '1:6 Border', sp: '45 cm x 30 cm', dur: '60 - 75 Days', dur_ta: '60 - 75 நாட்கள்', why: 'Root volatiles suppress nematodes and attract borer pests away.', why_ta: 'வேர் நூற்புழுக்களைக் கட்டுப்படுத்தி, காய்ப்புழுக்களைக் கவரும் இயற்கை அரண்.' }
-      ],
-      tomato: [
-        { key: 'frenchbean', name: 'French Bush Bean', name_ta: 'பீன்ஸ்', ler: 1.34, nFixed: 28, ratio: '1:1', sp: '30 cm x 15 cm', dur: '55 - 65 Days', dur_ta: '55 - 65 நாட்கள்', why: 'Supplies active nitrogen to tomato root zones without shading vines.', why_ta: 'தக்காளி கொடிகளை மறைக்காமல் வேர்ப்பகுதிக்கு தழைச்சத்தை ஊட்டுகிறது.' },
-        { key: 'marigold', name: 'Marigold (Trap Crop)', name_ta: 'சாமந்தி (கவர்ச்சிப் பயிர்)', ler: 1.29, nFixed: 0, ratio: '1:6 Border', sp: '45 cm x 30 cm', dur: '60 - 75 Days', dur_ta: '60 - 75 நாட்கள்', why: 'Repels root nematodes and lures fruit borer moths from tomato clusters.', why_ta: 'வேர் நூற்புழுக்களைக் கட்டுப்படுத்தி, காய்ப்புழுக்களைத் திசைதிருப்பும்.' },
-        { key: 'radish', name: 'Radish', name_ta: 'முள்ளங்கி', ler: 1.23, nFixed: 0, ratio: '1:2', sp: '20 cm x 10 cm', dur: '45 Days', dur_ta: '45 நாட்கள்', why: 'Fast root crop extracted from furrow shoulders before tomato branches drop.', why_ta: 'தக்காளி கொடிகள் படரும் முன்பே பாத்தி ஓரங்களில் அறுவடை முடிந்துவிடும்.' }
-      ],
-      bhendi: [
-        { key: 'radish', name: 'Radish', name_ta: 'முள்ளங்கி', ler: 1.28, nFixed: 0, ratio: '1:1', sp: '20 cm x 10 cm', dur: '40 - 45 Days', dur_ta: '40 - 45 நாட்கள்', why: 'Grows quickly on bed ridges, breaking heavy soil crusts.', why_ta: 'வெண்டை வளரும் முன் பாத்தி விளிம்புகளில் வேகமாக வளர்ந்து மண்ணைத் தளர்த்தும்.' },
-        { key: 'cowpea', name: 'Cowpea (Lobia)', name_ta: 'தட்டப்பயறு', ler: 1.31, nFixed: 32, ratio: '1:2', sp: '30 cm x 10 cm', dur: '65 Days', dur_ta: '65 நாட்கள்', why: 'Dense canopy covers open soil and fixes active biological nitrogen.', why_ta: 'களைகளைக் கட்டுப்படுத்தி வெண்டையின் வேருக்கு இயற்கை உரம் சேர்க்கும்.' },
-        { key: 'coriander', name: 'Coriander', name_ta: 'கொத்தமல்லி', ler: 1.22, nFixed: 0, ratio: '1:2', sp: '15 cm x 5 cm', dur: '35 Days', dur_ta: '35 நாட்கள்', why: 'Fast herb pulled before bhendi canopy shading occurs.', why_ta: 'வெண்டை நிழல் கொடுக்கும் முன்பே அறுவடை செய்யப்படும் பயிர்.' }
-      ],
-      chilli: [
-        { key: 'onion', name: 'Small Onion (Shallot)', name_ta: 'சின்ன வெங்காயம்', ler: 1.36, nFixed: 0, ratio: '1:2', sp: '15 cm x 10 cm', dur: '70 Days', dur_ta: '70 நாட்கள்', why: 'Sulfur volatiles deter thrips while bulbs mature before peak chilli flushes.', why_ta: 'வெங்காயத்தின் வாசனை இலைப்பேன் பூச்சிகளை விரட்டும், இரட்டை லாபம் தரும்.' },
-        { key: 'coriander', name: 'Coriander', name_ta: 'கொத்தமல்லி', ler: 1.29, nFixed: 0, ratio: '1:1', sp: '15 cm x 5 cm', dur: '40 Days', dur_ta: '40 நாட்கள்', why: 'Quick shallow herb yielding revenue in 4 weeks.', why_ta: 'நான்கே வாரங்களில் பலன் தரும் துரித ஊடுபயிர்.' },
-        { key: 'frenchbean', name: 'French Bush Bean', name_ta: 'பீன்ஸ்', ler: 1.25, nFixed: 24, ratio: '1:1', sp: '30 cm x 15 cm', dur: '60 Days', dur_ta: '60 நாட்கள்', why: 'Biological nitrogen enrichment feeding heavy-feeder chilli root zone.', why_ta: 'மிளகாய்க்குத் தேவையான இயற்கை தழைச்சத்தை வேருக்குக் கொடுக்கும்.' }
-      ],
-      cotton: [
-        { key: 'blackgram', name: 'Black Gram (Urad)', name_ta: 'உளுந்து', ler: 1.32, nFixed: 32, ratio: '1:2', sp: '30 cm x 10 cm', dur: '70 - 75 Days', dur_ta: '70 - 75 நாட்கள்', why: 'Completes harvest in 70 days before wide cotton branches lock.', why_ta: 'பருத்தி கிளை விரிக்கும் முன்பே உளுந்து அறுவடை முடிந்து கூடுதல் பண வரவு தரும்.' },
-        { key: 'greengram', name: 'Green Gram', name_ta: 'பாசிப்பயறு', ler: 1.28, nFixed: 30, ratio: '1:2', sp: '25 cm x 10 cm', dur: '60 Days', dur_ta: '60 நாட்கள்', why: 'Ultra-fast 60-day legume with zero solar competition.', why_ta: 'பருத்தியுடன் நிழல் போட்டியின்றி 60 நாட்களில் விரைவாக அறுவடை செய்யலாம்.' },
-        { key: 'clusterbean', name: 'Cluster Bean (Guar)', name_ta: 'கொத்தவரங்காய்', ler: 1.24, nFixed: 25, ratio: '1:1', sp: '45 cm x 15 cm', dur: '85 Days', dur_ta: '85 நாட்கள்', why: 'Drought-tolerant taproot legume resilient in hot black vertisols.', why_ta: 'கரிசல் நில வறட்சியைத் தாங்கி பருத்தி வரிசைகளுக்கு நடுவே பலன் தரும்.' }
-      ],
-      groundnut: [
-        { key: 'pearlmillet', name: 'Pearl Millet (Bajra)', name_ta: 'கம்பு', ler: 1.34, nFixed: 0, ratio: '6:1 Border', sp: '45 cm x 15 cm', dur: '80 - 85 Days', dur_ta: '80 - 85 நாட்கள்', why: 'Tall border rows deflect drying winds, preserving pegging micro-humidity.', why_ta: 'கம்பு வரப்புப் பயிராக இருந்து மணிலா விழுதுகள் இறங்குவதற்குத் தேவையான ஈரப்பதத்தைக் காக்கும்.' },
-        { key: 'pigeonpea', name: 'Pigeon Pea (Arhar / Tur)', name_ta: 'துவரை', ler: 1.36, nFixed: 42, ratio: '6:1', sp: '60 cm x 15 cm', dur: '140 Days', dur_ta: '140 நாட்கள்', why: 'Deep-rooted relay crop exploiting post-harvest subsoil moisture.', why_ta: 'வேர்க்கடலை அறுவடைக்கு பின்னும் ஆழமான ஈரத்தை எடுத்துக்கொண்டு பலன் தரும்.' },
-        { key: 'castor', name: 'Castor', name_ta: 'ஆமணக்கு', ler: 1.28, nFixed: 0, ratio: '8:1', sp: '90 cm x 30 cm', dur: '150 Days', dur_ta: '150 நாட்கள்', why: 'Commercial oilseed bonus and Spodoptera caterpillar oviposition trap.', why_ta: 'புழுக்களைத் தன்வசம் ஈர்த்து வேர்க்கடலையைக் காக்கும் இயற்கை கவர்ச்சிப் பயிர்.' }
-      ],
-      maize: [
-        { key: 'cowpea', name: 'Cowpea (Lobia)', name_ta: 'தட்டப்பயறு', ler: 1.35, nFixed: 35, ratio: '2:1', sp: '30 cm x 10 cm', dur: '65 - 75 Days', dur_ta: '65 - 75 நாட்கள்', why: 'Erect stalks allow dense cowpea foliage to smother weed flushes.', why_ta: 'மக்காச்சோளத் தட்டைகளுக்கு இடையே தட்டப்பயறு களைகளை ஒடுக்கி உரம் சேர்க்கும்.' },
-        { key: 'greengram', name: 'Green Gram', name_ta: 'பாசிப்பயறு', ler: 1.29, nFixed: 30, ratio: '1:2', sp: '25 cm x 10 cm', dur: '60 Days', dur_ta: '60 நாட்கள்', why: 'Harvested in 60 days before tall stalks close upper canopy.', why_ta: 'சோளம் முழுமையாக மூடும் முன்பே 60 நாட்களில் அறுவடை செய்யப்படும்.' },
-        { key: 'soybean', name: 'Soybean', name_ta: 'சோயாபீன்', ler: 1.27, nFixed: 36, ratio: '2:2 Strip', sp: '30 cm x 10 cm', dur: '85 Days', dur_ta: '85 நாட்கள்', why: 'Robust oilseed income with complementary erect rooting architecture.', why_ta: 'வேர்கள் முட்டாமல் மக்காச்சோளத்தோடு இணைந்து அதிக லாபம் தரும்.' }
-      ]
-    };
-
-    const comps = fullMatrix[cropKey] || [
-      { key: 'frenchbean', name: 'French Bush Bean', name_ta: 'பீன்ஸ்', ler: 1.33, nFixed: 28, ratio: '1:1', sp: '30 cm x 15 cm', dur: '55 - 65 Days', dur_ta: '55 - 65 நாட்கள்', why: 'Bush legume adding active atmospheric nitrogen into root zone.', why_ta: 'வேர் முடிச்சுகள் மூலம் தழைச்சத்தை அதிகரித்து கூடுதல் மகசூல் தரும்.' },
-      { key: 'coriander', name: 'Coriander (Kothamalli)', name_ta: 'கொத்தமல்லி', ler: 1.28, nFixed: 0, ratio: '1:2', sp: '15 cm x 5 cm', dur: '35 - 45 Days', dur_ta: '35 - 45 நாட்கள்', why: 'Ultra-fast catch crop yielding cash flow within 5 weeks.', why_ta: 'ஐந்தே வாரங்களில் அறுவடைக்கு வந்து உடனடி பண வரவு தரும் குறுகிய காலப் பயிர்.' },
-      { key: 'cowpea', name: 'Cowpea (Lobia)', name_ta: 'தட்டப்பயறு', ler: 1.24, nFixed: 30, ratio: '1:2', sp: '30 cm x 10 cm', dur: '65 Days', dur_ta: '65 நாட்கள்', why: 'Living mulch that suppresses weeds and conserves moisture.', why_ta: 'களைகளைக் கட்டுப்படுத்தி நிலத்தில் ஈரப்பதம் காக்கும் உயிருள்ள நிலப்போர்வை.' }
-    ];
-
-    const tiersEn = ['⭐ Highly Recommended', '👍 Recommended', '🌾 Feasible Alternative'];
-    const tiersTa = ['⭐ மிகச் சிறந்த பரிந்துரை', '👍 பரிந்துரைக்கப்படுகிறது', '🌾 சாத்தியமான மாற்றுப் பயிர்'];
-
-    const companionOptions = comps.map((c, idx) => ({
-      ...c,
-      tier: isTa ? tiersTa[idx] : tiersEn[idx],
-      tier_ta: tiersTa[idx],
-      lerScore: c.ler,
-      harvestDuration: c.dur,
-      harvestDuration_ta: c.dur_ta,
-      rowRatio: c.ratio,
-      spacing: c.sp,
-      nitrogenFixed: c.nFixed,
-      reasoning: c.why,
-      reasoning_ta: c.why_ta
-    }));
-
-    const activeCompanion = companionOptions[0];
-
-    return {
-      primaryCrop: {
-        key: cropKey,
-        name: cropMeta.name,
-        name_ta: cropMeta.name_ta,
-        harvestDuration: '3 - 5 Months',
-        harvestDuration_ta: '3 - 5 மாதங்கள்',
-        avgYield: cropMeta.avgYield,
-        safeMoisturePct: 85.0,
-        ambientDays: 4,
-        coldDays: 25
-      },
-      marketData: {
-        pricePerKg: cropMeta.mandiRate,
-        officialMspPerKg: cropMeta.msp,
-        lastUpdated: '2026-10-01'
-      },
-      intercrop: activeCompanion,
-      companionOptions,
-      waterFootprint: {
-        floodLitersPerAcre: Math.round((cropMeta.waterReqMm || 500) * 4046.86),
-        dripLitersPerAcre: Math.round((cropMeta.waterReqMm || 500) * 4046.86 * 0.48),
-        waterSavedLitersPerAcre: Math.round((cropMeta.waterReqMm || 500) * 4046.86 * 0.52),
-        waterSavedPercent: 52,
-        dripSchedule: {
-          runtimeHoursPerCycle: 1.5,
-          irrigationIntervalDays: 3,
-          soilInfiltrationNote: 'Moderate Infiltration Rate',
-          evaporationReduction: '32% due to canopy soil shading'
-        }
-      },
-      soilChemistry: {
-        before: { availableN: '210 kg/ha', availableP: '18 kg/ha', availableK: '280 kg/ha', organicCarbon: '0.52%' },
-        after: { availableN: '235 kg/ha (+25 kg Bio-N)', availableP: '20 kg/ha (Buffered)', availableK: '275 kg/ha', organicCarbon: '0.64% (+23%)' }
-      },
-      pests: [{
-        pestName: 'Crop Specific Pest Complex',
-        pestName_ta: 'பயிர்த்தாக்கும் பூச்சிகள் மற்றும் புழுக்கள்',
-        cultural: 'Prompt clipping of wilted shoots; install pheromone traps.',
-        cultural_ta: 'பாதிக்கப்பட்ட பகுதிகளை உடனுக்குடன் அகற்றுதல்; இனக்கவர்ச்சி பொறி வைத்தல்.',
-        bio: 'Neem seed kernel extract (NSKE 5%) or Bt spray @ 2g/L.',
-        bio_ta: 'வேப்பங்கொட்டை கரைசல் (5%) அல்லது பேசிலஸ் துரிஞ்சியென்சிஸ் தெளித்தல்.',
-        toxicity: 'Moderate',
-        phiDays: 3
-      }]
-    };
-  };
-
-  // Generate Blueprint ONLY on Button Click
+  // Generate Blueprint on Button Click
   const handleGenerateBlueprint = async () => {
     setIsGenerating(true);
     try {
@@ -891,158 +775,6 @@ export default function App() {
       netProfit,
       benefitCostRatio: (totalGrossRevenue / (totalCost || 1)).toFixed(2)
     };
-  };
-
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const dataUrl = event.target.result;
-      setFieldImage(dataUrl);
-      setIsAnalyzingImage(true);
-
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d', { willReadFrequently: true });
-        canvas.width = 48; canvas.height = 48;
-        ctx.drawImage(img, 0, 0, 48, 48);
-
-        let imgData = ctx.getImageData(0, 0, 48, 48).data;
-        let rSum = 0, gSum = 0, bSum = 0;
-        for (let i = 0; i < imgData.length; i += 4) {
-          rSum += imgData[i]; gSum += imgData[i + 1]; bSum += imgData[i + 2];
-        }
-        const total = imgData.length / 4;
-        const avgR = Math.round(rSum / total), avgG = Math.round(gSum / total), avgB = Math.round(bSum / total);
-
-        const toHex = (c) => ('0' + Math.max(0, Math.min(255, c)).toString(16)).slice(-2);
-        setExtractedSwatches([`#${toHex(avgR)}${toHex(avgG)}${toHex(avgB)}`, `#${toHex(avgR + 15)}${toHex(avgG + 10)}${toHex(avgB + 5)}`, `#${toHex(avgR - 15)}${toHex(avgG - 10)}${toHex(avgB - 10)}`]);
-
-        setTimeout(() => {
-          let detectedSoil = avgR > avgB * 1.55 ? 'Clay' : avgR > 140 ? 'Sandy' : 'Loamy';
-          let detectedCrop = detectedSoil === 'Clay' ? 'brinjal' : detectedSoil === 'Sandy' ? 'groundnut' : 'tomato';
-
-          setImageAnalysisResult({ isValid: true, soilType: detectedSoil, suggestedCrop: detectedCrop, confidence: '94%' });
-          setSoilType(detectedSoil);
-          setPrimaryCropKey(detectedCrop);
-          setIsAnalyzingImage(false);
-        }, 600);
-      };
-      img.src = dataUrl;
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const toggleListening = () => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) return alert('Speech recognition not supported in this browser.');
-
-    if (isListening) { recognitionRef.current?.stop(); setIsListening(false); return; }
-
-    const recognition = new SpeechRecognition();
-    recognitionRef.current = recognition;
-    recognition.lang = lang === 'ta' ? 'ta-IN' : 'en-US';
-    recognition.onstart = () => { setIsListening(true); setSpokenTranscript(''); };
-    recognition.onresult = (e) => {
-      const text = e.results[0][0].transcript.toLowerCase();
-      setSpokenTranscript(text);
-      for (const k of Object.keys(TN_38_CROPS)) {
-        if (text.includes(k) || (TN_38_CROPS[k].name_ta && text.includes(TN_38_CROPS[k].name_ta))) {
-          setPrimaryCropKey(k);
-          break;
-        }
-      }
-    };
-    recognition.onend = () => setIsListening(false);
-    recognition.start();
-  };
-
-  const generateFormattedCropPlanPDF = () => {
-    if (!advice || !advice.primaryCrop || !fin) return;
-
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) return alert('Pop-up blocked. Please allow pop-ups to print your certificate.');
-
-    const primaryName = lang === 'ta' ? (advice.primaryCrop.name_ta || advice.primaryCrop.name) : advice.primaryCrop.name;
-    const intercropName = lang === 'ta' ? (advice.intercrop?.name_ta || advice.intercrop?.name) : advice.intercrop?.name;
-    const districtName = lang === 'ta' ? (TN_38_DISTRICTS[selectedDistrict]?.name_ta || selectedDistrict) : TN_38_DISTRICTS[selectedDistrict]?.name;
-
-    const content = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>AgriCompanion AI - Official Crop Plan Certificate</title>
-        <style>
-          body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 25px; color: #1e293b; line-height: 1.4; }
-          .header { border-bottom: 3px solid #059669; padding-bottom: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-          .title { font-size: 22px; font-weight: 900; color: #065f46; margin: 0; }
-          .badge { background: #d1fae5; color: #065f46; padding: 4px 10px; border-radius: 999px; font-weight: bold; font-size: 11px; }
-          .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 15px; }
-          .box { border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; background: #f8fafc; }
-          .box h4 { margin: 0 0 8px 0; font-size: 13px; text-transform: uppercase; color: #475569; }
-          table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
-          th, td { border: 1px solid #cbd5e1; padding: 8px; text-align: left; }
-          th { background: #e2e8f0; font-weight: bold; }
-          .highlight { color: #059669; font-weight: bold; }
-          .footer { margin-top: 30px; border-top: 1px solid #cbd5e1; padding-top: 15px; font-size: 11px; color: #64748b; text-align: center; }
-        </style>
-      </head>
-      <body>
-        <div class="header">
-          <div>
-            <h1 class="title">${lang === 'ta' ? 'அக்ரிகாம்பானியன் AI • உழவர் சாகுபடி சான்றிதழ்' : 'AgriCompanion AI • Field Advisory Certificate'}</h1>
-            <p style="margin:4px 0; font-size:12px; color:#64748b;">${lang === 'ta' ? 'தமிழ்நாடு பல்நிலை ஊடுபயிர் துல்லிய வழிகாட்டி' : 'Statewide Tamil Nadu Agro-Ecological Decision Blueprint'}</p>
-          </div>
-          <div>
-            <span class="badge">${lang === 'ta' ? 'சரிபார்க்கப்பட்ட மாதிரி' : 'Verified Agronomic Model'}</span>
-          </div>
-        </div>
-
-        <div class="grid">
-          <div class="box">
-            <h4>${lang === 'ta' ? 'விவசாயி & நில விவரங்கள்' : 'Farmer & Plot Geocodes'}</h4>
-            <p><strong>${lang === 'ta' ? 'விவசாயி' : 'Farmer'}:</strong> ${user?.name || 'Registered Farm Owner'}</p>
-            <p><strong>${lang === 'ta' ? 'மாவட்டம்' : 'District'}:</strong> ${districtName}</p>
-            <p><strong>${lang === 'ta' ? 'வட்டம் / தொகுதி' : 'Constituency / Taluk'}:</strong> ${selectedUnit}</p>
-            <p><strong>${lang === 'ta' ? 'பரப்பளவு' : 'Plot Area'}:</strong> ${acres} ${lang === 'ta' ? 'ஏக்கர்' : 'Acres'}</p>
-          </div>
-          <div class="box">
-            <h4>${lang === 'ta' ? 'பயிர் இணைப்பு கட்டமைப்பு' : 'Crop Pairing Architecture'}</h4>
-            <p><strong>${lang === 'ta' ? 'முதன்மைப் பயிர்' : 'Primary Crop'}:</strong> ${primaryName}</p>
-            <p><strong>${lang === 'ta' ? 'ஊடுபயிர்' : 'Companion Intercrop'}:</strong> ${intercropName}</p>
-            <p><strong>${lang === 'ta' ? 'நிலப் பயன்பாட்டு விகிதம் (LER)' : 'Land Equivalent Ratio (LER)'}:</strong> <span class="highlight">${advice.intercrop?.lerScore || 1.30} (+${Math.round((Number(advice.intercrop?.lerScore || 1.30) - 1) * 100)}%)</span></p>
-          </div>
-        </div>
-
-        <div class="grid">
-          <div class="box">
-            <h4>${lang === 'ta' ? 'நீர் தடம் & சேமிப்பு' : 'Water Footprint & Drip Conservation'}</h4>
-            <p><strong>${lang === 'ta' ? 'பாரம்பரிய பாசன நீர்' : 'Flood Irrigation Water'}:</strong> ${(advice.waterFootprint?.floodLitersPerAcre * acres).toLocaleString('en-IN')} L</p>
-            <p><strong>${lang === 'ta' ? 'சொட்டுநீர் தேவை' : 'Drip System Water'}:</strong> ${(advice.waterFootprint?.dripLitersPerAcre * acres).toLocaleString('en-IN')} L</p>
-            <p><strong>${lang === 'ta' ? 'சேமிக்கப்படும் தூய நீர்' : 'Net Water Conserved'}:</strong> <span class="highlight">${(advice.waterFootprint?.waterSavedLitersPerAcre * acres).toLocaleString('en-IN')} Liters (-52%)</span></p>
-          </div>
-          <div class="box">
-            <h4>${lang === 'ta' ? 'பொருளாதாரம் & லாப வரவு' : 'Economics & Projected Profit'}</h4>
-            <p><strong>${lang === 'ta' ? 'முதன்மை மகசூல்' : 'Primary Yield'}:</strong> ${fin.primaryYield} Qtl (${fin.primaryYieldKg} kg)</p>
-            <p><strong>${lang === 'ta' ? 'சந்தை விலை' : 'Mandi Benchmark'}:</strong> ₹${advice.marketData?.pricePerKg}/kg</p>
-            <p><strong>${lang === 'ta' ? 'நிகர லாபம்' : 'Net Projected Profit'}:</strong> <span class="highlight">₹${fin.netProfit.toLocaleString('en-IN')}</span></p>
-          </div>
-        </div>
-
-        <div class="footer">
-          ${lang === 'ta' ? 'அக்ரிகாம்பானியன் AI துல்லிய வேளாண்மை முறைமை மூலம் உருவாக்கப்பட்டது.' : 'Generated via AgriCompanion AI Precision Agronomy System • Certified for Institutional Credit & Cooperative Schemes.'}
-        </div>
-      </body>
-      </html>
-    `;
-
-    printWindow.document.write(content);
-    printWindow.document.close();
-    printWindow.focus();
-    setTimeout(() => { printWindow.print(); }, 500);
   };
 
   const fin = calculateEconomics();
@@ -1339,7 +1071,7 @@ export default function App() {
         </div>
       </div>
 
-      {/* TABS & DETAILS (ONLY VISIBLE ONCE GENERATED) */}
+      {/* TABS & DETAILS */}
       {advice && advice.primaryCrop && (
         <div className="space-y-4">
           
@@ -1396,7 +1128,7 @@ export default function App() {
             })}
           </div>
 
-          {/* TAB 1: BLUEPRINT (ALL 3 DISTINCT TIERS) */}
+          {/* TAB 1: BLUEPRINT (3-TIER HIERARCHY ACCORDING TO PRIMARY CROP) */}
           {activeTab === 'intercrop' && advice.intercrop && (
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -1426,7 +1158,7 @@ export default function App() {
                           {lang === 'ta' ? (opt.reasoning_ta || opt.reasoning) : opt.reasoning}
                         </p>
                       </div>
-                      <div className="mt-2 pt-2 border-t border-emerald-500/20 text-[10px] font-extrabold text-emerald-400">
+                      <div className="mt-2.5 pt-2 border-t border-emerald-500/20 text-[10px] font-extrabold text-emerald-400">
                         {isCompanionActive ? '✓ Selected Blueprint' : 'Click to select this crop'}
                       </div>
                     </div>
@@ -1475,7 +1207,6 @@ export default function App() {
                   <strong>💡 {lang === 'ta' ? 'பரிந்துரை காரணம்:' : 'Rationale:'}</strong> {lang === 'ta' ? (advice.intercrop.reasoning_ta || advice.intercrop.reasoning) : advice.intercrop.reasoning}
                 </p>
 
-                {/* Action Buttons */}
                 <div className="flex flex-wrap gap-2.5 pt-1">
                   <button 
                     onClick={handleSaveBlueprint}

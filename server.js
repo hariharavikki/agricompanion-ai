@@ -121,7 +121,7 @@ const PEST_REGISTRY = {
   general: { pestName: 'Sucking Pest Complex', pestName_ta: 'சாறு உறிஞ்சும் பூச்சிகள் (அசுவினி, இலைப்பேன்)', cultural: 'Mulch inter-rows with pulse canopy.', cultural_ta: 'பருப்பு வகைகளை ஊடுபயிராகப் பயிரிட்டு நிலப்போர்வை அமைத்தல்.', bio: 'Spray 3% neem oil with soap water emulsifier.', bio_ta: '3% வேப்பெண்ணெய் கரைசல் தெளித்தல்.', chemical: 'Imidacloprid 17.8% SL @ 0.5 ml/L water.', toxicity: 'Severe', phiDays: 10 }
 };
 
-// 3-CROP HIERARCHICAL MATRIX (Guaranteed 3 Distinct Tiers for Every Crop)
+// 3-CROP HIERARCHICAL MATRIX (3 Distinct Tiers for Every Crop)
 const CROP_COMPANION_MATRIX = {
   brinjal: [
     { key: 'coriander', name: 'Coriander (Kothamalli)', name_ta: 'கொத்தமல்லி', rowRatio: '1:2', spacing: '15 cm x 5 cm', nitrogenFixed: 0, lerScore: 1.34, harvestDuration: '35 - 45 Days', harvestDuration_ta: '35 - 45 நாட்கள்', storageLife: 'Fresh 3 Days', storageLife_ta: 'பசும் தழை 3 நாட்கள்', reasoning: 'Quick catch crop providing fast revenue before brinjal canopies close.', reasoning_ta: 'கத்தரி கிளை பரப்பும் முன்பே 40 நாட்களில் உடனடி பண வரவு தரும் குறுகிய காலப் பயிர்.' },
@@ -131,7 +131,7 @@ const CROP_COMPANION_MATRIX = {
   tomato: [
     { key: 'frenchbean', name: 'French Bush Bean', name_ta: 'பீன்ஸ்', rowRatio: '1:1', spacing: '30 cm x 15 cm', nitrogenFixed: 28, lerScore: 1.34, harvestDuration: '55 - 65 Days', harvestDuration_ta: '55 - 65 நாட்கள்', storageLife: 'Crates 4 Days', storageLife_ta: 'பெட்டிகளில் 4 நாட்கள்', reasoning: 'Supplies active nitrogen to tomato root zones without shading vines.', reasoning_ta: 'தக்காளி கொடிகளை மறைக்காமல் வேர்ப்பகுதிக்கு தழைச்சத்தை ஊட்டுகிறது.' },
     { key: 'marigold', name: 'Marigold (Trap Crop)', name_ta: 'சாமந்தி (கவர்ச்சிப் பயிர்)', rowRatio: '1:6 Border', spacing: '45 cm x 30 cm', nitrogenFixed: 0, lerScore: 1.29, harvestDuration: '60 - 75 Days', harvestDuration_ta: '60 - 75 நாட்கள்', storageLife: 'Flowers 3 Days', storageLife_ta: 'பூக்கள் 3 நாட்கள்', reasoning: 'Repels root nematodes and lures fruit borer moths from tomato clusters.', reasoning_ta: 'வேர் நூற்புழுக்களைக் கட்டுப்படுத்தி, காய்ப்புழுக்களைத் திசைதிருப்பும்.' },
-    { key: 'radish', name: 'Radish', name_ta: 'முள்ளங்கி', rowRatio: '1:2', spacing: '20 cm x 10 cm', nitrogenFixed: 0, lerScore: 1.23, harvestDuration: '45 Days', harvestDuration_ta: '45 நாட்கள்', storageLife: 'Fresh 4 Days', storageLife_ta: 'பசும் கிழங்கு 4 நாட்கள்', reasoning: 'Fast root crop extracted from furrow shoulders before tomato branches drop.', reasoning_ta: 'தக்காளி கொடிகள் படரும் முன்பே பாத்தி ஓரங்களில் அறுவடை முடிந்துவிடும்.' }
+    { key: 'radish', name: 'Radish', name_ta: 'முள்ளங்கி', rowRatio: '1:2', spacing: '20 cm x 10 cm', nitrogenFixed: 0, lerScore: 1.23, harvestDuration: '45 Days', harvestDuration_ta: '45 நாட்கள்', storageLife: 'Fresh 4 Days', storageLife_ta: 'பசும் கிழங்கு 4 நாட்கள்', reasoning: 'Fast root crop extracted from furrow shoulders before tomato vines droop.', reasoning_ta: 'தக்காளி கொடிகள் படரும் முன்பே பாத்தி ஓரங்களில் அறுவடை முடிந்துவிடும்.' }
   ],
   bhendi: [
     { key: 'radish', name: 'Radish', name_ta: 'முள்ளங்கி', rowRatio: '1:1', spacing: '20 cm x 10 cm', nitrogenFixed: 0, lerScore: 1.28, harvestDuration: '40 - 45 Days', harvestDuration_ta: '40 - 45 நாட்கள்', storageLife: 'Fresh 4 Days', storageLife_ta: 'பசும் கிழங்கு 4 நாட்கள்', reasoning: 'Grows quickly on bed ridges, breaking heavy soil crusts.', reasoning_ta: 'வெண்டை வளரும் முன் பாத்தி விளிம்புகளில் வேகமாக வளர்ந்து மண்ணைத் தளர்த்தும்.' },
@@ -160,7 +160,6 @@ const CROP_COMPANION_MATRIX = {
   ]
 };
 
-// Fill remaining 30 crops with guaranteed 3-tier hierarchy
 const ALL_CROPS_KEYS = Object.keys(STATEWIDE_CROP_DIRECTORY);
 for (const crop of ALL_CROPS_KEYS) {
   if (!CROP_COMPANION_MATRIX[crop]) {
