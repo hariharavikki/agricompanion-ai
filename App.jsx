@@ -551,7 +551,6 @@ export default function App() {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Form selections
   const [selectedDistrict, setSelectedDistrict] = useState('thanjavur');
   const [selectedUnit, setSelectedUnit] = useState('Thanjavur');
   const [season, setSeason] = useState('Kharif');
@@ -565,7 +564,6 @@ export default function App() {
   const [advice, setAdvice] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  // Authentication & History State
   const [user, setUser] = useState(() => {
     try { return JSON.parse(localStorage.getItem('agri_user')) || null; } catch { return null; }
   });
@@ -580,14 +578,12 @@ export default function App() {
   const [spokenTranscript, setSpokenTranscript] = useState('');
   const recognitionRef = useRef(null);
 
-  // Scanner Viewfinder State
   const [fieldImage, setFieldImage] = useState(null);
   const [isAnalyzingImage, setIsAnalyzingImage] = useState(false);
   const [imageAnalysisResult, setImageAnalysisResult] = useState(null);
   const [extractedSwatches, setExtractedSwatches] = useState([]);
   const fileInputRef = useRef(null);
 
-  // Satellite Weather Forecast
   const [weatherForecast, setWeatherForecast] = useState([
     { day: 'Day 1', temp: 32, rainProb: 15, windKmh: 12, sprayRisk: 'Low' },
     { day: 'Day 2', temp: 31, rainProb: 20, windKmh: 14, sprayRisk: 'Low' },
@@ -643,30 +639,73 @@ export default function App() {
     }
   };
 
-  // CLIENT-SIDE DISTINCT FALLBACK MAP
+  // CLIENT-SIDE 3-TIER HIERARCHY FALLBACK MAP
   const generateClientFallback = (cropKey, targetLang) => {
     const cropMeta = TN_38_CROPS[cropKey] || TN_38_CROPS.brinjal;
     const isTa = targetLang === 'ta';
 
-    const matrix = {
-      tomato: { key: 'frenchbean', name: 'French Bush Bean', name_ta: 'பீன்ஸ்', ler: 1.34, nFixed: 28, ratio: '1:1', sp: '30 cm x 15 cm', dur: '55 - 65 Days', dur_ta: '55 - 65 நாட்கள்', why: 'Supplies active nitrogen to tomato root zones without shading vines.', why_ta: 'தக்காளி கொடிகளை மறைக்காமல் வேர்ப்பகுதிக்கு தழைச்சத்தை ஊட்டுகிறது.' },
-      bhendi: { key: 'radish', name: 'Radish', name_ta: 'முள்ளங்கி', ler: 1.28, nFixed: 0, ratio: '1:1', sp: '20 cm x 10 cm', dur: '40 - 45 Days', dur_ta: '40 - 45 நாட்கள்', why: 'Grows quickly on bed ridges, breaking heavy soil crusts.', why_ta: 'வெண்டை வளரும் முன் பாத்தி விளிம்புகளில் வேகமாக வளர்ந்து மண்ணைத் தளர்த்தும்.' },
-      chilli: { key: 'onion', name: 'Small Onion (Shallot)', name_ta: 'சின்ன வெங்காயம்', ler: 1.36, nFixed: 0, ratio: '1:2', sp: '15 cm x 10 cm', dur: '70 Days', dur_ta: '70 நாட்கள்', why: 'Sulfur volatiles deter thrips while bulbs mature before peak chilli flushes.', why_ta: 'வெங்காயத்தின் வாசனை இலைப்பேன் பூச்சிகளை விரட்டும், இரட்டை லாபம் தரும்.' },
-      tapioca: { key: 'groundnut', name: 'Groundnut (Peanut)', name_ta: 'வேர்க்கடலை', ler: 1.41, nFixed: 25, ratio: '1:2', sp: '30 cm x 10 cm', dur: '105 Days', dur_ta: '105 நாட்கள்', why: 'Exploits wide 90cm spaces between cassava setts during juvenile stage.', why_ta: 'மரவள்ளி வளரும் வரை உள்ள 90 செ.மீ இடைவெளியைப் பயன்படுத்தி கூடுதல் லாபம் ஈட்டலாம்.' },
-      cotton: { key: 'blackgram', name: 'Black Gram (Urad)', name_ta: 'உளுந்து', ler: 1.32, nFixed: 32, ratio: '1:2', sp: '30 cm x 10 cm', dur: '70 - 75 Days', dur_ta: '70 - 75 நாட்கள்', why: 'Completes harvest in 70 days before wide cotton branches lock.', why_ta: 'பருத்தி கிளை விரிக்கும் முன்பே உளுந்து அறுவடை முடிந்து கூடுதல் பண வரவு தரும்.' },
-      groundnut: { key: 'pearlmillet', name: 'Pearl Millet (Bajra)', name_ta: 'கம்பு', ler: 1.34, nFixed: 0, ratio: '6:1 Border', sp: '45 cm x 15 cm', dur: '80 - 85 Days', dur_ta: '80 - 85 நாட்கள்', why: 'Tall border rows deflect drying winds, preserving pegging micro-humidity.', why_ta: 'கம்பு வரப்புப் பயிராக இருந்து மணிலா விழுதுகள் இறங்குவதற்குத் தேவையான ஈரப்பதத்தைக் காக்கும்.' },
-      maize: { key: 'cowpea', name: 'Cowpea (Lobia)', name_ta: 'தட்டப்பயறு', ler: 1.35, nFixed: 35, ratio: '2:1', sp: '30 cm x 10 cm', dur: '65 - 75 Days', dur_ta: '65 - 75 நாட்கள்', why: 'Erect stalks allow dense cowpea foliage to smother weed flushes.', why_ta: 'மக்காச்சோளத் தட்டைகளுக்கு இடையே தட்டப்பயறு களைகளை ஒடுக்கி உரம் சேர்க்கும்.' },
-      sorghum: { key: 'cowpea', name: 'Cowpea (Lobia)', name_ta: 'தட்டப்பயறு', ler: 1.33, nFixed: 35, ratio: '2:1', sp: '30 cm x 10 cm', dur: '70 Days', dur_ta: '70 நாட்கள்', why: 'Drought-hardy cereal and legume pairing for semi-arid zones.', why_ta: 'மானாவாரி நிலங்களுக்கு ஏற்ற சிறந்த தானிய-பருப்பு ஊடுபயிர் முறை.' },
-      coconut: { key: 'drumstick', name: 'Drumstick (Moringa)', name_ta: 'முருங்கை', ler: 1.52, nFixed: 0, ratio: 'Inter-Basin Alley', sp: '2.5m x 2.5m', dur: 'Perennial', dur_ta: 'ஆண்டு முழுவதும்', why: 'Agroforestry companion maximizing sun in wide palm alleys.', why_ta: 'தென்னந்தோப்பின் அகன்ற வரிசைகளில் சூரிய ஒளியைப் பயன்படுத்தி நிரந்தர வருமானம் தரும்.' },
-      sugarcane: { key: 'soybean', name: 'Soybean', name_ta: 'சோயாபீன்', ler: 1.39, nFixed: 36, ratio: '1:2', sp: '30 cm x 10 cm', dur: '85 Days', dur_ta: '85 நாட்கள்', why: 'Thrives in wide 120cm cane rows during the 90-day slow tillering phase.', why_ta: 'கரும்பு ஆரம்பத்தில் மெதுவாக வளரும் 90 நாட்களில் சோயாபீன் நல்ல வருமானம் தரும்.' },
-      turmeric: { key: 'onion', name: 'Small Onion (Shallot)', name_ta: 'சின்ன வெங்காயம்', ler: 1.37, nFixed: 0, ratio: '1:2 Raised Bed', sp: '15 cm x 10 cm', dur: '70 Days', dur_ta: '70 நாட்கள்', why: 'Onions mature in 70 days, paying off bed preparation costs early.', why_ta: 'மஞ்சள் முளைத்து வரும் முன்பே வெங்காயம் அறுவடைக்கு வந்து உழவுச் செலவை ஈடு செய்யும்.' }
+    const fullMatrix = {
+      brinjal: [
+        { key: 'coriander', name: 'Coriander (Kothamalli)', name_ta: 'கொத்தமல்லி', ler: 1.34, nFixed: 0, ratio: '1:2', sp: '15 cm x 5 cm', dur: '35 - 45 Days', dur_ta: '35 - 45 நாட்கள்', why: 'Quick catch crop providing fast revenue before brinjal canopies close.', why_ta: 'கத்தரி கிளை பரப்பும் முன்பே 40 நாட்களில் உடனடி பண வரவு தரும் குறுகிய காலப் பயிர்.' },
+        { key: 'frenchbean', name: 'French Bush Bean', name_ta: 'பீன்ஸ்', ler: 1.29, nFixed: 26, ratio: '1:1', sp: '30 cm x 15 cm', dur: '55 - 65 Days', dur_ta: '55 - 65 நாட்கள்', why: 'Biological nitrogen fixer enriching heavy-feeder brinjal rhizosphere.', why_ta: 'கத்தரிக்குத் தேவையான தழைச்சத்தை வேர் முடிச்சுகள் மூலம் நிலைநிறுத்துகிறது.' },
+        { key: 'marigold', name: 'Marigold (Trap Crop)', name_ta: 'சாமந்தி (கவர்ச்சிப் பயிர்)', ler: 1.24, nFixed: 0, ratio: '1:6 Border', sp: '45 cm x 30 cm', dur: '60 - 75 Days', dur_ta: '60 - 75 நாட்கள்', why: 'Root volatiles suppress nematodes and attract borer pests away.', why_ta: 'வேர் நூற்புழுக்களைக் கட்டுப்படுத்தி, காய்ப்புழுக்களைக் கவரும் இயற்கை அரண்.' }
+      ],
+      tomato: [
+        { key: 'frenchbean', name: 'French Bush Bean', name_ta: 'பீன்ஸ்', ler: 1.34, nFixed: 28, ratio: '1:1', sp: '30 cm x 15 cm', dur: '55 - 65 Days', dur_ta: '55 - 65 நாட்கள்', why: 'Supplies active nitrogen to tomato root zones without shading vines.', why_ta: 'தக்காளி கொடிகளை மறைக்காமல் வேர்ப்பகுதிக்கு தழைச்சத்தை ஊட்டுகிறது.' },
+        { key: 'marigold', name: 'Marigold (Trap Crop)', name_ta: 'சாமந்தி (கவர்ச்சிப் பயிர்)', ler: 1.29, nFixed: 0, ratio: '1:6 Border', sp: '45 cm x 30 cm', dur: '60 - 75 Days', dur_ta: '60 - 75 நாட்கள்', why: 'Repels root nematodes and lures fruit borer moths from tomato clusters.', why_ta: 'வேர் நூற்புழுக்களைக் கட்டுப்படுத்தி, காய்ப்புழுக்களைத் திசைதிருப்பும்.' },
+        { key: 'radish', name: 'Radish', name_ta: 'முள்ளங்கி', ler: 1.23, nFixed: 0, ratio: '1:2', sp: '20 cm x 10 cm', dur: '45 Days', dur_ta: '45 நாட்கள்', why: 'Fast root crop extracted from furrow shoulders before tomato branches drop.', why_ta: 'தக்காளி கொடிகள் படரும் முன்பே பாத்தி ஓரங்களில் அறுவடை முடிந்துவிடும்.' }
+      ],
+      bhendi: [
+        { key: 'radish', name: 'Radish', name_ta: 'முள்ளங்கி', ler: 1.28, nFixed: 0, ratio: '1:1', sp: '20 cm x 10 cm', dur: '40 - 45 Days', dur_ta: '40 - 45 நாட்கள்', why: 'Grows quickly on bed ridges, breaking heavy soil crusts.', why_ta: 'வெண்டை வளரும் முன் பாத்தி விளிம்புகளில் வேகமாக வளர்ந்து மண்ணைத் தளர்த்தும்.' },
+        { key: 'cowpea', name: 'Cowpea (Lobia)', name_ta: 'தட்டப்பயறு', ler: 1.31, nFixed: 32, ratio: '1:2', sp: '30 cm x 10 cm', dur: '65 Days', dur_ta: '65 நாட்கள்', why: 'Dense canopy covers open soil and fixes active biological nitrogen.', why_ta: 'களைகளைக் கட்டுப்படுத்தி வெண்டையின் வேருக்கு இயற்கை உரம் சேர்க்கும்.' },
+        { key: 'coriander', name: 'Coriander', name_ta: 'கொத்தமல்லி', ler: 1.22, nFixed: 0, ratio: '1:2', sp: '15 cm x 5 cm', dur: '35 Days', dur_ta: '35 நாட்கள்', why: 'Fast herb pulled before bhendi canopy shading occurs.', why_ta: 'வெண்டை நிழல் கொடுக்கும் முன்பே அறுவடை செய்யப்படும் பயிர்.' }
+      ],
+      chilli: [
+        { key: 'onion', name: 'Small Onion (Shallot)', name_ta: 'சின்ன வெங்காயம்', ler: 1.36, nFixed: 0, ratio: '1:2', sp: '15 cm x 10 cm', dur: '70 Days', dur_ta: '70 நாட்கள்', why: 'Sulfur volatiles deter thrips while bulbs mature before peak chilli flushes.', why_ta: 'வெங்காயத்தின் வாசனை இலைப்பேன் பூச்சிகளை விரட்டும், இரட்டை லாபம் தரும்.' },
+        { key: 'coriander', name: 'Coriander', name_ta: 'கொத்தமல்லி', ler: 1.29, nFixed: 0, ratio: '1:1', sp: '15 cm x 5 cm', dur: '40 Days', dur_ta: '40 நாட்கள்', why: 'Quick shallow herb yielding revenue in 4 weeks.', why_ta: 'நான்கே வாரங்களில் பலன் தரும் துரித ஊடுபயிர்.' },
+        { key: 'frenchbean', name: 'French Bush Bean', name_ta: 'பீன்ஸ்', ler: 1.25, nFixed: 24, ratio: '1:1', sp: '30 cm x 15 cm', dur: '60 Days', dur_ta: '60 நாட்கள்', why: 'Biological nitrogen enrichment feeding heavy-feeder chilli root zone.', why_ta: 'மிளகாய்க்குத் தேவையான இயற்கை தழைச்சத்தை வேருக்குக் கொடுக்கும்.' }
+      ],
+      cotton: [
+        { key: 'blackgram', name: 'Black Gram (Urad)', name_ta: 'உளுந்து', ler: 1.32, nFixed: 32, ratio: '1:2', sp: '30 cm x 10 cm', dur: '70 - 75 Days', dur_ta: '70 - 75 நாட்கள்', why: 'Completes harvest in 70 days before wide cotton branches lock.', why_ta: 'பருத்தி கிளை விரிக்கும் முன்பே உளுந்து அறுவடை முடிந்து கூடுதல் பண வரவு தரும்.' },
+        { key: 'greengram', name: 'Green Gram', name_ta: 'பாசிப்பயறு', ler: 1.28, nFixed: 30, ratio: '1:2', sp: '25 cm x 10 cm', dur: '60 Days', dur_ta: '60 நாட்கள்', why: 'Ultra-fast 60-day legume with zero solar competition.', why_ta: 'பருத்தியுடன் நிழல் போட்டியின்றி 60 நாட்களில் விரைவாக அறுவடை செய்யலாம்.' },
+        { key: 'clusterbean', name: 'Cluster Bean (Guar)', name_ta: 'கொத்தவரங்காய்', ler: 1.24, nFixed: 25, ratio: '1:1', sp: '45 cm x 15 cm', dur: '85 Days', dur_ta: '85 நாட்கள்', why: 'Drought-tolerant taproot legume resilient in hot black vertisols.', why_ta: 'கரிசல் நில வறட்சியைத் தாங்கி பருத்தி வரிசைகளுக்கு நடுவே பலன் தரும்.' }
+      ],
+      groundnut: [
+        { key: 'pearlmillet', name: 'Pearl Millet (Bajra)', name_ta: 'கம்பு', ler: 1.34, nFixed: 0, ratio: '6:1 Border', sp: '45 cm x 15 cm', dur: '80 - 85 Days', dur_ta: '80 - 85 நாட்கள்', why: 'Tall border rows deflect drying winds, preserving pegging micro-humidity.', why_ta: 'கம்பு வரப்புப் பயிராக இருந்து மணிலா விழுதுகள் இறங்குவதற்குத் தேவையான ஈரப்பதத்தைக் காக்கும்.' },
+        { key: 'pigeonpea', name: 'Pigeon Pea (Arhar / Tur)', name_ta: 'துவரை', ler: 1.36, nFixed: 42, ratio: '6:1', sp: '60 cm x 15 cm', dur: '140 Days', dur_ta: '140 நாட்கள்', why: 'Deep-rooted relay crop exploiting post-harvest subsoil moisture.', why_ta: 'வேர்க்கடலை அறுவடைக்கு பின்னும் ஆழமான ஈரத்தை எடுத்துக்கொண்டு பலன் தரும்.' },
+        { key: 'castor', name: 'Castor', name_ta: 'ஆமணக்கு', ler: 1.28, nFixed: 0, ratio: '8:1', sp: '90 cm x 30 cm', dur: '150 Days', dur_ta: '150 நாட்கள்', why: 'Commercial oilseed bonus and Spodoptera caterpillar oviposition trap.', why_ta: 'புழுக்களைத் தன்வசம் ஈர்த்து வேர்க்கடலையைக் காக்கும் இயற்கை கவர்ச்சிப் பயிர்.' }
+      ],
+      maize: [
+        { key: 'cowpea', name: 'Cowpea (Lobia)', name_ta: 'தட்டப்பயறு', ler: 1.35, nFixed: 35, ratio: '2:1', sp: '30 cm x 10 cm', dur: '65 - 75 Days', dur_ta: '65 - 75 நாட்கள்', why: 'Erect stalks allow dense cowpea foliage to smother weed flushes.', why_ta: 'மக்காச்சோளத் தட்டைகளுக்கு இடையே தட்டப்பயறு களைகளை ஒடுக்கி உரம் சேர்க்கும்.' },
+        { key: 'greengram', name: 'Green Gram', name_ta: 'பாசிப்பயறு', ler: 1.29, nFixed: 30, ratio: '1:2', sp: '25 cm x 10 cm', dur: '60 Days', dur_ta: '60 நாட்கள்', why: 'Harvested in 60 days before tall stalks close upper canopy.', why_ta: 'சோளம் முழுமையாக மூடும் முன்பே 60 நாட்களில் அறுவடை செய்யப்படும்.' },
+        { key: 'soybean', name: 'Soybean', name_ta: 'சோயாபீன்', ler: 1.27, nFixed: 36, ratio: '2:2 Strip', sp: '30 cm x 10 cm', dur: '85 Days', dur_ta: '85 நாட்கள்', why: 'Robust oilseed income with complementary erect rooting architecture.', why_ta: 'வேர்கள் முட்டாமல் மக்காச்சோளத்தோடு இணைந்து அதிக லாபம் தரும்.' }
+      ]
     };
 
-    const comp = matrix[cropKey] || {
-      key: 'coriander', name: 'Coriander (Kothamalli)', name_ta: 'கொத்தமல்லி', ler: 1.34, nFixed: 0, ratio: '1:2', sp: '15 cm x 5 cm', dur: '35 - 45 Days', dur_ta: '35 - 45 நாட்கள்',
-      why: 'Quick catch crop providing fast cash before primary branches spread.',
-      why_ta: 'முதன்மைப் பயிர் கிளை பரப்பும் முன்பே 40 நாட்களில் உடனடி பண வரவு தரும் குறுகிய காலப் பயிர்.'
-    };
+    const comps = fullMatrix[cropKey] || [
+      { key: 'frenchbean', name: 'French Bush Bean', name_ta: 'பீன்ஸ்', ler: 1.33, nFixed: 28, ratio: '1:1', sp: '30 cm x 15 cm', dur: '55 - 65 Days', dur_ta: '55 - 65 நாட்கள்', why: 'Bush legume adding active atmospheric nitrogen into root zone.', why_ta: 'வேர் முடிச்சுகள் மூலம் தழைச்சத்தை அதிகரித்து கூடுதல் மகசூல் தரும்.' },
+      { key: 'coriander', name: 'Coriander (Kothamalli)', name_ta: 'கொத்தமல்லி', ler: 1.28, nFixed: 0, ratio: '1:2', sp: '15 cm x 5 cm', dur: '35 - 45 Days', dur_ta: '35 - 45 நாட்கள்', why: 'Ultra-fast catch crop yielding cash flow within 5 weeks.', why_ta: 'ஐந்தே வாரங்களில் அறுவடைக்கு வந்து உடனடி பண வரவு தரும் குறுகிய காலப் பயிர்.' },
+      { key: 'cowpea', name: 'Cowpea (Lobia)', name_ta: 'தட்டப்பயறு', ler: 1.24, nFixed: 30, ratio: '1:2', sp: '30 cm x 10 cm', dur: '65 Days', dur_ta: '65 நாட்கள்', why: 'Living mulch that suppresses weeds and conserves moisture.', why_ta: 'களைகளைக் கட்டுப்படுத்தி நிலத்தில் ஈரப்பதம் காக்கும் உயிருள்ள நிலப்போர்வை.' }
+    ];
+
+    const tiersEn = ['⭐ Highly Recommended', '👍 Recommended', '🌾 Feasible Alternative'];
+    const tiersTa = ['⭐ மிகச் சிறந்த பரிந்துரை', '👍 பரிந்துரைக்கப்படுகிறது', '🌾 சாத்தியமான மாற்றுப் பயிர்'];
+
+    const companionOptions = comps.map((c, idx) => ({
+      ...c,
+      tier: isTa ? tiersTa[idx] : tiersEn[idx],
+      tier_ta: tiersTa[idx],
+      lerScore: c.ler,
+      harvestDuration: c.dur,
+      harvestDuration_ta: c.dur_ta,
+      rowRatio: c.ratio,
+      spacing: c.sp,
+      nitrogenFixed: c.nFixed,
+      reasoning: c.why,
+      reasoning_ta: c.why_ta
+    }));
+
+    const activeCompanion = companionOptions[0];
 
     return {
       primaryCrop: {
@@ -685,40 +724,8 @@ export default function App() {
         officialMspPerKg: cropMeta.msp,
         lastUpdated: '2026-10-01'
       },
-      intercrop: {
-        tier: isTa ? '⭐ மிகச் சிறந்த பரிந்துரை' : '⭐ Highly Recommended',
-        tier_ta: '⭐ மிகச் சிறந்த பரிந்துரை',
-        key: comp.key,
-        name: comp.name,
-        name_ta: comp.name_ta,
-        rowRatio: comp.ratio,
-        spacing: comp.sp,
-        nitrogenFixed: comp.nFixed,
-        lerScore: comp.ler,
-        harvestDuration: comp.dur,
-        harvestDuration_ta: comp.dur_ta,
-        storageLife: 'Fresh Storage Available',
-        storageLife_ta: 'பசும் சேமிப்பு முறை',
-        reasoning: comp.why,
-        reasoning_ta: comp.why_ta
-      },
-      companionOptions: [
-        {
-          tier: isTa ? '⭐ மிகச் சிறந்த பரிந்துரை' : '⭐ Highly Recommended',
-          tier_ta: '⭐ மிகச் சிறந்த பரிந்துரை',
-          key: comp.key,
-          name: comp.name,
-          name_ta: comp.name_ta,
-          rowRatio: comp.ratio,
-          spacing: comp.sp,
-          nitrogenFixed: comp.nFixed,
-          lerScore: comp.ler,
-          harvestDuration: comp.dur,
-          harvestDuration_ta: comp.dur_ta,
-          reasoning: comp.why,
-          reasoning_ta: comp.why_ta
-        }
-      ],
+      intercrop: activeCompanion,
+      companionOptions,
       waterFootprint: {
         floodLitersPerAcre: Math.round((cropMeta.waterReqMm || 500) * 4046.86),
         dripLitersPerAcre: Math.round((cropMeta.waterReqMm || 500) * 4046.86 * 0.48),
@@ -769,7 +776,6 @@ export default function App() {
 
       setAdvice(data);
     } catch {
-      // Apply exact distinct pairing client-side if server is offline
       const fallbackData = generateClientFallback(primaryCropKey, lang);
       setAdvice(fallbackData);
     } finally {
@@ -777,7 +783,6 @@ export default function App() {
     }
   };
 
-  // Save Blueprint Handler with Login Gate
   const handleSaveBlueprint = async () => {
     if (!user) {
       setAuthReason(d.loginPrompt);
@@ -1095,10 +1100,6 @@ export default function App() {
             onChange={(e) => { 
               const newL = e.target.value;
               setLang(newL); 
-              if (advice) {
-                // If advice is already generated, refresh it with new language
-                loadAdvice(newL);
-              }
             }} 
             className={`border p-1.5 rounded-xl text-xs font-bold transition-all shadow-sm ${
               isFieldMode ? 'bg-zinc-900 text-white border-zinc-700' : 'bg-white border-slate-200 text-slate-700'
@@ -1395,17 +1396,17 @@ export default function App() {
             })}
           </div>
 
-          {/* TAB 1: BLUEPRINT */}
+          {/* TAB 1: BLUEPRINT (ALL 3 DISTINCT TIERS) */}
           {activeTab === 'intercrop' && advice.intercrop && (
             <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 {advice.companionOptions?.map((opt, i) => {
                   const isCompanionActive = advice.intercrop?.key === opt.key;
                   return (
                     <div
                       key={i}
                       onClick={() => setAdvice(prev => ({ ...prev, intercrop: opt }))}
-                      className={`p-4 rounded-2xl border cursor-pointer transition-all shadow-sm ${
+                      className={`p-4 rounded-2xl border cursor-pointer transition-all shadow-sm flex flex-col justify-between ${
                         isCompanionActive 
                           ? 'bg-gradient-to-br from-emerald-950 to-teal-950 text-white border-emerald-500 ring-2 ring-emerald-500 shadow-emerald-900/20' 
                           : isFieldMode 
@@ -1413,14 +1414,21 @@ export default function App() {
                             : 'bg-white border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/20'
                       }`}
                     >
-                      <div className="flex justify-between items-center text-[10px] font-bold">
-                        <span className="text-emerald-400">{lang === 'ta' ? (opt.tier_ta || opt.tier) : opt.tier}</span>
-                        <span className="bg-emerald-900/60 px-2 py-0.5 rounded-full text-emerald-200 font-extrabold">LER {opt.lerScore}</span>
+                      <div>
+                        <div className="flex justify-between items-center text-[10px] font-bold">
+                          <span className={i === 0 ? "text-emerald-400 font-black" : i === 1 ? "text-teal-400 font-bold" : "text-amber-400 font-bold"}>
+                            {lang === 'ta' ? (opt.tier_ta || opt.tier) : opt.tier}
+                          </span>
+                          <span className="bg-emerald-900/60 px-2 py-0.5 rounded-full text-emerald-200 font-extrabold">LER {opt.lerScore}</span>
+                        </div>
+                        <h4 className="text-sm font-black mt-1.5">{lang === 'ta' ? (opt.name_ta || opt.name) : opt.name}</h4>
+                        <p className={`text-xs mt-1 line-clamp-3 leading-relaxed ${isCompanionActive ? 'text-slate-300' : 'text-slate-500'}`}>
+                          {lang === 'ta' ? (opt.reasoning_ta || opt.reasoning) : opt.reasoning}
+                        </p>
                       </div>
-                      <h4 className="text-sm font-black mt-1.5">{lang === 'ta' ? (opt.name_ta || opt.name) : opt.name}</h4>
-                      <p className={`text-xs mt-1 line-clamp-2 ${isCompanionActive ? 'text-slate-300' : 'text-slate-500'}`}>
-                        {lang === 'ta' ? (opt.reasoning_ta || opt.reasoning) : opt.reasoning}
-                      </p>
+                      <div className="mt-2 pt-2 border-t border-emerald-500/20 text-[10px] font-extrabold text-emerald-400">
+                        {isCompanionActive ? '✓ Selected Blueprint' : 'Click to select this crop'}
+                      </div>
                     </div>
                   );
                 })}
@@ -1433,10 +1441,13 @@ export default function App() {
                   : 'bg-gradient-to-br from-emerald-50/80 via-teal-50/50 to-white border-emerald-200'
               }`}>
                 <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-black text-emerald-800">
-                    {lang === 'ta' ? (advice.intercrop.name_ta || advice.intercrop.name) : advice.intercrop.name}
-                  </h3>
-                  <span className="bg-gradient-to-r from-emerald-600 to-teal-500 text-white text-xs font-black px-3 py-1 rounded-full shadow-sm">
+                  <div>
+                    <span className="text-[10px] font-black uppercase text-emerald-600">Active Recommended Blueprint</span>
+                    <h3 className="text-lg font-black text-emerald-800">
+                      {lang === 'ta' ? (advice.intercrop.name_ta || advice.intercrop.name) : advice.intercrop.name}
+                    </h3>
+                  </div>
+                  <span className="bg-gradient-to-r from-emerald-600 to-teal-500 text-white text-xs font-black px-3.5 py-1.5 rounded-full shadow-sm">
                     LER: {advice.intercrop.lerScore}
                   </span>
                 </div>
@@ -1460,10 +1471,11 @@ export default function App() {
                   </div>
                 </div>
 
-                <p className="text-xs leading-relaxed text-slate-700 bg-white/70 p-3 rounded-xl border border-emerald-100">
+                <p className="text-xs leading-relaxed text-slate-700 bg-white/70 p-3.5 rounded-xl border border-emerald-100">
                   <strong>💡 {lang === 'ta' ? 'பரிந்துரை காரணம்:' : 'Rationale:'}</strong> {lang === 'ta' ? (advice.intercrop.reasoning_ta || advice.intercrop.reasoning) : advice.intercrop.reasoning}
                 </p>
 
+                {/* Action Buttons */}
                 <div className="flex flex-wrap gap-2.5 pt-1">
                   <button 
                     onClick={handleSaveBlueprint}
@@ -1499,7 +1511,9 @@ export default function App() {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div className={`p-4 rounded-2xl border transition-all ${
-                  isFieldMode ? 'bg-zinc-900 border-zinc-800' : 'bg-gradient-to-br from-rose-50 to-orange-50/40 border-rose-100 shadow-sm'
+                  isFieldMode 
+                    ? 'bg-zinc-900 border-zinc-800' 
+                    : 'bg-gradient-to-br from-rose-50 to-orange-50/40 border-rose-100 shadow-sm'
                 }`}>
                   <p className="text-[10px] font-extrabold text-rose-500 uppercase">{lang === 'ta' ? 'பாரம்பரிய வாய்க்கால் பாசனம்' : 'Conventional Flood Irrigation'}</p>
                   <p className="text-xl font-black mt-1 text-rose-600">
@@ -1509,7 +1523,9 @@ export default function App() {
                 </div>
 
                 <div className={`p-4 rounded-2xl border transition-all ${
-                  isFieldMode ? 'bg-zinc-900 border-zinc-800' : 'bg-gradient-to-br from-cyan-50 to-blue-50/40 border-cyan-100 shadow-sm'
+                  isFieldMode 
+                    ? 'bg-zinc-900 border-zinc-800' 
+                    : 'bg-gradient-to-br from-cyan-50 to-blue-50/40 border-cyan-100 shadow-sm'
                 }`}>
                   <p className="text-[10px] font-extrabold text-cyan-600 uppercase">{lang === 'ta' ? 'பரிந்துரைக்கப்படும் சொட்டுநீர் தேவை' : 'AgriCompanion Drip System'}</p>
                   <p className="text-xl font-black mt-1 text-cyan-700">
@@ -1519,7 +1535,9 @@ export default function App() {
                 </div>
 
                 <div className={`p-4 rounded-2xl border transition-all ${
-                  isFieldMode ? 'bg-zinc-900 border-zinc-800' : 'bg-gradient-to-br from-emerald-50 to-teal-50/40 border-emerald-100 shadow-sm'
+                  isFieldMode 
+                    ? 'bg-zinc-900 border-zinc-800' 
+                    : 'bg-gradient-to-br from-emerald-50 to-teal-50/40 border-emerald-100 shadow-sm'
                 }`}>
                   <p className="text-[10px] font-extrabold text-emerald-600 uppercase">{lang === 'ta' ? 'சேமிக்கப்படும் நிகர நீர்' : 'Net Water Conserved'}</p>
                   <p className="text-xl font-black mt-1 text-emerald-600">
@@ -1532,7 +1550,9 @@ export default function App() {
               </div>
 
               <div className={`p-4 rounded-2xl border space-y-2 text-xs ${
-                isFieldMode ? 'bg-zinc-900/60 border-zinc-800' : 'bg-slate-50 border-slate-200'
+                isFieldMode 
+                  ? 'bg-zinc-900/60 border-zinc-800' 
+                  : 'bg-slate-50 border-slate-200'
               }`}>
                 <h4 className="font-extrabold text-emerald-700 text-xs uppercase flex items-center gap-1.5">
                   <span>⏱️</span> {lang === 'ta' ? 'பரிந்துரைக்கப்படும் சொட்டுநீர் அட்டவணை' : 'Precision Drip Scheduling Guide'}
@@ -1726,7 +1746,7 @@ export default function App() {
 
       {/* AUTHENTICATION MODAL */}
       {showAuth && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <form onSubmit={handleAuthSubmit} className="bg-white border border-emerald-100 p-6 rounded-2xl max-w-sm w-full space-y-4 text-slate-800 shadow-2xl">
             <div>
               <h3 className="text-base font-black text-emerald-700">{d.signIn}</h3>
@@ -1780,7 +1800,7 @@ export default function App() {
 
       {/* SAVED PLANS HISTORY MODAL */}
       {showHistory && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-white border border-emerald-100 p-6 rounded-2xl max-w-md w-full space-y-4 text-slate-800 shadow-2xl max-h-[80vh] overflow-y-auto">
             <div className="flex justify-between items-center border-b border-slate-100 pb-3">
               <h3 className="text-base font-black text-emerald-700">{d.viewHistory}</h3>
