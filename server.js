@@ -11,7 +11,7 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 5002;
 
-// In-Memory Fallback Stores for resilient zero-downtime hosting
+// In-Memory Fallback Stores
 const memoryUsers = new Map();
 const memoryHistory = [];
 
@@ -66,56 +66,56 @@ const initDatabase = async () => {
 
 initDatabase();
 
-// Crop Meta Registry (37 Crops - Tobacco & Rice Excluded)
+// Crop Meta Registry (37 Crops - Tobacco & Rice Excluded) with Water Need Metrics (mm/season)
 export const STATEWIDE_CROP_DIRECTORY = {
   // Vegetables
-  brinjal: { name: 'Brinjal / Eggplant', category: 'Vegetables', avgYield: 110, mandiRate: 24.50, msp: 18.00, costPerAcre: 26000, defaultSoil: 'Clay', harvestDur: '4 - 5 Months', safeMoisturePct: 85.0, ambientDays: 4, coldDays: 25 },
-  tomato: { name: 'Tomato', category: 'Vegetables', avgYield: 140, mandiRate: 22.00, msp: 15.00, costPerAcre: 32000, defaultSoil: 'Loamy', harvestDur: '3 - 4 Months', safeMoisturePct: 88.0, ambientDays: 6, coldDays: 28 },
-  bhendi: { name: 'Bhendi (Okra)', category: 'Vegetables', avgYield: 50, mandiRate: 28.00, msp: 20.00, costPerAcre: 18000, defaultSoil: 'Loamy', harvestDur: '3 Months', safeMoisturePct: 86.0, ambientDays: 3, coldDays: 14 },
-  chilli: { name: 'Chilli', category: 'Vegetables', avgYield: 18, mandiRate: 120.00, msp: 100.00, costPerAcre: 35000, defaultSoil: 'Black', harvestDur: '5 - 6 Months', safeMoisturePct: 10.0, ambientDays: 180, coldDays: 365 },
-  tapioca: { name: 'Tapioca (Cassava)', category: 'Vegetables', avgYield: 120, mandiRate: 11.50, msp: 9.50, costPerAcre: 24000, defaultSoil: 'Sandy', harvestDur: '9 - 10 Months', safeMoisturePct: 65.0, ambientDays: 3, coldDays: 20 },
-  onion: { name: 'Small Onion (Shallot)', category: 'Vegetables', avgYield: 60, mandiRate: 38.00, msp: 30.00, costPerAcre: 38000, defaultSoil: 'Loamy', harvestDur: '70 - 80 Days', safeMoisturePct: 12.0, ambientDays: 90, coldDays: 210 },
-  drumstick: { name: 'Drumstick (Moringa)', category: 'Vegetables', avgYield: 80, mandiRate: 32.00, msp: 24.00, costPerAcre: 20000, defaultSoil: 'Sandy', harvestDur: 'Perennial', safeMoisturePct: 82.0, ambientDays: 5, coldDays: 21 },
-  bittergourd: { name: 'Bitter Gourd', category: 'Vegetables', avgYield: 45, mandiRate: 34.00, msp: 26.00, costPerAcre: 25000, defaultSoil: 'Sandy', harvestDur: '3 - 4 Months', safeMoisturePct: 88.0, ambientDays: 4, coldDays: 18 },
-  snakegourd: { name: 'Snake Gourd', category: 'Vegetables', avgYield: 70, mandiRate: 22.00, msp: 17.00, costPerAcre: 22000, defaultSoil: 'Sandy', harvestDur: '4 Months', safeMoisturePct: 90.0, ambientDays: 4, coldDays: 14 },
-  radish: { name: 'Radish', category: 'Vegetables', avgYield: 80, mandiRate: 18.00, msp: 12.00, costPerAcre: 14000, defaultSoil: 'Sandy', harvestDur: '45 - 55 Days', safeMoisturePct: 90.0, ambientDays: 3, coldDays: 21 },
+  brinjal: { name: 'Brinjal / Eggplant', category: 'Vegetables', avgYield: 110, mandiRate: 24.50, msp: 18.00, costPerAcre: 26000, defaultSoil: 'Clay', harvestDur: '4 - 5 Months', safeMoisturePct: 85.0, ambientDays: 4, coldDays: 25, waterReqMm: 550 },
+  tomato: { name: 'Tomato', category: 'Vegetables', avgYield: 140, mandiRate: 22.00, msp: 15.00, costPerAcre: 32000, defaultSoil: 'Loamy', harvestDur: '3 - 4 Months', safeMoisturePct: 88.0, ambientDays: 6, coldDays: 28, waterReqMm: 500 },
+  bhendi: { name: 'Bhendi (Okra)', category: 'Vegetables', avgYield: 50, mandiRate: 28.00, msp: 20.00, costPerAcre: 18000, defaultSoil: 'Loamy', harvestDur: '3 Months', safeMoisturePct: 86.0, ambientDays: 3, coldDays: 14, waterReqMm: 400 },
+  chilli: { name: 'Chilli', category: 'Vegetables', avgYield: 18, mandiRate: 120.00, msp: 100.00, costPerAcre: 35000, defaultSoil: 'Black', harvestDur: '5 - 6 Months', safeMoisturePct: 10.0, ambientDays: 180, coldDays: 365, waterReqMm: 600 },
+  tapioca: { name: 'Tapioca (Cassava)', category: 'Vegetables', avgYield: 120, mandiRate: 11.50, msp: 9.50, costPerAcre: 24000, defaultSoil: 'Sandy', harvestDur: '9 - 10 Months', safeMoisturePct: 65.0, ambientDays: 3, coldDays: 20, waterReqMm: 750 },
+  onion: { name: 'Small Onion (Shallot)', category: 'Vegetables', avgYield: 60, mandiRate: 38.00, msp: 30.00, costPerAcre: 38000, defaultSoil: 'Loamy', harvestDur: '70 - 80 Days', safeMoisturePct: 12.0, ambientDays: 90, coldDays: 210, waterReqMm: 380 },
+  drumstick: { name: 'Drumstick (Moringa)', category: 'Vegetables', avgYield: 80, mandiRate: 32.00, msp: 24.00, costPerAcre: 20000, defaultSoil: 'Sandy', harvestDur: 'Perennial', safeMoisturePct: 82.0, ambientDays: 5, coldDays: 21, waterReqMm: 450 },
+  bittergourd: { name: 'Bitter Gourd', category: 'Vegetables', avgYield: 45, mandiRate: 34.00, msp: 26.00, costPerAcre: 25000, defaultSoil: 'Sandy', harvestDur: '3 - 4 Months', safeMoisturePct: 88.0, ambientDays: 4, coldDays: 18, waterReqMm: 420 },
+  snakegourd: { name: 'Snake Gourd', category: 'Vegetables', avgYield: 70, mandiRate: 22.00, msp: 17.00, costPerAcre: 22000, defaultSoil: 'Sandy', harvestDur: '4 Months', safeMoisturePct: 90.0, ambientDays: 4, coldDays: 14, waterReqMm: 450 },
+  radish: { name: 'Radish', category: 'Vegetables', avgYield: 80, mandiRate: 18.00, msp: 12.00, costPerAcre: 14000, defaultSoil: 'Sandy', harvestDur: '45 - 55 Days', safeMoisturePct: 90.0, ambientDays: 3, coldDays: 21, waterReqMm: 280 },
 
   // Pulses
-  blackgram: { name: 'Black Gram (Urad)', category: 'Pulses', avgYield: 4.5, mandiRate: 74.00, msp: 70.00, costPerAcre: 9500, defaultSoil: 'Clay', harvestDur: '70 - 75 Days', safeMoisturePct: 10.0, ambientDays: 240, coldDays: 540 },
-  greengram: { name: 'Green Gram (Moong)', category: 'Pulses', avgYield: 4.0, mandiRate: 86.00, msp: 85.58, costPerAcre: 9500, defaultSoil: 'Loamy', harvestDur: '60 - 65 Days', safeMoisturePct: 10.0, ambientDays: 240, coldDays: 540 },
-  pigeonpea: { name: 'Red Gram (Arhar / Tur)', category: 'Pulses', avgYield: 6.0, mandiRate: 78.00, msp: 75.50, costPerAcre: 12000, defaultSoil: 'Loamy', harvestDur: '5 - 6 Months', safeMoisturePct: 10.5, ambientDays: 300, coldDays: 540 },
-  cowpea: { name: 'Cowpea (Lobia)', category: 'Pulses', avgYield: 5.5, mandiRate: 64.00, msp: 58.00, costPerAcre: 9000, defaultSoil: 'Sandy', harvestDur: '65 - 75 Days', safeMoisturePct: 10.0, ambientDays: 210, coldDays: 500 },
-  horsegram: { name: 'Horse Gram (Kulthi)', category: 'Pulses', avgYield: 3.5, mandiRate: 48.00, msp: 42.00, costPerAcre: 6500, defaultSoil: 'Sandy', harvestDur: '80 - 90 Days', safeMoisturePct: 9.5, ambientDays: 365, coldDays: 700 },
-  chickpea: { name: 'Chickpea (Chana)', category: 'Pulses', avgYield: 5.0, mandiRate: 58.00, msp: 54.40, costPerAcre: 11000, defaultSoil: 'Black', harvestDur: '90 - 100 Days', safeMoisturePct: 9.5, ambientDays: 300, coldDays: 600 },
-  clusterbean: { name: 'Cluster Bean (Guar)', category: 'Pulses', avgYield: 15, mandiRate: 35.00, msp: 29.00, costPerAcre: 8500, defaultSoil: 'Sandy', harvestDur: '85 - 95 Days', safeMoisturePct: 11.0, ambientDays: 180, coldDays: 365 },
-  frenchbean: { name: 'French Bush Bean', category: 'Pulses', avgYield: 30, mandiRate: 45.00, msp: 35.00, costPerAcre: 18000, defaultSoil: 'Loamy', harvestDur: '55 - 65 Days', safeMoisturePct: 85.0, ambientDays: 4, coldDays: 20 },
+  blackgram: { name: 'Black Gram (Urad)', category: 'Pulses', avgYield: 4.5, mandiRate: 74.00, msp: 70.00, costPerAcre: 9500, defaultSoil: 'Clay', harvestDur: '70 - 75 Days', safeMoisturePct: 10.0, ambientDays: 240, coldDays: 540, waterReqMm: 300 },
+  greengram: { name: 'Green Gram (Moong)', category: 'Pulses', avgYield: 4.0, mandiRate: 86.00, msp: 85.58, costPerAcre: 9500, defaultSoil: 'Loamy', harvestDur: '60 - 65 Days', safeMoisturePct: 10.0, ambientDays: 240, coldDays: 540, waterReqMm: 280 },
+  pigeonpea: { name: 'Red Gram (Arhar / Tur)', category: 'Pulses', avgYield: 6.0, mandiRate: 78.00, msp: 75.50, costPerAcre: 12000, defaultSoil: 'Loamy', harvestDur: '5 - 6 Months', safeMoisturePct: 10.5, ambientDays: 300, coldDays: 540, waterReqMm: 450 },
+  cowpea: { name: 'Cowpea (Lobia)', category: 'Pulses', avgYield: 5.5, mandiRate: 64.00, msp: 58.00, costPerAcre: 9000, defaultSoil: 'Sandy', harvestDur: '65 - 75 Days', safeMoisturePct: 10.0, ambientDays: 210, coldDays: 500, waterReqMm: 320 },
+  horsegram: { name: 'Horse Gram (Kulthi)', category: 'Pulses', avgYield: 3.5, mandiRate: 48.00, msp: 42.00, costPerAcre: 6500, defaultSoil: 'Sandy', harvestDur: '80 - 90 Days', safeMoisturePct: 9.5, ambientDays: 365, coldDays: 700, waterReqMm: 220 },
+  chickpea: { name: 'Chickpea (Chana)', category: 'Pulses', avgYield: 5.0, mandiRate: 58.00, msp: 54.40, costPerAcre: 11000, defaultSoil: 'Black', harvestDur: '90 - 100 Days', safeMoisturePct: 9.5, ambientDays: 300, coldDays: 600, waterReqMm: 290 },
+  clusterbean: { name: 'Cluster Bean (Guar)', category: 'Pulses', avgYield: 15, mandiRate: 35.00, msp: 29.00, costPerAcre: 8500, defaultSoil: 'Sandy', harvestDur: '85 - 95 Days', safeMoisturePct: 11.0, ambientDays: 180, coldDays: 365, waterReqMm: 310 },
+  frenchbean: { name: 'French Bush Bean', category: 'Pulses', avgYield: 30, mandiRate: 45.00, msp: 35.00, costPerAcre: 18000, defaultSoil: 'Loamy', harvestDur: '55 - 65 Days', safeMoisturePct: 85.0, ambientDays: 4, coldDays: 20, waterReqMm: 350 },
 
   // Oilseeds
-  groundnut: { name: 'Groundnut (Peanut)', category: 'Oilseeds', avgYield: 12, mandiRate: 78.50, msp: 75.17, costPerAcre: 15500, defaultSoil: 'Sandy', harvestDur: '105 - 115 Days', safeMoisturePct: 8.0, ambientDays: 180, coldDays: 365 },
-  sesame: { name: 'Sesame (Til)', category: 'Oilseeds', avgYield: 3.5, mandiRate: 118.00, msp: 92.67, costPerAcre: 9000, defaultSoil: 'Sandy', harvestDur: '75 - 85 Days', safeMoisturePct: 7.0, ambientDays: 240, coldDays: 450 },
-  sunflower: { name: 'Sunflower', category: 'Oilseeds', avgYield: 7.0, mandiRate: 68.00, msp: 67.60, costPerAcre: 13000, defaultSoil: 'Black', harvestDur: '85 - 90 Days', safeMoisturePct: 8.5, ambientDays: 150, coldDays: 300 },
-  castor: { name: 'Castor', category: 'Oilseeds', avgYield: 6.5, mandiRate: 64.00, msp: 58.00, costPerAcre: 10500, defaultSoil: 'Sandy', harvestDur: '140 - 160 Days', safeMoisturePct: 8.0, ambientDays: 240, coldDays: 500 },
-  soybean: { name: 'Soybean', category: 'Oilseeds', avgYield: 8.5, mandiRate: 52.00, msp: 48.92, costPerAcre: 12500, defaultSoil: 'Clay', harvestDur: '85 - 90 Days', safeMoisturePct: 10.0, ambientDays: 210, coldDays: 400 },
-  coconut: { name: 'Coconut (Inter-bed base)', category: 'Oilseeds', avgYield: 45, mandiRate: 34.00, msp: 29.00, costPerAcre: 18000, defaultSoil: 'Sandy', harvestDur: 'Perennial', safeMoisturePct: 6.0, ambientDays: 90, coldDays: 240 },
+  groundnut: { name: 'Groundnut (Peanut)', category: 'Oilseeds', avgYield: 12, mandiRate: 78.50, msp: 75.17, costPerAcre: 15500, defaultSoil: 'Sandy', harvestDur: '105 - 115 Days', safeMoisturePct: 8.0, ambientDays: 180, coldDays: 365, waterReqMm: 500 },
+  sesame: { name: 'Sesame (Til)', category: 'Oilseeds', avgYield: 3.5, mandiRate: 118.00, msp: 92.67, costPerAcre: 9000, defaultSoil: 'Sandy', harvestDur: '75 - 85 Days', safeMoisturePct: 7.0, ambientDays: 240, coldDays: 450, waterReqMm: 250 },
+  sunflower: { name: 'Sunflower', category: 'Oilseeds', avgYield: 7.0, mandiRate: 68.00, msp: 67.60, costPerAcre: 13000, defaultSoil: 'Black', harvestDur: '85 - 90 Days', safeMoisturePct: 8.5, ambientDays: 150, coldDays: 300, waterReqMm: 450 },
+  castor: { name: 'Castor', category: 'Oilseeds', avgYield: 6.5, mandiRate: 64.00, msp: 58.00, costPerAcre: 10500, defaultSoil: 'Sandy', harvestDur: '140 - 160 Days', safeMoisturePct: 8.0, ambientDays: 240, coldDays: 500, waterReqMm: 480 },
+  soybean: { name: 'Soybean', category: 'Oilseeds', avgYield: 8.5, mandiRate: 52.00, msp: 48.92, costPerAcre: 12500, defaultSoil: 'Clay', harvestDur: '85 - 90 Days', safeMoisturePct: 10.0, ambientDays: 210, coldDays: 400, waterReqMm: 480 },
+  coconut: { name: 'Coconut (Inter-bed base)', category: 'Oilseeds', avgYield: 45, mandiRate: 34.00, msp: 29.00, costPerAcre: 18000, defaultSoil: 'Sandy', harvestDur: 'Perennial', safeMoisturePct: 6.0, ambientDays: 90, coldDays: 240, waterReqMm: 950 },
 
   // Millets & Cereals
-  maize: { name: 'Maize / Corn', category: 'Millets & Cereals', avgYield: 18, mandiRate: 25.80, msp: 24.10, costPerAcre: 15500, defaultSoil: 'Loamy', harvestDur: '3 - 4 Months', safeMoisturePct: 12.0, ambientDays: 180, coldDays: 540 },
-  pearlmillet: { name: 'Pearl Millet (Bajra)', category: 'Millets & Cereals', avgYield: 11, mandiRate: 27.50, msp: 26.25, costPerAcre: 10000, defaultSoil: 'Sandy', harvestDur: '80 - 85 Days', safeMoisturePct: 11.5, ambientDays: 240, coldDays: 600 },
-  sorghum: { name: 'Sorghum (Jowar)', category: 'Millets & Cereals', avgYield: 10, mandiRate: 35.00, msp: 33.71, costPerAcre: 11000, defaultSoil: 'Black', harvestDur: '100 - 110 Days', safeMoisturePct: 11.0, ambientDays: 240, coldDays: 600 },
-  fingermillet: { name: 'Finger Millet (Ragi)', category: 'Millets & Cereals', avgYield: 9.5, mandiRate: 44.00, msp: 42.90, costPerAcre: 11500, defaultSoil: 'Loamy', harvestDur: '110 - 120 Days', safeMoisturePct: 11.0, ambientDays: 365, coldDays: 720 },
-  barnyardmillet: { name: 'Barnyard Millet (Kuthiraivali)', category: 'Millets & Cereals', avgYield: 6.5, mandiRate: 45.00, msp: 38.00, costPerAcre: 8000, defaultSoil: 'Sandy', harvestDur: '90 - 100 Days', safeMoisturePct: 11.0, ambientDays: 300, coldDays: 650 },
-  foxtailmillet: { name: 'Foxtail Millet (Thinai)', category: 'Millets & Cereals', avgYield: 6.0, mandiRate: 43.00, msp: 37.00, costPerAcre: 8000, defaultSoil: 'Loamy', harvestDur: '80 - 90 Days', safeMoisturePct: 10.5, ambientDays: 300, coldDays: 650 },
-  kodomillet: { name: 'Kodo Millet (Varagu)', category: 'Millets & Cereals', avgYield: 5.5, mandiRate: 42.00, msp: 36.00, costPerAcre: 7500, defaultSoil: 'Sandy', harvestDur: '110 - 120 Days', safeMoisturePct: 10.5, ambientDays: 300, coldDays: 650 },
+  maize: { name: 'Maize / Corn', category: 'Millets & Cereals', avgYield: 18, mandiRate: 25.80, msp: 24.10, costPerAcre: 15500, defaultSoil: 'Loamy', harvestDur: '3 - 4 Months', safeMoisturePct: 12.0, ambientDays: 180, coldDays: 540, waterReqMm: 500 },
+  pearlmillet: { name: 'Pearl Millet (Bajra)', category: 'Millets & Cereals', avgYield: 11, mandiRate: 27.50, msp: 26.25, costPerAcre: 10000, defaultSoil: 'Sandy', harvestDur: '80 - 85 Days', safeMoisturePct: 11.5, ambientDays: 240, coldDays: 600, waterReqMm: 300 },
+  sorghum: { name: 'Sorghum (Jowar)', category: 'Millets & Cereals', avgYield: 10, mandiRate: 35.00, msp: 33.71, costPerAcre: 11000, defaultSoil: 'Black', harvestDur: '100 - 110 Days', safeMoisturePct: 11.0, ambientDays: 240, coldDays: 600, waterReqMm: 350 },
+  fingermillet: { name: 'Finger Millet (Ragi)', category: 'Millets & Cereals', avgYield: 9.5, mandiRate: 44.00, msp: 42.90, costPerAcre: 11500, defaultSoil: 'Loamy', harvestDur: '110 - 120 Days', safeMoisturePct: 11.0, ambientDays: 365, coldDays: 720, waterReqMm: 350 },
+  barnyardmillet: { name: 'Barnyard Millet (Kuthiraivali)', category: 'Millets & Cereals', avgYield: 6.5, mandiRate: 45.00, msp: 38.00, costPerAcre: 8000, defaultSoil: 'Sandy', harvestDur: '90 - 100 Days', safeMoisturePct: 11.0, ambientDays: 300, coldDays: 650, waterReqMm: 260 },
+  foxtailmillet: { name: 'Foxtail Millet (Thinai)', category: 'Millets & Cereals', avgYield: 6.0, mandiRate: 43.00, msp: 37.00, costPerAcre: 8000, defaultSoil: 'Loamy', harvestDur: '80 - 90 Days', safeMoisturePct: 10.5, ambientDays: 300, coldDays: 650, waterReqMm: 250 },
+  kodomillet: { name: 'Kodo Millet (Varagu)', category: 'Millets & Cereals', avgYield: 5.5, mandiRate: 42.00, msp: 36.00, costPerAcre: 7500, defaultSoil: 'Sandy', harvestDur: '110 - 120 Days', safeMoisturePct: 10.5, ambientDays: 300, coldDays: 650, waterReqMm: 270 },
 
   // Fiber & Cash (No Tobacco)
-  cotton: { name: 'Cotton', category: 'Cash & Fiber', avgYield: 8.5, mandiRate: 86.50, msp: 82.67, costPerAcre: 21000, defaultSoil: 'Black', harvestDur: '5 - 6 Months', safeMoisturePct: 8.5, ambientDays: 240, coldDays: 700 },
-  sugarcane: { name: 'Sugarcane', category: 'Cash & Fiber', avgYield: 420, mandiRate: 3.50, msp: 3.40, costPerAcre: 65000, defaultSoil: 'Clay', harvestDur: '10 - 12 Months', safeMoisturePct: 70.0, ambientDays: 3, coldDays: 10 },
-  sunnhemp: { name: 'Sunn Hemp', category: 'Cash & Fiber', avgYield: 7.0, mandiRate: 54.00, msp: 48.00, costPerAcre: 7000, defaultSoil: 'Sandy', harvestDur: '75 - 90 Days', safeMoisturePct: 10.0, ambientDays: 240, coldDays: 500 },
+  cotton: { name: 'Cotton', category: 'Cash & Fiber', avgYield: 8.5, mandiRate: 86.50, msp: 82.67, costPerAcre: 21000, defaultSoil: 'Black', harvestDur: '5 - 6 Months', safeMoisturePct: 8.5, ambientDays: 240, coldDays: 700, waterReqMm: 650 },
+  sugarcane: { name: 'Sugarcane', category: 'Cash & Fiber', avgYield: 420, mandiRate: 3.50, msp: 3.40, costPerAcre: 65000, defaultSoil: 'Clay', harvestDur: '10 - 12 Months', safeMoisturePct: 70.0, ambientDays: 3, coldDays: 10, waterReqMm: 1600 },
+  sunnhemp: { name: 'Sunn Hemp', category: 'Cash & Fiber', avgYield: 7.0, mandiRate: 54.00, msp: 48.00, costPerAcre: 7000, defaultSoil: 'Sandy', harvestDur: '75 - 90 Days', safeMoisturePct: 10.0, ambientDays: 240, coldDays: 500, waterReqMm: 260 },
 
   // Spices & Tubers
-  turmeric: { name: 'Turmeric', category: 'Spices & Tubers', avgYield: 24, mandiRate: 155.00, msp: 120.00, costPerAcre: 45000, defaultSoil: 'Clay', harvestDur: '8 - 9 Months', safeMoisturePct: 9.0, ambientDays: 365, coldDays: 720 },
-  ginger: { name: 'Ginger', category: 'Spices & Tubers', avgYield: 55, mandiRate: 90.00, msp: 72.00, costPerAcre: 52000, defaultSoil: 'Loamy', harvestDur: '8 - 9 Months', safeMoisturePct: 75.0, ambientDays: 20, coldDays: 90 },
-  coriander: { name: 'Coriander (Seed & Herb)', category: 'Spices & Tubers', avgYield: 4.5, mandiRate: 92.00, msp: 75.00, costPerAcre: 9000, defaultSoil: 'Black', harvestDur: '35 - 45 Days', safeMoisturePct: 9.0, ambientDays: 180, coldDays: 365 }
+  turmeric: { name: 'Turmeric', category: 'Spices & Tubers', avgYield: 24, mandiRate: 155.00, msp: 120.00, costPerAcre: 45000, defaultSoil: 'Clay', harvestDur: '8 - 9 Months', safeMoisturePct: 9.0, ambientDays: 365, coldDays: 720, waterReqMm: 900 },
+  ginger: { name: 'Ginger', category: 'Spices & Tubers', avgYield: 55, mandiRate: 90.00, msp: 72.00, costPerAcre: 52000, defaultSoil: 'Loamy', harvestDur: '8 - 9 Months', safeMoisturePct: 75.0, ambientDays: 20, coldDays: 90, waterReqMm: 850 },
+  coriander: { name: 'Coriander (Seed & Herb)', category: 'Spices & Tubers', avgYield: 4.5, mandiRate: 92.00, msp: 75.00, costPerAcre: 9000, defaultSoil: 'Black', harvestDur: '35 - 45 Days', safeMoisturePct: 9.0, ambientDays: 180, coldDays: 365, waterReqMm: 240 }
 };
 
 // IPM Protocol Engine
@@ -124,6 +124,41 @@ const PEST_REGISTRY = {
   bollworm: { pestName: 'Bollworm Complex & Whitefly (Bemisia tabaci)', cultural: 'Erect 15 yellow sticky cards per acre; remove alternate weed hosts.', bio: 'Beauveria bassiana @ 10g/L or release Chrysoperla predator larvae.', chemical: 'Flonicamid 50% WG @ 4g/10L water.', toxicity: 'Moderate', phiDays: 21 },
   spodoptera: { pestName: 'Leaf Miner & Spodoptera Armyworm', cultural: 'Plant Castor/Bajra borders to intercept egg clusters before they reach the main crop.', bio: 'Nuclear Polyhedrosis Virus (NPV @ 250 LE/acre) mixed with 1% jaggery.', chemical: 'Emamectin benzoate 5% SG @ 4g/10L water.', toxicity: 'Moderate', phiDays: 14 },
   general: { pestName: 'Sucking Pest Complex (Aphids, Thrips, Mites)', cultural: 'Mulch inter-rows with pulse canopy to eliminate exposed soil reflection.', bio: 'Spray 3% neem oil with soap water emulsifier.', chemical: 'Imidacloprid 17.8% SL @ 0.5 ml/L water (Last resort).', toxicity: 'Severe', phiDays: 10 }
+};
+
+// Water Footprint & Drip Irrigation Schedule Engine
+const calculateWaterFootprintAndDrip = (primaryCropKey, soilType = 'Clay') => {
+  const cropMeta = STATEWIDE_CROP_DIRECTORY[primaryCropKey] || STATEWIDE_CROP_DIRECTORY.brinjal;
+  const baseWaterMm = cropMeta.waterReqMm || 500;
+
+  // 1 mm water on 1 acre = 4,046.86 Liters
+  const LITERS_PER_MM_ACRE = 4046.86;
+  const floodLitersPerAcre = Math.round(baseWaterMm * LITERS_PER_MM_ACRE);
+
+  // Precision Drip achieves ~45% water savings; living intercrop mulch reduces evaporation by another ~10%
+  const dripLitersPerAcre = Math.round(floodLitersPerAcre * 0.48);
+  const waterSavedLitersPerAcre = floodLitersPerAcre - dripLitersPerAcre;
+
+  // Soil-specific drip runtime calculation (based on standard 2.4 LPH drippers spaced at 40cm)
+  const soilFactors = {
+    Clay: { hoursPerIrrigation: 1.5, frequencyDays: 3, infiltration: 'Slow (High Moisture Retention)' },
+    Black: { hoursPerIrrigation: 1.8, frequencyDays: 3, infiltration: 'Medium-Slow (High Shrink-Swell)' },
+    Loamy: { hoursPerIrrigation: 2.0, frequencyDays: 2, infiltration: 'Optimal Infiltration Rate' },
+    Sandy: { hoursPerIrrigation: 1.0, frequencyDays: 1, infiltration: 'Rapid (Requires Frequent Micro-Pulses)' }
+  }[soilType] || { hoursPerIrrigation: 1.8, frequencyDays: 2, infiltration: 'Moderate' };
+
+  return {
+    floodLitersPerAcre,
+    dripLitersPerAcre,
+    waterSavedLitersPerAcre,
+    waterSavedPercent: 52,
+    dripSchedule: {
+      runtimeHoursPerCycle: soilFactors.hoursPerIrrigation,
+      irrigationIntervalDays: soilFactors.frequencyDays,
+      soilInfiltrationNote: soilFactors.infiltration,
+      evaporationReduction: '32% due to canopy soil shading'
+    }
+  };
 };
 
 // Soil Chemistry Audit Engine
@@ -164,12 +199,11 @@ const getAgronomicDistinctCompanions = (cropKey, districtKey = 'thanjavur', soil
   const s = String(soilType || 'Loamy').toLowerCase();
 
   const labels = {
-    high: lang === 'ta' ? '⭐ மிகச் சிறந்த பரிந்துரை' : lang === 'hi' ? '⭐ अत्यधिक अनुशंसित' : '⭐ Highly Recommended',
-    rec: lang === 'ta' ? '👍 பரிந்துரைக்கப்படுகிறது' : lang === 'hi' ? '👍 अनुशंसित' : '👍 Recommended',
-    alt: lang === 'ta' ? '🌾 சாத்தியமான மாற்றுப் பயிர்' : lang === 'hi' ? '🌾 व्यावहारिक विकल्प' : '🌾 Feasible Alternative'
+    high: lang === 'ta' ? '⭐ மிகச் சிறந்த பரிந்துரை' : '⭐ Highly Recommended',
+    rec: lang === 'ta' ? '👍 பரிந்துரைக்கப்படுகிறது' : '👍 Recommended',
+    alt: lang === 'ta' ? '🌾 சாத்தியமான மாற்றுப் பயிர்' : '🌾 Feasible Alternative'
   };
 
-  // 1. COTTON
   if (c.includes('cotton')) {
     if (s.includes('black') || d.includes('virudhunagar') || d.includes('thoothukudi') || d.includes('tirunelveli')) {
       return [
@@ -185,7 +219,6 @@ const getAgronomicDistinctCompanions = (cropKey, districtKey = 'thanjavur', soil
     ];
   }
 
-  // 2. GROUNDNUT
   if (c.includes('groundnut')) {
     if (d.includes('villupuram') || d.includes('cuddalore') || s.includes('sandy')) {
       return [
@@ -201,79 +234,7 @@ const getAgronomicDistinctCompanions = (cropKey, districtKey = 'thanjavur', soil
     ];
   }
 
-  // 3. MAIZE, SORGHUM & MILLETS
-  if (c.includes('maize') || c.includes('sorghum') || c.includes('millet') || c.includes('ragi')) {
-    return [
-      { tier: labels.high, key: 'cowpea', name: 'Cowpea (Lobia)', rowRatio: '2:1', spacing: '30 cm x 10 cm', nitrogenFixed: 35, lerScore: 1.35, harvestDuration: '65 - 75 Days', storageLife: 'Ambient 7 Months (≤10% moisture)', reasoning: `Erect cereal stalks allow dense Cowpea ground foliage to smother weed flushes and fix active biological nitrogen in ${districtKey.toUpperCase()}.` },
-      { tier: labels.rec, key: 'greengram', name: 'Green Gram (Moong)', rowRatio: '1:2', spacing: '25 cm x 10 cm', nitrogenFixed: 30, lerScore: 1.30, harvestDuration: '60 - 65 Days', storageLife: 'Ambient 8 Months (≤10% moisture)', reasoning: 'Harvested in 60 days before tall cereal leaves close their upper canopy.' },
-      { tier: labels.alt, key: 'soybean', name: 'Soybean', rowRatio: '2:2 Strip', spacing: '30 cm x 10 cm', nitrogenFixed: 36, lerScore: 1.29, harvestDuration: '85 - 90 Days', storageLife: 'Ambient 7 Months (≤10% moisture)', reasoning: 'Robust oilseed income with complementary erect rooting architecture.' }
-    ];
-  }
-
-  // 4. CHILLI
-  if (c.includes('chilli')) {
-    return [
-      { tier: labels.high, key: 'onion', name: 'Small Onion (Shallot)', rowRatio: '1:2', spacing: '15 cm x 10 cm', nitrogenFixed: 0, lerScore: 1.36, harvestDuration: '70 Days', storageLife: 'Aerated racks 90 Days', reasoning: `In ${districtKey.toUpperCase()}, Shallot's pungent sulfur volatiles deter thrips and aphids, while bulbs mature before peak chilli harvests.` },
-      { tier: labels.rec, key: 'coriander', name: 'Coriander (Kothamalli)', rowRatio: '1:1', spacing: '15 cm x 5 cm', nitrogenFixed: 0, lerScore: 1.30, harvestDuration: '40 Days', storageLife: 'Fresh bundles 3 Days', reasoning: 'Quick shallow-rooted intercrop providing early revenue within 4 weeks.' },
-      { tier: labels.alt, key: 'marigold', name: 'Marigold (Trap Crop)', rowRatio: '1:6 Border', spacing: '45 cm x 30 cm', nitrogenFixed: 0, lerScore: 1.26, harvestDuration: '65 Days', storageLife: 'Cut flowers 3 Days', reasoning: 'Roots secrete alpha-terthienyl, neutralizing root-knot nematodes in sandy/black tracts.' }
-    ];
-  }
-
-  // 5. TOMATO
-  if (c.includes('tomato')) {
-    return [
-      { tier: labels.high, key: 'frenchbean', name: 'French Bush Bean', rowRatio: '1:1', spacing: '30 cm x 15 cm', nitrogenFixed: 28, lerScore: 1.34, harvestDuration: '55 - 65 Days', storageLife: 'Crates 4 Days, Cold store 20 Days', reasoning: 'Bush legume adds atmospheric nitrogen into heavy-feeder tomato beds without tangling trellises.' },
-      { tier: labels.rec, key: 'marigold', name: 'Marigold (Trap Crop)', rowRatio: '1:6 Border', spacing: '45 cm x 30 cm', nitrogenFixed: 0, lerScore: 1.31, harvestDuration: '65 Days', storageLife: 'Fresh 3 Days', reasoning: 'TNAU-recommended trap crop that lures Helicoverpa fruit borers away from tomato clusters.' },
-      { tier: labels.alt, key: 'radish', name: 'Radish', rowRatio: '1:2', spacing: '20 cm x 10 cm', nitrogenFixed: 0, lerScore: 1.25, harvestDuration: '45 Days', storageLife: 'Fresh 3 Days, Cold 21 Days', reasoning: 'Quick root crop pulled in 45 days along bed shoulders before tomato vines spread wide.' }
-    ];
-  }
-
-  // 6. TAPIOCA (CASSAVA)
-  if (c.includes('tapioca')) {
-    return [
-      { tier: labels.high, key: 'groundnut', name: 'Groundnut (Peanut)', rowRatio: '1:2', spacing: '30 cm x 10 cm', nitrogenFixed: 25, lerScore: 1.41, harvestDuration: '105 Days', storageLife: 'Ambient 6 Months', reasoning: `Exploits wide 90cm spaces between tapioca setts in ${districtKey.toUpperCase()}, generating immediate revenue while tapioca establishes.` },
-      { tier: labels.rec, key: 'blackgram', name: 'Black Gram (Urad)', rowRatio: '1:2', spacing: '30 cm x 10 cm', nitrogenFixed: 30, lerScore: 1.33, harvestDuration: '70 Days', storageLife: 'Ambient 8 Months', reasoning: 'Suppresses early weeds and leaves organic nitrogen residues in red loamy soils.' },
-      { tier: labels.alt, key: 'cowpea', name: 'Cowpea (Lobia)', rowRatio: '1:2', spacing: '30 cm x 10 cm', nitrogenFixed: 32, lerScore: 1.29, harvestDuration: '65 Days', storageLife: 'Ambient 7 Months', reasoning: 'Living mulch that conserves topsoil moisture during early juvenile growth.' }
-    ];
-  }
-
-  // 7. TURMERIC / GINGER
-  if (c.includes('turmeric') || c.includes('ginger')) {
-    return [
-      { tier: labels.high, key: 'onion', name: 'Small Onion (Shallot)', rowRatio: '1:2 Raised Bed', spacing: '15 cm x 10 cm', nitrogenFixed: 0, lerScore: 1.37, harvestDuration: '70 Days', storageLife: 'Aerated racks 90 Days', reasoning: `In ${districtKey.toUpperCase()}'s raised beds, onions mature in 70 days, paying off bed prep costs before turmeric rhizomes expand.` },
-      { tier: labels.rec, key: 'frenchbean', name: 'French Bush Bean', rowRatio: '1:2', spacing: '30 cm x 15 cm', nitrogenFixed: 26, lerScore: 1.31, harvestDuration: '60 Days', storageLife: 'Fresh 4 Days', reasoning: 'Bio-nitrogen enrichment directly feeding the rhizome root zone.' },
-      { tier: labels.alt, key: 'coriander', name: 'Coriander (Kothamalli)', rowRatio: '1:2', spacing: '15 cm x 5 cm', nitrogenFixed: 0, lerScore: 1.28, harvestDuration: '40 Days', storageLife: 'Fresh 3 Days', reasoning: 'Fast catch crop harvested in 40 days before vegetative shoots emerge.' }
-    ];
-  }
-
-  // 8. COCONUT
-  if (c.includes('coconut')) {
-    return [
-      { tier: labels.high, key: 'drumstick', name: 'Drumstick (Moringa)', rowRatio: 'Inter-Basin Alley', spacing: '2.5m x 2.5m', nitrogenFixed: 0, lerScore: 1.52, harvestDuration: 'Perennial', storageLife: 'Fresh pods 5 Days', reasoning: 'High-yielding agroforestry companion maximizing sunlight in wide palm alleys.' },
-      { tier: labels.rec, key: 'banana', name: 'Banana (Plantain)', rowRatio: 'Inter-row Matrix', spacing: '2m x 2m', nitrogenFixed: 0, lerScore: 1.45, harvestDuration: '11 Months', storageLife: 'Fresh bunches 10 Days', reasoning: 'Retains microclimate humidity, suppresses understory weeds, and provides steady bunch sales.' },
-      { tier: labels.alt, key: 'turmeric', name: 'Turmeric', rowRatio: 'Shaded Basin Beds', spacing: '30 cm x 20 cm', nitrogenFixed: 0, lerScore: 1.38, harvestDuration: '9 Months', storageLife: 'Cured rhizomes 12 Months', reasoning: 'Shade-tolerant spice crop thriving in palm understory leaf litter.' }
-    ];
-  }
-
-  // 9. SUGARCANE
-  if (c.includes('sugarcane')) {
-    return [
-      { tier: labels.high, key: 'soybean', name: 'Soybean', rowRatio: '1:2', spacing: '30 cm x 10 cm', nitrogenFixed: 36, lerScore: 1.39, harvestDuration: '85 Days', storageLife: 'Ambient 7 Months', reasoning: 'Soybean thrives in wide 120cm cane rows during the 90-day slow tillering phase, adding organic nitrogen.' },
-      { tier: labels.rec, key: 'frenchbean', name: 'French Bush Bean', rowRatio: '1:2', spacing: '30 cm x 15 cm', nitrogenFixed: 26, lerScore: 1.32, harvestDuration: '60 Days', storageLife: 'Fresh 4 Days', reasoning: 'High-value fresh pod harvest before the main cane canopy closes.' },
-      { tier: labels.alt, key: 'sunnhemp', name: 'Sunn Hemp', rowRatio: '1:1 Ridge base', spacing: '20 cm x 10 cm', nitrogenFixed: 40, lerScore: 1.25, harvestDuration: '50 Days (Mulch)', storageLife: 'Green manure incorporated in-situ', reasoning: 'Trampled into furrows at 50 days as green manure, slashing commercial fertilizer requirements.' }
-    ];
-  }
-
-  // 10. PULSES (Black Gram, Green Gram, Red Gram, Cowpea, Horse Gram, Chickpea)
-  if (c.includes('gram') || c.includes('pigeonpea') || c.includes('cowpea') || c.includes('horsegram') || c.includes('chickpea')) {
-    return [
-      { tier: labels.high, key: 'sesame', name: 'Sesame (Til)', rowRatio: '3:1', spacing: '30 cm x 10 cm', nitrogenFixed: 0, lerScore: 1.32, harvestDuration: '75 Days', storageLife: 'Godown 8 Months', reasoning: 'High-value dual oilseed-pulse pairing: erect sesame stems complement sprawling pulse canopies.' },
-      { tier: labels.rec, key: 'pearlmillet', name: 'Pearl Millet (Bajra)', rowRatio: '4:1 Border', spacing: '45 cm x 15 cm', nitrogenFixed: 0, lerScore: 1.28, harvestDuration: '80 Days', storageLife: 'Ambient 8 Months', reasoning: 'Tall border barrier protecting pulse flowers from desiccation by dry summer winds.' },
-      { tier: labels.alt, key: 'castor', name: 'Castor', rowRatio: '6:1 Perimeter', spacing: '90 cm x 30 cm', nitrogenFixed: 0, lerScore: 1.25, harvestDuration: '140 Days', storageLife: 'Godown 8 Months', reasoning: 'Deep subsoil water foraging and effective pest diversion border.' }
-    ];
-  }
-
-  // 11. GENERAL VEGETABLES & BRINJAL (Cauvery Delta vs. Other Zones)
+  // Delta Default (Vegetables & Brinjal)
   if (d.includes('thanjavur') || d.includes('tiruvarur') || d.includes('mayiladuthurai') || s.includes('clay')) {
     return [
       { tier: labels.high, key: 'coriander', name: 'Coriander (Kothamalli)', rowRatio: '1:2', spacing: '15 cm x 5 cm', nitrogenFixed: 0, lerScore: 1.34, harvestDuration: '35 - 45 Days', storageLife: 'Fresh 3 Days, Seed 6 Months', reasoning: `In ${districtKey.toUpperCase()}'s fertile riverbed alluvium, Coriander matures in 40 days between 75cm ridges, generating immediate early income before brinjal branches spread.` },
@@ -289,7 +250,7 @@ const getAgronomicDistinctCompanions = (cropKey, districtKey = 'thanjavur', soil
   ];
 };
 
-// Recommendation Endpoint
+// Recommendation Endpoint (Includes Water Footprint & Drip Model)
 app.post('/api/recommend', async (req, res) => {
   try {
     const { primaryCropKey, districtKey, soilType, lang } = req.body;
@@ -322,6 +283,9 @@ app.post('/api/recommend', async (req, res) => {
     // Compute Soil Chemical Audit
     const soilChemistry = calculateSoilChemistryEvolution(cKey, activeCompanion.nitrogenFixed, sType);
 
+    // Compute Water Footprint and Drip Automation Metrics
+    const waterFootprint = calculateWaterFootprintAndDrip(cKey, sType);
+
     // Select matched IPM Protocol
     let pestData = PEST_REGISTRY.borer;
     if (cKey.includes('cotton')) pestData = PEST_REGISTRY.bollworm;
@@ -334,6 +298,7 @@ app.post('/api/recommend', async (req, res) => {
       intercrop: activeCompanion,
       companionOptions,
       soilChemistry,
+      waterFootprint,
       pests: [pestData]
     });
   } catch (err) {
@@ -357,8 +322,7 @@ app.get('/api/weather', async (req, res) => {
 
     const dayLabels = {
       en: ['Day 1 (Today)', 'Day 2', 'Day 3', 'Day 4', 'Day 5'],
-      ta: ['நாள் 1 (இன்று)', 'நாள் 2', 'நாள் 3', 'நாள் 4', 'நாள் 5'],
-      hi: ['दिन 1 (आज)', 'दिन 2', 'दिन 3', 'दिन 4', 'दिन 5']
+      ta: ['நாள் 1 (இன்று)', 'நாள் 2', 'நாள் 3', 'நாள் 4', 'நாள் 5']
     };
     const labels = dayLabels[lang] || dayLabels.en;
 
