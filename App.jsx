@@ -3,22 +3,277 @@ import ReactDOM from 'react-dom/client';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5002';
 
-// Statewide Tamil Nadu Agro-Climatic Districts
-const TN_AGRO_DISTRICTS = {
-  thanjavur: { name: 'Thanjavur', zone: 'Cauvery Delta', defaultSoil: 'Clay', coords: [10.7870, 79.1378] },
-  tiruvarur: { name: 'Tiruvarur', zone: 'Cauvery Delta', defaultSoil: 'Clay', coords: [10.7725, 79.6365] },
-  nagapattinam: { name: 'Nagapattinam', zone: 'Cauvery Delta', defaultSoil: 'Clay', coords: [10.7672, 79.8449] },
-  coimbatore: { name: 'Coimbatore', zone: 'Western Zone', defaultSoil: 'Loamy', coords: [11.0168, 76.9558] },
-  tiruppur: { name: 'Tiruppur', zone: 'Western Zone', defaultSoil: 'Black', coords: [11.1085, 77.3411] },
-  erode: { name: 'Erode', zone: 'Western Zone', defaultSoil: 'Loamy', coords: [11.3410, 77.7172] },
-  madurai: { name: 'Madurai', zone: 'Southern Zone', defaultSoil: 'Black', coords: [9.9252, 78.1198] },
-  virudhunagar: { name: 'Virudhunagar', zone: 'Southern Zone', defaultSoil: 'Black', coords: [9.5680, 77.9624] },
-  thoothukudi: { name: 'Thoothukudi', zone: 'Southern Zone', defaultSoil: 'Black', coords: [8.7642, 78.1348] },
-  villupuram: { name: 'Villupuram', zone: 'North Eastern Zone', defaultSoil: 'Sandy', coords: [11.9401, 79.4861] },
-  salem: { name: 'Salem', zone: 'North Western Zone', defaultSoil: 'Loamy', coords: [11.6643, 78.1460] }
+// 38 Districts of Tamil Nadu with their Constituencies & Taluks
+const TN_38_DISTRICTS = {
+  thanjavur: {
+    name: 'Thanjavur',
+    zone: 'Cauvery Delta',
+    defaultSoil: 'Clay',
+    coords: [10.7870, 79.1378],
+    units: ['Thanjavur', 'Thiruvaiyaru', 'Kumbakonam', 'Papanasam', 'Pattukkottai', 'Peravurani', 'Orathanadu', 'Thiruvidaimarudur']
+  },
+  tiruvarur: {
+    name: 'Tiruvarur',
+    zone: 'Cauvery Delta',
+    defaultSoil: 'Clay',
+    coords: [10.7725, 79.6365],
+    units: ['Tiruvarur', 'Mannargudi', 'Thiruthuraipoondi', 'Nannilam', 'Kudavasal', 'Valangaiman', 'Needamangalam']
+  },
+  nagapattinam: {
+    name: 'Nagapattinam',
+    zone: 'Cauvery Delta',
+    defaultSoil: 'Clay',
+    coords: [10.7672, 79.8449],
+    units: ['Nagapattinam', 'Kilvelur', 'Vedaranyam', 'Thirukkuvalai']
+  },
+  mayiladuthurai: {
+    name: 'Mayiladuthurai',
+    zone: 'Cauvery Delta',
+    defaultSoil: 'Clay',
+    coords: [11.1075, 79.6524],
+    units: ['Mayiladuthurai', 'Sirkazhi', 'Poompuhar', 'Tharangambadi', 'Kuthalam']
+  },
+  coimbatore: {
+    name: 'Coimbatore',
+    zone: 'Western Zone',
+    defaultSoil: 'Loamy',
+    coords: [11.0168, 76.9558],
+    units: ['Coimbatore North', 'Coimbatore South', 'Pollachi', 'Sulur', 'Mettupalayam', 'Valparai', 'Thondamuthur', 'Singanallur', 'Kinathukadavu']
+  },
+  tiruppur: {
+    name: 'Tiruppur',
+    zone: 'Western Zone',
+    defaultSoil: 'Black',
+    coords: [11.1085, 77.3411],
+    units: ['Tiruppur North', 'Tiruppur South', 'Avinashi', 'Palladam', 'Udumalaipettai', 'Dharapuram', 'Kangeyam', 'Madathukulam']
+  },
+  erode: {
+    name: 'Erode',
+    zone: 'Western Zone',
+    defaultSoil: 'Loamy',
+    coords: [11.3410, 77.7172],
+    units: ['Erode East', 'Erode West', 'Gobichettipalayam', 'Bhavani', 'Anthiyur', 'Perundurai', 'Modakkurichi', 'Bhavanisagar']
+  },
+  dindigul: {
+    name: 'Dindigul',
+    zone: 'Western Zone',
+    defaultSoil: 'Loamy',
+    coords: [10.3673, 77.9803],
+    units: ['Dindigul', 'Palani', 'Oddanchatram', 'Athoor', 'Nilakkottai', 'Natham', 'Vedasandur', 'Kodaikanal']
+  },
+  karur: {
+    name: 'Karur',
+    zone: 'Western Zone',
+    defaultSoil: 'Loamy',
+    coords: [10.9601, 78.0766],
+    units: ['Karur', 'Aravakurichi', 'Kulithalai', 'Krishnarayapuram', 'Kadavur']
+  },
+  madurai: {
+    name: 'Madurai',
+    zone: 'Southern Zone',
+    defaultSoil: 'Black',
+    coords: [9.9252, 78.1198],
+    units: ['Madurai North', 'Madurai South', 'Madurai Central', 'Madurai West', 'Melur', 'Thirumangalam', 'Usilampatti', 'Sholavandan', 'Thiruparankundram']
+  },
+  virudhunagar: {
+    name: 'Virudhunagar',
+    zone: 'Southern Zone',
+    defaultSoil: 'Black',
+    coords: [9.5680, 77.9624],
+    units: ['Virudhunagar', 'Rajapalayam', 'Sivakasi', 'Sattur', 'Aruppukkottai', 'Tiruchuli', 'Srivilliputhur']
+  },
+  thoothukudi: {
+    name: 'Thoothukudi',
+    zone: 'Southern Zone',
+    defaultSoil: 'Black',
+    coords: [8.7642, 78.1348],
+    units: ['Thoothukudi', 'Tiruchendur', 'Kovilpatti', 'Ottapidaram', 'Vilathikulam', 'Srivaikuntam', 'Eral']
+  },
+  tirunelveli: {
+    name: 'Tirunelveli',
+    zone: 'Southern Zone',
+    defaultSoil: 'Black',
+    coords: [8.7139, 77.7567],
+    units: ['Tirunelveli', 'Palayamkottai', 'Ambasamudram', 'Nanguneri', 'Radhapuram', 'Manur']
+  },
+  tenkasi: {
+    name: 'Tenkasi',
+    zone: 'Southern Zone',
+    defaultSoil: 'Loamy',
+    coords: [8.9594, 77.3149],
+    units: ['Tenkasi', 'Kadayanallur', 'Sankarankovil', 'Vasudevanallur', 'Alangulam', 'Shenkottai']
+  },
+  kanyakumari: {
+    name: 'Kanyakumari',
+    zone: 'High Rainfall Zone',
+    defaultSoil: 'Loamy',
+    coords: [8.0883, 77.5385],
+    units: ['Kanyakumari', 'Nagercoil', 'Colachel', 'Padmanabhapuram', 'Vilavancode', 'Killiyoor', 'Thovalai']
+  },
+  ramanathapuram: {
+    name: 'Ramanathapuram',
+    zone: 'Southern Zone',
+    defaultSoil: 'Sandy',
+    coords: [9.3639, 78.8395],
+    units: ['Ramanathapuram', 'Paramakudi', 'Tiruvadanai', 'Mudukulathur', 'Rameswaram', 'Kamuthi', 'Kadaladi']
+  },
+  sivagangai: {
+    name: 'Sivagangai',
+    zone: 'Southern Zone',
+    defaultSoil: 'Loamy',
+    coords: [9.8433, 78.4809],
+    units: ['Sivagangai', 'Karaikudi', 'Tiruppattur', 'Manamadurai', 'Ilayangudi', 'Devakottai', 'Singampunari']
+  },
+  theni: {
+    name: 'Theni',
+    zone: 'Southern Zone',
+    defaultSoil: 'Loamy',
+    coords: [10.0104, 77.4768],
+    units: ['Bodinayakanur', 'Periyakulam', 'Cumbum', 'Andipatti', 'Uthamapalayam']
+  },
+  salem: {
+    name: 'Salem',
+    zone: 'North Western Zone',
+    defaultSoil: 'Loamy',
+    coords: [11.6643, 78.1460],
+    units: ['Salem North', 'Salem South', 'Salem West', 'Attur', 'Mettur', 'Omalur', 'Edappadi', 'Sankari', 'Yercaud', 'Gangavalli']
+  },
+  dharmapuri: {
+    name: 'Dharmapuri',
+    zone: 'North Western Zone',
+    defaultSoil: 'Loamy',
+    coords: [12.1211, 78.1582],
+    units: ['Dharmapuri', 'Pennagaram', 'Palacode', 'Harur', 'Pappireddipatti', 'Nallampalli']
+  },
+  krishnagiri: {
+    name: 'Krishnagiri',
+    zone: 'North Western Zone',
+    defaultSoil: 'Loamy',
+    coords: [12.5186, 78.2137],
+    units: ['Krishnagiri', 'Hosur', 'Uthangarai', 'Bargur', 'Pochampalli', 'Shoolagiri', 'Denkanikottai']
+  },
+  namakkal: {
+    name: 'Namakkal',
+    zone: 'North Western Zone',
+    defaultSoil: 'Loamy',
+    coords: [11.2189, 78.1674],
+    units: ['Namakkal', 'Rasipuram', 'Tiruchengode', 'Paramathi Velur', 'Sendamangalam', 'Kolli Hills']
+  },
+  cuddalore: {
+    name: 'Cuddalore',
+    zone: 'North Eastern Zone',
+    defaultSoil: 'Clay',
+    coords: [11.7480, 79.7714],
+    units: ['Cuddalore', 'Panruti', 'Chidambaram', 'Virudhachalam', 'Neyveli', 'Bhuvanagiri', 'Tittakudi', 'Kattumannarkoil']
+  },
+  villupuram: {
+    name: 'Villupuram',
+    zone: 'North Eastern Zone',
+    defaultSoil: 'Sandy',
+    coords: [11.9401, 79.4861],
+    units: ['Villupuram', 'Tindivanam', 'Vanur', 'Mailam', 'Vikravandi', 'Gingee', 'Kandachipuram']
+  },
+  kallakurichi: {
+    name: 'Kallakurichi',
+    zone: 'North Eastern Zone',
+    defaultSoil: 'Loamy',
+    coords: [11.7384, 78.9639],
+    units: ['Kallakurichi', 'Sankarapuram', 'Rishivandiyam', 'Ulundurpet', 'Chinnasalem', 'Kalvarayan Hills']
+  },
+  tiruvannamalai: {
+    name: 'Tiruvannamalai',
+    zone: 'North Eastern Zone',
+    defaultSoil: 'Loamy',
+    coords: [12.2253, 79.0747],
+    units: ['Tiruvannamalai', 'Arani', 'Cheyyar', 'Polur', 'Chengam', 'Kalasapakkam', 'Kilpennathur', 'Vandavasi']
+  },
+  vellore: {
+    name: 'Vellore',
+    zone: 'North Eastern Zone',
+    defaultSoil: 'Loamy',
+    coords: [12.9165, 79.1325],
+    units: ['Vellore', 'Anaikattu', 'Gudiyatham', 'Katpadi', 'KV Kuppam', 'Pernambut']
+  },
+  tirupathur: {
+    name: 'Tirupathur',
+    zone: 'North Eastern Zone',
+    defaultSoil: 'Loamy',
+    coords: [12.4926, 78.5677],
+    units: ['Tirupathur', 'Vaniyambadi', 'Ambur', 'Natrampalli']
+  },
+  ranipet: {
+    name: 'Ranipet',
+    zone: 'North Eastern Zone',
+    defaultSoil: 'Loamy',
+    coords: [12.9224, 79.3330],
+    units: ['Ranipet', 'Arcot', 'Arakkonam', 'Sholinghur', 'Nemili', 'Walajah']
+  },
+  kanchipuram: {
+    name: 'Kanchipuram',
+    zone: 'North Eastern Zone',
+    defaultSoil: 'Loamy',
+    coords: [12.8342, 79.7036],
+    units: ['Kanchipuram', 'Sriperumbudur', 'Uthiramerur', 'Walajabad', 'Kundrathur']
+  },
+  chengalpattu: {
+    name: 'Chengalpattu',
+    zone: 'North Eastern Zone',
+    defaultSoil: 'Sandy',
+    coords: [12.6841, 79.9836],
+    units: ['Chengalpattu', 'Tambaram', 'Pallavaram', 'Madurantakam', 'Cheyyur', 'Thiruporur', 'Vandalur']
+  },
+  tiruvallur: {
+    name: 'Tiruvallur',
+    zone: 'North Eastern Zone',
+    defaultSoil: 'Sandy',
+    coords: [13.1432, 79.9083],
+    units: ['Tiruvallur', 'Avadi', 'Poonamallee', 'Tiruttani', 'Gummidipoondi', 'Ponneri', 'Uthukottai']
+  },
+  chennai: {
+    name: 'Chennai',
+    zone: 'North Eastern Zone',
+    defaultSoil: 'Sandy',
+    coords: [13.0827, 80.2707],
+    units: ['Alandur', 'Ambattur', 'Aminjikarai', 'Ayanavaram', 'Egmore', 'Guindy', 'Mambalam', 'Mylapore', 'Perambur', 'Purasawalkam', 'Saidapet', 'Tondiarpet', 'Velachery']
+  },
+  tiruchirappalli: {
+    name: 'Tiruchirappalli',
+    zone: 'Cauvery Delta',
+    defaultSoil: 'Clay',
+    coords: [10.7905, 78.7047],
+    units: ['Tiruchirappalli West', 'Tiruchirappalli East', 'Srirangam', 'Manachanallur', 'Lalgudi', 'Musiri', 'Thuraiyur', 'Thiruverumbur', 'Manapparai']
+  },
+  perambalur: {
+    name: 'Perambalur',
+    zone: 'Cauvery Delta',
+    defaultSoil: 'Loamy',
+    coords: [11.2333, 78.8833],
+    units: ['Perambalur', 'Kunnam', 'Veppanthattai', 'Alathur']
+  },
+  ariyalur: {
+    name: 'Ariyalur',
+    zone: 'Cauvery Delta',
+    defaultSoil: 'Black',
+    coords: [11.1401, 79.0786],
+    units: ['Ariyalur', 'Jayankondam', 'Sendurai', 'Andimadam']
+  },
+  pudukkottai: {
+    name: 'Pudukkottai',
+    zone: 'Cauvery Delta',
+    defaultSoil: 'Loamy',
+    coords: [10.3833, 78.8167],
+    units: ['Pudukkottai', 'Alangudi', 'Aranthangi', 'Gandarvakottai', 'Viralimalai', 'Thirumayam', 'Avudaiyarkoil', 'Iluppur', 'Karambakkudi']
+  },
+  nilgiris: {
+    name: 'The Nilgiris',
+    zone: 'Hilly Zone',
+    defaultSoil: 'Loamy',
+    coords: [11.4102, 76.6950],
+    units: ['Udhagamandalam', 'Coonoor', 'Gudalur', 'Kotagiri', 'Kundah', 'Pandalur']
+  }
 };
 
-// Commercial Crops of Tamil Nadu (Tobacco Removed)
+// 37 Commercial Crops of Tamil Nadu (Tobacco & Rice Excluded)
 const TN_38_CROPS = {
   brinjal: { name: 'Brinjal / Eggplant', category: 'Vegetables', avgYield: 110, mandiRate: 24.50, msp: 18.00, costPerAcre: 26000, defaultSoil: 'Clay' },
   tomato: { name: 'Tomato', category: 'Vegetables', avgYield: 140, mandiRate: 22.00, msp: 15.00, costPerAcre: 32000, defaultSoil: 'Loamy' },
@@ -181,7 +436,7 @@ function FloatingVoiceOrb({ onToggleListen, isListening, lastTranscript }) {
           }`}
           title="State your crop, soil, or acres"
         >
-          <span className="text-xl">🎙️</span>
+          <span className="text-xl">🎙️️</span>
         </button>
       </div>
     </div>
@@ -195,7 +450,10 @@ export default function App() {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
 
+  // Dual-Level District and Constituency / Taluk Selectors
   const [selectedDistrict, setSelectedDistrict] = useState('thanjavur');
+  const [selectedUnit, setSelectedUnit] = useState('Thanjavur');
+
   const [season, setSeason] = useState('Kharif');
   const [soilType, setSoilType] = useState('Clay');
   const [waterStatus, setWaterStatus] = useState('Medium');
@@ -253,7 +511,7 @@ export default function App() {
         });
 
         setWeatherForecast(list);
-        setLocationName(`Tamil Nadu Grid (${lat.toFixed(2)}°N, ${lon.toFixed(2)}°E)`);
+        setLocationName(`${selectedUnit}, ${TN_38_DISTRICTS[selectedDistrict]?.name} (${lat.toFixed(2)}°N, ${lon.toFixed(2)}°E)`);
         setWeatherLoading(false);
       }
     } catch {
@@ -273,17 +531,29 @@ export default function App() {
     }
   }, []);
 
+  // District Switch Event
   const handleDistrictChange = (distKey) => {
     setSelectedDistrict(distKey);
-    const dist = TN_AGRO_DISTRICTS[distKey];
+    const dist = TN_38_DISTRICTS[distKey];
     if (dist) {
+      const firstUnit = dist.units[0];
+      setSelectedUnit(firstUnit);
       setSoilType(dist.defaultSoil);
       fetchLiveForecast(dist.coords[0], dist.coords[1]);
       loadAdvice(lang, { soilType: dist.defaultSoil, primaryCropKey, season, waterStatus });
     }
   };
 
-  // Robust Client-Side Fallback Generator (Tobacco Removed)
+  // Constituency / Taluk Switch Event
+  const handleUnitChange = (unitName) => {
+    setSelectedUnit(unitName);
+    const dist = TN_38_DISTRICTS[selectedDistrict];
+    if (dist) {
+      fetchLiveForecast(dist.coords[0], dist.coords[1]);
+    }
+  };
+
+  // Robust Client-Side Fallback Generator
   const generateClientFallback = (cropKey, sType) => {
     const cMeta = TN_38_CROPS[cropKey] || TN_38_CROPS.brinjal;
     const cName = cMeta.name;
@@ -504,7 +774,8 @@ export default function App() {
           <div class="box">
             <h4>Farmer & Plot Geocodes</h4>
             <p><strong>Farmer:</strong> ${user?.name || 'Registered Farm Owner'}</p>
-            <p><strong>District:</strong> ${selectedDistrict.toUpperCase()} (${TN_AGRO_DISTRICTS[selectedDistrict]?.zone || 'Tamil Nadu'})</p>
+            <p><strong>District:</strong> ${TN_38_DISTRICTS[selectedDistrict]?.name || selectedDistrict.toUpperCase()} (${TN_38_DISTRICTS[selectedDistrict]?.zone || 'Tamil Nadu'})</p>
+            <p><strong>Constituency / Taluk:</strong> ${selectedUnit}</p>
             <p><strong>Total Plot Area:</strong> ${acres} Acres | Soil: ${soilType}</p>
           </div>
           <div class="box">
@@ -681,31 +952,49 @@ export default function App() {
 
       {/* CROP SELECTOR */}
       <div className={`p-5 rounded-xl border mb-6 space-y-4 ${isFieldMode ? 'bg-black border-zinc-700' : 'bg-white'}`}>
+        
+        {/* Dual Location Selectors: District & Constituency / Taluk */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pb-2 border-b border-zinc-800">
           <div>
-            <label className="text-xs font-bold block mb-1">Tamil Nadu District / Zone</label>
+            <label className="text-xs font-bold block mb-1">1. District (மாவட்டம்)</label>
             <select
               value={selectedDistrict}
               onChange={(e) => handleDistrictChange(e.target.value)}
               className={`w-full border p-2 rounded text-xs font-bold ${isFieldMode ? 'bg-zinc-900 border-zinc-700 text-white' : 'bg-white'}`}
             >
-              {Object.entries(TN_AGRO_DISTRICTS).map(([k, dist]) => (
-                <option key={k} value={k}>{dist.name} — {dist.zone} ({dist.defaultSoil} Soil)</option>
+              {Object.entries(TN_38_DISTRICTS).map(([k, dist]) => (
+                <option key={k} value={k}>{dist.name} ({dist.zone})</option>
               ))}
             </select>
           </div>
+
           <div>
-            <label className="text-xs font-bold block mb-1">Search Crop</label>
-            <input
-              type="text"
-              placeholder="e.g. தக்காளி, Cotton, Onion..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className={`w-full border p-2 rounded text-xs ${isFieldMode ? 'bg-zinc-900 border-zinc-700 text-white' : 'bg-white'}`}
-            />
+            <label className="text-xs font-bold block mb-1">2. Constituency / Taluk (வட்டம் / தொகுதி)</label>
+            <select
+              value={selectedUnit}
+              onChange={(e) => handleUnitChange(e.target.value)}
+              className={`w-full border p-2 rounded text-xs font-bold ${isFieldMode ? 'bg-zinc-900 border-zinc-700 text-emerald-400' : 'bg-white text-emerald-700'}`}
+            >
+              {TN_38_DISTRICTS[selectedDistrict]?.units.map((unitName) => (
+                <option key={unitName} value={unitName}>{unitName}</option>
+              ))}
+            </select>
           </div>
         </div>
 
+        {/* Search Crop Input */}
+        <div>
+          <label className="text-xs font-bold block mb-1">Search Crop (Tamil / English)</label>
+          <input
+            type="text"
+            placeholder="e.g. தக்காளி, Cotton, Onion..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className={`w-full border p-2 rounded text-xs ${isFieldMode ? 'bg-zinc-900 border-zinc-700 text-white' : 'bg-white'}`}
+          />
+        </div>
+
+        {/* Category Pills */}
         <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
           {CATEGORIES.map((cat) => (
             <button
@@ -720,6 +1009,7 @@ export default function App() {
           ))}
         </div>
 
+        {/* Crop Selection Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 max-h-48 overflow-y-auto p-1">
           {filteredCrops.map(([k, c]) => (
             <button
@@ -739,6 +1029,7 @@ export default function App() {
           ))}
         </div>
 
+        {/* Farm Size Slider & Blueprint Button */}
         <div className="pt-2 flex items-center justify-between gap-4">
           <div className="flex-1">
             <div className="flex justify-between text-xs font-bold mb-1">

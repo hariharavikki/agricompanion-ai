@@ -11,7 +11,7 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 5002;
 
-// In-Memory Fallback Stores
+// In-Memory Fallback Stores for resilient hosting
 const memoryUsers = new Map();
 const memoryHistory = [];
 
@@ -64,7 +64,7 @@ const initDatabase = async () => {
 
 initDatabase();
 
-// Crop Meta Registry with Storage & Baseline Soil Chemistries (Tobacco Removed)
+// Crop Meta Registry (37 Crops - Tobacco & Rice Excluded)
 export const STATEWIDE_CROP_DIRECTORY = {
   // Vegetables
   brinjal: { name: 'Brinjal / Eggplant', category: 'Vegetables', avgYield: 110, mandiRate: 24.50, msp: 18.00, costPerAcre: 26000, defaultSoil: 'Clay', harvestDur: '4 - 5 Months', safeMoisturePct: 85.0, ambientDays: 4, coldDays: 25 },
@@ -105,7 +105,7 @@ export const STATEWIDE_CROP_DIRECTORY = {
   foxtailmillet: { name: 'Foxtail Millet (Thinai)', category: 'Millets & Cereals', avgYield: 6.0, mandiRate: 43.00, msp: 37.00, costPerAcre: 8000, defaultSoil: 'Loamy', harvestDur: '80 - 90 Days', safeMoisturePct: 10.5, ambientDays: 300, coldDays: 650 },
   kodomillet: { name: 'Kodo Millet (Varagu)', category: 'Millets & Cereals', avgYield: 5.5, mandiRate: 42.00, msp: 36.00, costPerAcre: 7500, defaultSoil: 'Sandy', harvestDur: '110 - 120 Days', safeMoisturePct: 10.5, ambientDays: 300, coldDays: 650 },
 
-  // Fiber & Cash (Tobacco Removed)
+  // Fiber & Cash
   cotton: { name: 'Cotton', category: 'Cash & Fiber', avgYield: 8.5, mandiRate: 86.50, msp: 82.67, costPerAcre: 21000, defaultSoil: 'Black', harvestDur: '5 - 6 Months', safeMoisturePct: 8.5, ambientDays: 240, coldDays: 700 },
   sugarcane: { name: 'Sugarcane', category: 'Cash & Fiber', avgYield: 420, mandiRate: 3.50, msp: 3.40, costPerAcre: 65000, defaultSoil: 'Clay', harvestDur: '10 - 12 Months', safeMoisturePct: 70.0, ambientDays: 3, coldDays: 10 },
   sunnhemp: { name: 'Sunn Hemp', category: 'Cash & Fiber', avgYield: 7.0, mandiRate: 54.00, msp: 48.00, costPerAcre: 7000, defaultSoil: 'Sandy', harvestDur: '75 - 90 Days', safeMoisturePct: 10.0, ambientDays: 240, coldDays: 500 },
@@ -116,7 +116,7 @@ export const STATEWIDE_CROP_DIRECTORY = {
   coriander: { name: 'Coriander (Seed & Herb)', category: 'Spices & Tubers', avgYield: 4.5, mandiRate: 92.00, msp: 75.00, costPerAcre: 9000, defaultSoil: 'Black', harvestDur: '35 - 45 Days', safeMoisturePct: 9.0, ambientDays: 180, coldDays: 365 }
 };
 
-// IPM Registry with PHI & Chemical Options
+// IPM Protocols
 const PEST_REGISTRY = {
   borer: { pestName: 'Fruit & Shoot Borer Complex (Leucinodes / Helicoverpa)', cultural: 'Prompt clipping of wilted shoots; install pheromone traps (5/acre) and Marigold trap borders.', bio: 'Neem seed kernel extract (NSKE 5%) or Bacillus thuringiensis (Bt) @ 2g/L.', chemical: 'Chlorantraniliprole 18.5% SC @ 0.3 ml/L water.', toxicity: 'Moderate', phiDays: 3 },
   bollworm: { pestName: 'Bollworm Complex & Whitefly (Bemisia tabaci)', cultural: 'Erect 15 yellow sticky cards per acre; remove alternate weed hosts.', bio: 'Beauveria bassiana @ 10g/L or release Chrysoperla predator larvae.', chemical: 'Flonicamid 50% WG @ 4g/10L water.', toxicity: 'Moderate', phiDays: 21 },
@@ -124,7 +124,7 @@ const PEST_REGISTRY = {
   general: { pestName: 'Sucking Pest Complex (Aphids, Thrips, Mites)', cultural: 'Mulch inter-rows with pulse canopy to eliminate exposed soil reflection.', bio: 'Spray 3% neem oil with soap water emulsifier.', chemical: 'Imidacloprid 17.8% SL @ 0.5 ml/L water (Last resort).', toxicity: 'Severe', phiDays: 10 }
 };
 
-// Compute Dynamic Soil Chemical Evolution
+// Soil Chemical Evolution (Before vs After Intercropping)
 const calculateSoilChemistryEvolution = (primaryCropKey, intercropNFixed = 25, soilType = 'Loamy') => {
   const baseChem = {
     Clay: { n: 210, p: 18, k: 280, oc: 0.52, microbialScore: 62 },
