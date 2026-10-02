@@ -261,7 +261,7 @@ const AGRONOMIC_TRANSLATIONS = {
     marigold: { en: 'Marigold (Trap Crop)', ta: 'செவ்வந்தி / சாமந்தி (கவர்ச்சிப் பயிர்)', hi: 'गेंदा (ट्रैप फसल)' },
     cowpea: { en: 'Cowpea (Lobia)', ta: 'காராமணி (தட்டப்பயறு)', hi: 'लोबिया (चौलाई)' },
     greengram: { en: 'Green Gram (Moong)', ta: 'பாசிப்பயறு (பச்சைப்பயறு)', hi: 'मूंग (Green Gram)' },
-    blackgram: { en: 'Black Gram (Urad)', ta: 'உளுந்து (கருப்பு உளுந்து)', hi: 'उड़द (Black Gram)' },
+    blackgram: { en: 'Black Gram (Urad)', ta: 'உளுந்து (கருப்பு உளுந்து)', hi: 'உड़द (Black Gram)' },
     soybean: { en: 'Soybean', ta: 'சோயாபீன்', hi: 'சோயாபீன்' },
     horsegram: { en: 'Horse Gram (Kulthi)', ta: 'கொள்ளு (Horse Gram)', hi: 'कुलथी (Horse Gram)' },
     clusterbean: { en: 'Cluster Bean (Guar)', ta: 'கொத்தவரங்காய் (Guar)', hi: 'ग्वारफली (Cluster Bean)' },
@@ -329,7 +329,7 @@ const normalizeCompanion = (item, lang = 'en') => {
   };
 };
 
-// 3-TIER MATRIX WITH BRINJAL (THANJAVUR VEGETABLE)
+// MULTI-CROP CLIENT FALLBACK MATRIX (Brinjal, Maize, Cotton, Groundnut)
 const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
   const s = String(szn || '').toLowerCase();
   const so = String(soil || '').toLowerCase();
@@ -351,7 +351,7 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
     greengram: { en: 'Green Gram (Moong)', ta: 'பாசிப்பயறு (பச்சைப்பயறு)', hi: 'मूंग (Green Gram)' },
     cowpea: { en: 'Cowpea (Lobia)', ta: 'காராமணி (தட்டப்பயறு)', hi: 'लोबिया (चौलाई)' },
     blackgram: { en: 'Black Gram (Urad)', ta: 'உளுந்து (கருப்பு உளுந்து)', hi: 'उड़द (Black Gram)' },
-    soybean: { en: 'Soybean', ta: 'சோயாபீன்', hi: 'सोयाबीन (Soybean)' },
+    soybean: { en: 'Soybean', ta: 'சோயாபீன்', hi: 'சோயாபீன் (Soybean)' },
     horsegram: { en: 'Horse Gram (Kulthi)', ta: 'கொள்ளு (Horse Gram)', hi: 'कुलथी (Horse Gram)' },
     clusterbean: { en: 'Cluster Bean (Guar)', ta: 'கொத்தவரங்காய் (Guar)', hi: 'ग्वारफली (Cluster Bean)' },
     pearlmillet: { en: 'Pearl Millet (Bajra)', ta: 'கம்பு (Bajra)', hi: 'बाजरा (Pearl Millet)' },
@@ -609,7 +609,7 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
           spacing: '45 cm x 15 cm',
           nitrogenFixed: 0,
           lerScore: 1.28,
-          harvestDuration: lang === 'ta' ? '80 - 85 நாட்கள்' : lang === 'hi' ? '80 - 85 दिन' : '80 - 85 Days',
+          harvestDuration: lang === 'ta' ? '80 - 85 நாட்கள்' : lang === 'hi' ? '80 - 85 দিন' : '80 - 85 Days',
           sowingOffset: 'Simultaneous on Day 0',
           rootZoneSynergy: 'Tall perimeter micro-climate barrier',
           reasoning: 'Tall Bajra border rows deflect dry winds in sandy zones, conserving humidity for groundnut pegging.',
@@ -654,7 +654,7 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
         spacing: '60 cm x 15 cm',
         nitrogenFixed: 42,
         lerScore: 1.36,
-        harvestDuration: lang === 'ta' ? '130 - 150 நாட்கள்' : lang === 'hi' ? '130 - 150 दिन' : '130 - 150 Days',
+        harvestDuration: lang === 'ta' ? '130 - 150 நாட்கள்' : lang === 'hi' ? '130 - 150 দিন' : '130 - 150 Days',
         sowingOffset: 'Simultaneous on Day 0',
         rootZoneSynergy: 'Deep taproot (1.5m) + Shallow groundnut peg layer (20cm)',
         reasoning: 'Classic ICAR pairing: groundnut finishes in 105 days, leaving Pigeon Pea to exploit late-season soil moisture and sunlight.',
@@ -668,7 +668,7 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
         spacing: '90 cm x 30 cm',
         nitrogenFixed: 0,
         lerScore: 1.30,
-        harvestDuration: lang === 'ta' ? '140 - 160 நாட்கள்' : lang === 'hi' ? '140 - 160 दिन' : '140 - 160 Days',
+        harvestDuration: lang === 'ta' ? '140 - 160 நாட்கள்' : lang === 'hi' ? '140 - 160 দিন' : '140 - 160 Days',
         sowingOffset: 'Simultaneous on Day 0',
         rootZoneSynergy: 'Deep taproot with vertical canopy branching',
         reasoning: 'Castor provides heavy secondary commercial returns and acts as an effective trap crop for Spodoptera caterpillars.',
@@ -710,6 +710,203 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
   ];
 };
 
+// --- SUBCOMPONENT 1: LER & PROFIT TUG-OF-WAR COMPARISON GAUGE ---
+function ProfitTugOfWarGauge({ fin, advice, acres }) {
+  if (!fin || !advice) return null;
+
+  const monoRevenue = Math.round(Number(fin.primaryYield) * Number(advice.marketData?.pricePerQuintal || 2200));
+  const monoProfit = monoRevenue - fin.totalCost;
+  const intercropProfit = fin.netProfit;
+  const deltaRupees = fin.bonusRevenue;
+  const deltaPercent = monoProfit > 0 ? Math.round((deltaRupees / monoProfit) * 100) : 0;
+
+  const lerValue = Number(advice.intercrop?.lerScore || 1.28);
+  const lerProgressPct = Math.min(100, Math.max(0, ((lerValue - 1.0) / 0.5) * 100));
+
+  return (
+    <div className="bg-white border rounded-xl p-5 shadow-sm space-y-5">
+      <div className="flex justify-between items-center border-b pb-3">
+        <div>
+          <h3 className="text-sm font-black text-gray-900 flex items-center gap-2">
+            <span>⚖️</span> LER & Profit Comparison Gauge
+          </h3>
+          <p className="text-[11px] text-gray-500">
+            Comparative analysis: Pure Monoculture vs. AgriCompanion Blueprint on {acres} Acres.
+          </p>
+        </div>
+        <span className="text-xs bg-emerald-100 text-emerald-950 font-black px-3 py-1 rounded-full border border-emerald-300">
+          +{deltaPercent}% Profit Surge
+        </span>
+      </div>
+
+      <div className="space-y-3">
+        <div>
+          <div className="flex justify-between text-xs font-bold mb-1">
+            <span className="text-gray-600">Pure Monoculture ({advice.primaryCrop.name})</span>
+            <span className="text-gray-900 font-black">₹{monoProfit.toLocaleString('en-IN')} Net</span>
+          </div>
+          <div className="h-5 bg-gray-100 rounded-full overflow-hidden p-0.5 border">
+            <div
+              className="h-full bg-slate-400 rounded-full transition-all duration-700 ease-out"
+              style={{ width: `${Math.max(10, Math.round((monoProfit / intercropProfit) * 100))}%` }}
+            ></div>
+          </div>
+        </div>
+
+        <div>
+          <div className="flex justify-between text-xs font-bold mb-1">
+            <span className="text-emerald-900 font-extrabold flex items-center gap-1">
+              <span>🚀</span> AgriCompanion Blueprint (+{advice.intercrop.name})
+            </span>
+            <span className="text-emerald-700 font-black text-sm">
+              ₹{intercropProfit.toLocaleString('en-IN')} Net
+            </span>
+          </div>
+          <div className="h-6 bg-emerald-50 rounded-full overflow-hidden p-0.5 border border-emerald-300 shadow-inner">
+            <div
+              className="h-full bg-gradient-to-r from-emerald-600 to-teal-500 rounded-full transition-all duration-700 ease-out flex items-center justify-end pr-2 text-[10px] font-black text-white shadow-sm"
+              style={{ width: '100%' }}
+            >
+              +₹{deltaRupees.toLocaleString('en-IN')} Extra Value
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+        <div className="bg-gradient-to-br from-emerald-50 to-teal-50/50 p-3 rounded-xl border border-emerald-200 flex items-center gap-3">
+          <div className="relative w-16 h-16 flex-shrink-0 flex items-center justify-center">
+            <svg viewBox="0 0 36 36" className="w-16 h-16 transform -rotate-90">
+              <path
+                className="text-gray-200"
+                strokeWidth="3.5"
+                stroke="currentColor"
+                fill="none"
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+              />
+              <path
+                className="text-emerald-600 transition-all duration-1000"
+                strokeDasharray={`${lerProgressPct}, 100`}
+                strokeWidth="3.8"
+                strokeLinecap="round"
+                stroke="currentColor"
+                fill="none"
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+              />
+            </svg>
+            <div className="absolute text-center">
+              <span className="text-xs font-black text-emerald-950">{lerValue}</span>
+              <p className="text-[7px] uppercase font-bold text-gray-500">LER</p>
+            </div>
+          </div>
+          <div className="text-xs">
+            <p className="font-black text-emerald-950">Land Synergy Factor</p>
+            <p className="text-[10px] text-gray-600 mt-0.5 leading-tight">
+              Equivalent to harvesting <strong>{(acres * lerValue).toFixed(2)} acres</strong> of solitary land.
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-blue-50/70 p-3 rounded-xl border border-blue-200 flex flex-col justify-center">
+          <p className="text-[10px] text-blue-700 font-bold uppercase">Added Margin Per Acre</p>
+          <p className="text-lg font-black text-blue-950 mt-0.5">
+            +₹{Math.round(deltaRupees / acres).toLocaleString('en-IN')}
+          </p>
+          <p className="text-[10px] text-gray-500">Net bonus over mono-crop baseline</p>
+        </div>
+
+        <div className="bg-amber-50/70 p-3 rounded-xl border border-amber-200 flex flex-col justify-center">
+          <p className="text-[10px] text-amber-700 font-bold uppercase">Benefit-Cost Ratio (BCR)</p>
+          <p className="text-lg font-black text-amber-950 mt-0.5">{fin.benefitCostRatio}</p>
+          <p className="text-[10px] text-gray-500">Gross ₹{fin.benefitCostRatio} generated per ₹1.00 cost</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// --- SUBCOMPONENT 2: FLOATING VOICE ORB ASSISTANT ---
+function FloatingVoiceOrb({ lang, isListening, onToggleListen, lastTranscript }) {
+  const [showTips, setShowTips] = useState(false);
+
+  const hints = {
+    en: [
+      { text: "Brinjal 2 acres Kharif" },
+      { text: "Maize 3 acres Loam" },
+      { text: "Cotton Black soil" }
+    ],
+    ta: [
+      { text: "2 ஏக்கர் கத்தரிக்காய் காரிப்" },
+      { text: "மக்காச்சோளம் வண்டல் மண்" },
+      { text: "பருத்தி கரிசல் மண்" }
+    ],
+    hi: [
+      { text: "2 एकड़ बैंगन खरीफ" },
+      { text: "मक्का दोमट मिट्टी" },
+      { text: "कपास काली मिट्टी" }
+    ]
+  };
+
+  const activeHints = hints[lang] || hints.en;
+
+  return (
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2">
+      {showTips && (
+        <div className="bg-white/95 backdrop-blur-md p-3 rounded-2xl shadow-xl border border-emerald-200 w-64 text-xs space-y-2">
+          <div className="flex justify-between items-center border-b pb-1">
+            <span className="font-extrabold text-emerald-950 text-[11px] flex items-center gap-1">
+              <span>💡</span>
+              {lang === 'ta' ? 'குரல் உதாரணங்கள்' : lang === 'hi' ? 'बोलने के उदाहरण' : 'Voice Shortcuts'}
+            </span>
+            <button onClick={() => setShowTips(false)} className="text-gray-400 hover:text-black text-[10px]">
+              ✕
+            </button>
+          </div>
+          <div className="space-y-1.5">
+            {activeHints.map((hint, idx) => (
+              <div
+                key={idx}
+                className="p-1.5 rounded-lg bg-emerald-50 text-emerald-900 font-semibold text-[11px] truncate"
+              >
+                🗣️ "{hint.text}"
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {lastTranscript && (
+        <div className="bg-gray-900/90 backdrop-blur-md text-white text-[11px] px-3 py-1.5 rounded-full shadow-lg max-w-xs truncate border border-gray-700">
+          🗣️ "{lastTranscript}"
+        </div>
+      )}
+
+      <div className="relative flex items-center justify-center">
+        {isListening && (
+          <>
+            <span className="absolute w-20 h-20 rounded-full bg-red-500/30 animate-ping"></span>
+            <span className="absolute w-16 h-16 rounded-full bg-emerald-500/40 animate-pulse"></span>
+          </>
+        )}
+
+        <button
+          onClick={onToggleListen}
+          onMouseEnter={() => setShowTips(true)}
+          className={`relative w-14 h-14 rounded-full shadow-2xl flex items-center justify-center text-white transition-all transform hover:scale-105 active:scale-95 ${
+            isListening
+              ? 'bg-gradient-to-tr from-red-600 to-rose-500 ring-4 ring-red-400/40'
+              : 'bg-gradient-to-tr from-emerald-700 to-teal-500 hover:from-emerald-800 hover:to-teal-600 ring-4 ring-emerald-500/20'
+          }`}
+          title="Speak to configure your field blueprint"
+        >
+          <span className="text-xl">🎙️</span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// --- MAIN APPLICATION COMPONENT ---
 export default function App() {
   const [lang, setLang] = useState('en');
   const d = DICTIONARY[lang] || DICTIONARY.en;
@@ -761,7 +958,6 @@ export default function App() {
   const [imageAnalysisResult, setImageAnalysisResult] = useState(null);
   const fileInputRef = useRef(null);
 
-  // Dynamic Weather State
   const [weatherForecast, setWeatherForecast] = useState([]);
   const [weatherLoading, setWeatherLoading] = useState(true);
   const [locationName, setLocationName] = useState('Detecting location...');
@@ -778,7 +974,6 @@ export default function App() {
     }
   }, []);
 
-  // Live Location & Weather Fetcher (Defaults to Trichy / Thanjavur basin)
   useEffect(() => {
     let isMounted = true;
 
@@ -863,7 +1058,6 @@ export default function App() {
       }
     };
 
-    // Default coordinates: Thanjavur, Tamil Nadu (10.7870, 79.1378)
     const defaultLat = 10.7870;
     const defaultLon = 79.1378;
 
@@ -939,7 +1133,6 @@ export default function App() {
     };
   };
 
-  // Robust In-Memory FileReader + Calibrated Soil Chromatic Classifier
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -997,8 +1190,6 @@ export default function App() {
         const avgLum = Math.round(0.299 * avgR + 0.587 * avgG + 0.114 * avgB);
         const soilRatio = soilPixelCount / totalPixels;
 
-        console.log(`[Soil Scanner] Avg RGB: (${avgR}, ${avgG}, ${avgB}) | Lum: ${avgLum} | Soil Confidence: ${(soilRatio * 100).toFixed(1)}%`);
-
         setTimeout(() => {
           const isBlueDominant = (avgB > avgR * 1.1 && avgB > avgG);
           const isUnnaturalHue = Math.abs(avgR - avgB) < 6 && Math.abs(avgG - avgB) < 6 && (avgLum > 200 || avgLum < 30);
@@ -1019,29 +1210,22 @@ export default function App() {
           let rationale = '';
           let confidence = 89;
 
-          // 1. Black Soil (Vertisol)
           if (avgLum < 85 && Math.abs(avgR - avgG) <= 15 && Math.abs(avgG - avgB) <= 15) {
             detectedSoil = 'Black';
             detectedCrop = 'cotton';
             rationale = 'Dark Vertisol (Black Cotton Soil) detected. High moisture retention ideal for Cotton + Black Gram / Moong.';
             confidence = 94;
-          }
-          // 2. Sandy Soil
-          else if (avgLum > 155 && avgR > 140 && avgR > avgB * 1.35) {
+          } else if (avgLum > 155 && avgR > 140 && avgR > avgB * 1.35) {
             detectedSoil = 'Sandy';
             detectedCrop = 'groundnut';
             rationale = 'Light sandy texture detected with porous drainage. Optimal for Groundnut pegging and drought-hardy companion rows.';
             confidence = 91;
-          }
-          // 3. Clay / Delta Alluvium: Ideal for Thanjavur Brinjal
-          else if (avgR > avgB * 1.55 && (avgR - avgG) >= 20 && avgLum >= 80 && avgLum <= 150) {
+          } else if (avgR > avgB * 1.55 && (avgR - avgG) >= 20 && avgLum >= 80 && avgLum <= 150) {
             detectedSoil = 'Clay';
             detectedCrop = 'brinjal';
             rationale = 'Heavy clay/alluvial delta soil detected. Highly fertile with moisture retention, ideal for Thanjavur Brinjal + Coriander / Bush Bean.';
             confidence = 93;
-          }
-          // 4. Loamy Soil default
-          else {
+          } else {
             detectedSoil = 'Loamy';
             detectedCrop = 'maize';
             rationale = 'Balanced organic loam soil detected with neutral drainage. Well suited for Maize cereal-legume intercropping.';
@@ -1394,7 +1578,8 @@ export default function App() {
   const fert = calculateFertilizer();
 
   return (
-    <div className="bg-gray-100 min-h-screen p-4 md:p-8 font-sans max-w-5xl mx-auto">
+    <div className="bg-gray-100 min-h-screen p-4 md:p-8 font-sans max-w-5xl mx-auto relative pb-24">
+      {/* HEADER */}
       <div className="flex flex-wrap justify-between items-center bg-white p-4 rounded-xl shadow-sm border mb-6 gap-3">
         <div>
           <h1 className="text-xl font-black text-green-900">{d.title}</h1>
@@ -1422,6 +1607,7 @@ export default function App() {
         </div>
       </div>
 
+      {/* FIELD SCANNER & VOICE BAR */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <div className="bg-white border p-3.5 rounded-xl shadow-sm space-y-2">
           <div className="flex justify-between items-center">
@@ -1504,6 +1690,7 @@ export default function App() {
         </div>
       </div>
 
+      {/* INPUT PANEL & MAIN RESULTS */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-5 rounded-xl shadow-sm border space-y-4">
           <div>
@@ -1612,6 +1799,7 @@ export default function App() {
                 </div>
               </div>
 
+              {/* TABS HEADER */}
               <div className="flex overflow-x-auto border-b border-gray-200 bg-white rounded-t-xl px-2 pt-2 gap-1 shadow-sm scrollbar-none">
                 <button
                   onClick={() => setActiveTab('intercrop')}
@@ -1677,6 +1865,7 @@ export default function App() {
                 </button>
               </div>
 
+              {/* TAB 1: INTERCROP */}
               {activeTab === 'intercrop' && (
                 <div className="space-y-4">
                   {advice.companionOptions && advice.companionOptions.length > 0 && (
@@ -1712,7 +1901,7 @@ export default function App() {
 
                               <div className="mt-2.5 pt-1.5 border-t border-gray-200 flex justify-between items-center text-[10px] font-bold">
                                 <span className="text-emerald-800">
-                                  {Number(opt.nitrogenFixed) > 0 ? `+${opt.nitrogenFixed} kg N/ha` : 'Vegetable Catch'}
+                                  {Number(opt.nitrogenFixed) > 0 ? `+${opt.nitrogenFixed} kg N/ha` : 'Catch Crop'}
                                 </span>
                                 <span className={isSelected ? 'text-emerald-700' : 'text-gray-400'}>
                                   {isSelected 
@@ -1815,6 +2004,7 @@ export default function App() {
                 </div>
               )}
 
+              {/* TAB 2: CHECKLIST */}
               {activeTab === 'checklist' && (
                 <div className="bg-white p-5 rounded-b-xl shadow-sm border space-y-4">
                   <div className="flex flex-wrap justify-between items-center border-b pb-3 gap-2">
@@ -1907,45 +2097,51 @@ export default function App() {
                 </div>
               )}
 
+              {/* TAB 3: ECONOMICS WITH TUG-OF-WAR GAUGE */}
               {activeTab === 'economics' && fin && (
-                <div className="bg-white p-5 rounded-b-xl shadow-sm border space-y-4">
-                  <div className="flex justify-between items-center border-b pb-2">
-                    <h3 className="text-sm font-black text-gray-800">
-                      Farm Financials for {acres} Acres ({getLocalizedCropName(advice.intercrop?.key, advice.intercrop?.name, lang)})
-                    </h3>
-                    <span className="text-xs bg-emerald-100 text-emerald-900 font-extrabold px-2.5 py-0.5 rounded">
-                      B:C Ratio: {fin.benefitCostRatio}
-                    </span>
-                  </div>
+                <div className="space-y-4">
+                  <ProfitTugOfWarGauge fin={fin} advice={advice} acres={acres} />
 
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
-                    <div className="bg-gray-50 p-3 rounded-lg border">
-                      <p className="text-[10px] text-gray-500 font-bold uppercase">Expected Main Yield</p>
-                      <p className="text-base font-black text-gray-900 mt-0.5">{fin.primaryYield} Qtl</p>
+                  <div className="bg-white p-5 rounded-xl shadow-sm border space-y-4">
+                    <div className="flex justify-between items-center border-b pb-2">
+                      <h3 className="text-sm font-black text-gray-800">
+                        Detailed Ledger for {acres} Acres ({getLocalizedCropName(advice.intercrop?.key, advice.intercrop?.name, lang)})
+                      </h3>
+                      <span className="text-xs bg-emerald-100 text-emerald-900 font-extrabold px-2.5 py-0.5 rounded">
+                        B:C Ratio: {fin.benefitCostRatio}
+                      </span>
                     </div>
 
-                    <div className="bg-blue-50 p-3 rounded-lg border border-blue-100">
-                      <p className="text-[10px] text-blue-700 font-bold uppercase">Intercrop Bonus Value</p>
-                      <p className="text-base font-black text-blue-950 mt-0.5">+₹{fin.bonusRevenue.toLocaleString('en-IN')}</p>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+                      <div className="bg-gray-50 p-3 rounded-lg border">
+                        <p className="text-[10px] text-gray-500 font-bold uppercase">Expected Main Yield</p>
+                        <p className="text-base font-black text-gray-900 mt-0.5">{fin.primaryYield} Qtl</p>
+                      </div>
+
+                      <div className="bg-blue-50 p-3 rounded-lg border border-blue-100">
+                        <p className="text-[10px] text-blue-700 font-bold uppercase">Intercrop Bonus Value</p>
+                        <p className="text-base font-black text-blue-950 mt-0.5">+₹{fin.bonusRevenue.toLocaleString('en-IN')}</p>
+                      </div>
+
+                      <div className="bg-amber-50 p-3 rounded-lg border border-amber-100">
+                        <p className="text-[10px] text-amber-700 font-bold uppercase">Est. Cultivation Cost</p>
+                        <p className="text-base font-black text-amber-950 mt-0.5">₹{fin.totalCost.toLocaleString('en-IN')}</p>
+                      </div>
+
+                      <div className="bg-emerald-50 p-3 rounded-lg border border-emerald-200">
+                        <p className="text-[10px] text-emerald-800 font-bold uppercase">Projected Net Profit</p>
+                        <p className="text-base font-black text-emerald-700 mt-0.5">₹{fin.netProfit.toLocaleString('en-IN')}</p>
+                      </div>
                     </div>
 
-                    <div className="bg-amber-50 p-3 rounded-lg border border-amber-100">
-                      <p className="text-[10px] text-amber-700 font-bold uppercase">Est. Cultivation Cost</p>
-                      <p className="text-base font-black text-amber-950 mt-0.5">₹{fin.totalCost.toLocaleString('en-IN')}</p>
+                    <div className="bg-emerald-50/60 p-3 rounded-lg border border-emerald-200 text-xs text-emerald-900 leading-relaxed">
+                      💵 <strong>Revenue Breakdown:</strong> Gross sales reach <strong>₹{fin.totalGrossRevenue.toLocaleString('en-IN')}</strong>, powered by simultaneous companion intercropping delivering an extra <strong>₹{fin.bonusRevenue.toLocaleString('en-IN')}</strong> above mono-cropping.
                     </div>
-
-                    <div className="bg-emerald-50 p-3 rounded-lg border border-emerald-200">
-                      <p className="text-[10px] text-emerald-800 font-bold uppercase">Projected Net Profit</p>
-                      <p className="text-base font-black text-emerald-700 mt-0.5">₹{fin.netProfit.toLocaleString('en-IN')}</p>
-                    </div>
-                  </div>
-
-                  <div className="bg-emerald-50/60 p-3 rounded-lg border border-emerald-200 text-xs text-emerald-900 leading-relaxed">
-                    💵 <strong>Revenue Breakdown:</strong> Gross Mandi vegetable sales reach <strong>₹{fin.totalGrossRevenue.toLocaleString('en-IN')}</strong>, powered by simultaneous companion intercropping delivering an extra <strong>₹{fin.bonusRevenue.toLocaleString('en-IN')}</strong> above mono-cropping.
                   </div>
                 </div>
               )}
 
+              {/* TAB 4: FERTILIZER */}
               {activeTab === 'fertilizer' && fert && (
                 <div className="bg-white p-5 rounded-b-xl shadow-sm border space-y-4">
                   <div className="flex justify-between items-center border-b pb-2">
@@ -1981,7 +2177,7 @@ export default function App() {
                       <span className="text-emerald-700">+{fert.nCreditPerAcre} kg Pure N / Acre</span>
                     </div>
                     <p className="text-gray-700">
-                      If pairing with a legume companion, atmospheric nitrogen nodulation saves <strong>{fert.ureaSavedBags} commercial Urea bag(s)</strong>, saving approximately <strong>₹{fert.savingsRupees}</strong> on input costs.
+                      Atmospheric nitrogen fixation from companions saves <strong>{fert.ureaSavedBags} commercial Urea bag(s)</strong>, saving approximately <strong>₹{fert.savingsRupees}</strong> on input costs.
                     </p>
                   </div>
                 </div>
@@ -2028,12 +2224,13 @@ export default function App() {
                 </div>
               )}
 
+              {/* TAB 6: STORAGE */}
               {activeTab === 'storage' && (
                 <div className="bg-white p-5 rounded-b-xl shadow-sm border space-y-4">
                   <div className="flex justify-between items-center border-b pb-2">
                     <h3 className="text-sm font-black text-gray-800">Post-Harvest Storage & Shelf-Life Longevity</h3>
                     <span className="text-xs bg-amber-100 text-amber-900 font-black px-2.5 py-0.5 rounded">
-                      Vegetable Storage Guidance
+                      Storage Guidance
                     </span>
                   </div>
 
@@ -2041,7 +2238,7 @@ export default function App() {
                     <div className="p-3.5 bg-gray-50 rounded-lg border space-y-2">
                       <div className="flex justify-between items-center">
                         <span className="font-black text-gray-900">{advice.primaryCrop.name}</span>
-                        <span className="bg-blue-100 text-blue-900 text-[10px] font-bold px-2 py-0.5 rounded">Perishable Vegetable</span>
+                        <span className="bg-blue-100 text-blue-900 text-[10px] font-bold px-2 py-0.5 rounded">Primary</span>
                       </div>
                       <p><strong>Storage Condition:</strong> High relative humidity (85–90%), well-aerated crates</p>
                       <p><strong>Ambient Shelf-Life:</strong> 3 – 5 Days</p>
@@ -2064,6 +2261,7 @@ export default function App() {
                 </div>
               )}
 
+              {/* TAB 7: PESTS */}
               {activeTab === 'pests' && (
                 <div className="bg-white p-5 rounded-b-xl shadow-sm border space-y-3">
                   <h3 className="text-xs font-black text-red-800 uppercase border-b pb-2">{d.pestTitle}</h3>
@@ -2095,6 +2293,7 @@ export default function App() {
         </div>
       </div>
 
+      {/* HISTORY MODAL */}
       {showHistory && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
           <div className="bg-white p-6 rounded-xl max-w-md w-full space-y-4 shadow-xl max-h-[80vh] overflow-y-auto">
@@ -2125,6 +2324,7 @@ export default function App() {
         </div>
       )}
 
+      {/* AUTH MODAL */}
       {showAuth && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
           <form onSubmit={handleAuth} className="bg-white p-6 rounded-xl max-w-sm w-full space-y-3 shadow-lg">
@@ -2138,6 +2338,14 @@ export default function App() {
           </form>
         </div>
       )}
+
+      {/* FLOATING VOICE ORB (ASSISTANT) */}
+      <FloatingVoiceOrb 
+        lang={lang} 
+        isListening={isListening} 
+        onToggleListen={toggleListening} 
+        lastTranscript={spokenTranscript} 
+      />
     </div>
   );
 }
