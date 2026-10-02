@@ -11,7 +11,7 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 5002;
 
-// In-Memory Fallback Stores
+// In-Memory Fallback Stores for resilient zero-downtime hosting
 const memoryUsers = new Map();
 const memoryHistory = [];
 
@@ -107,7 +107,7 @@ export const STATEWIDE_CROP_DIRECTORY = {
   foxtailmillet: { name: 'Foxtail Millet (Thinai)', category: 'Millets & Cereals', avgYield: 6.0, mandiRate: 43.00, msp: 37.00, costPerAcre: 8000, defaultSoil: 'Loamy', harvestDur: '80 - 90 Days', safeMoisturePct: 10.5, ambientDays: 300, coldDays: 650 },
   kodomillet: { name: 'Kodo Millet (Varagu)', category: 'Millets & Cereals', avgYield: 5.5, mandiRate: 42.00, msp: 36.00, costPerAcre: 7500, defaultSoil: 'Sandy', harvestDur: '110 - 120 Days', safeMoisturePct: 10.5, ambientDays: 300, coldDays: 650 },
 
-  // Fiber & Cash
+  // Fiber & Cash (No Tobacco)
   cotton: { name: 'Cotton', category: 'Cash & Fiber', avgYield: 8.5, mandiRate: 86.50, msp: 82.67, costPerAcre: 21000, defaultSoil: 'Black', harvestDur: '5 - 6 Months', safeMoisturePct: 8.5, ambientDays: 240, coldDays: 700 },
   sugarcane: { name: 'Sugarcane', category: 'Cash & Fiber', avgYield: 420, mandiRate: 3.50, msp: 3.40, costPerAcre: 65000, defaultSoil: 'Clay', harvestDur: '10 - 12 Months', safeMoisturePct: 70.0, ambientDays: 3, coldDays: 10 },
   sunnhemp: { name: 'Sunn Hemp', category: 'Cash & Fiber', avgYield: 7.0, mandiRate: 54.00, msp: 48.00, costPerAcre: 7000, defaultSoil: 'Sandy', harvestDur: '75 - 90 Days', safeMoisturePct: 10.0, ambientDays: 240, coldDays: 500 },
@@ -118,7 +118,7 @@ export const STATEWIDE_CROP_DIRECTORY = {
   coriander: { name: 'Coriander (Seed & Herb)', category: 'Spices & Tubers', avgYield: 4.5, mandiRate: 92.00, msp: 75.00, costPerAcre: 9000, defaultSoil: 'Black', harvestDur: '35 - 45 Days', safeMoisturePct: 9.0, ambientDays: 180, coldDays: 365 }
 };
 
-// IPM Protocol Engine
+// IPM Protocols
 const PEST_REGISTRY = {
   borer: { pestName: 'Fruit & Shoot Borer Complex (Leucinodes / Helicoverpa)', cultural: 'Prompt clipping of wilted shoots; install pheromone traps (5/acre) and Marigold trap borders.', bio: 'Neem seed kernel extract (NSKE 5%) or Bacillus thuringiensis (Bt) @ 2g/L.', chemical: 'Chlorantraniliprole 18.5% SC @ 0.3 ml/L water.', toxicity: 'Moderate', phiDays: 3 },
   bollworm: { pestName: 'Bollworm Complex & Whitefly (Bemisia tabaci)', cultural: 'Erect 15 yellow sticky cards per acre; remove alternate weed hosts.', bio: 'Beauveria bassiana @ 10g/L or release Chrysoperla predator larvae.', chemical: 'Flonicamid 50% WG @ 4g/10L water.', toxicity: 'Moderate', phiDays: 21 },
@@ -126,7 +126,7 @@ const PEST_REGISTRY = {
   general: { pestName: 'Sucking Pest Complex (Aphids, Thrips, Mites)', cultural: 'Mulch inter-rows with pulse canopy to eliminate exposed soil reflection.', bio: 'Spray 3% neem oil with soap water emulsifier.', chemical: 'Imidacloprid 17.8% SL @ 0.5 ml/L water (Last resort).', toxicity: 'Severe', phiDays: 10 }
 };
 
-// Soil Chemistry Audit Engine
+// Soil Chemical Evolution (Before vs After Intercropping)
 const calculateSoilChemistryEvolution = (primaryCropKey, intercropNFixed = 25, soilType = 'Loamy') => {
   const baseChem = {
     Clay: { n: 210, p: 18, k: 280, oc: 0.52, microbialScore: 62 },
@@ -157,7 +157,7 @@ const calculateSoilChemistryEvolution = (primaryCropKey, intercropNFixed = 25, s
   };
 };
 
-// Agro-Climatic and Crop-Specific Distinct Companion Decision Engine
+// District & Crop-Specific Distinct Companion Decision Engine
 const getAgronomicDistinctCompanions = (cropKey, districtKey = 'thanjavur', soilType = 'Clay', lang = 'en') => {
   const c = String(cropKey || 'brinjal').toLowerCase();
   const d = String(districtKey || 'thanjavur').toLowerCase();
@@ -173,7 +173,7 @@ const getAgronomicDistinctCompanions = (cropKey, districtKey = 'thanjavur', soil
   if (c.includes('cotton')) {
     if (s.includes('black') || d.includes('virudhunagar') || d.includes('thoothukudi') || d.includes('tirunelveli')) {
       return [
-        { tier: labels.high, key: 'blackgram', name: 'Black Gram (Urad)', rowRatio: '1:2', spacing: '30 cm x 10 cm', nitrogenFixed: 32, lerScore: 1.32, harvestDuration: '70 - 75 Days', storageLife: 'Ambient 8 Months (≤10% moisture)', reasoning: `In ${districtKey.toUpperCase()}'s deep black cotton soils, fast-maturing Black Gram completes its cycle before cotton branches lock, giving an early cash harvest.` },
+        { tier: labels.high, key: 'blackgram', name: 'Black Gram (Urad)', rowRatio: '1:2', spacing: '30 cm x 10 cm', nitrogenFixed: 32, lerScore: 1.32, harvestDuration: '70 - 75 Days', storageLife: 'Ambient 8 Months (≤10% moisture)', reasoning: `In ${districtKey.toUpperCase()}'s deep Vertisols, fast-maturing Black Gram completes its cycle before cotton branches lock, giving an early cash harvest.` },
         { tier: labels.rec, key: 'greengram', name: 'Green Gram (Moong)', rowRatio: '1:2', spacing: '25 cm x 10 cm', nitrogenFixed: 30, lerScore: 1.28, harvestDuration: '60 - 65 Days', storageLife: 'Ambient 8 Months (≤10% moisture)', reasoning: 'Ultra-fast 60-day legume with zero solar competition against juvenile cotton.' },
         { tier: labels.alt, key: 'clusterbean', name: 'Cluster Bean (Guar)', rowRatio: '1:1', spacing: '45 cm x 15 cm', nitrogenFixed: 25, lerScore: 1.24, harvestDuration: '85 - 95 Days', storageLife: 'Pod fresh 4 days, seed 12 Months', reasoning: 'Drought-tolerant taproot legume resilient to semi-arid Southern Zone heat breaks.' }
       ];
