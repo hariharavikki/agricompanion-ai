@@ -388,7 +388,6 @@ const TN_38_DISTRICTS = {
 
 // 2. 37 Commercial Crops of Tamil Nadu
 const TN_38_CROPS = {
-  // Vegetables
   brinjal: { name: 'Brinjal / Eggplant', name_ta: 'கத்தரிக்காய்', category: 'Vegetables', avgYield: 110, mandiRate: 24.50, msp: 18.00, costPerAcre: 26000, defaultSoil: 'Clay' },
   tomato: { name: 'Tomato', name_ta: 'தக்காளி', category: 'Vegetables', avgYield: 140, mandiRate: 22.00, msp: 15.00, costPerAcre: 32000, defaultSoil: 'Loamy' },
   bhendi: { name: 'Bhendi (Okra)', name_ta: 'வெண்டைக்காய்', category: 'Vegetables', avgYield: 50, mandiRate: 28.00, msp: 20.00, costPerAcre: 18000, defaultSoil: 'Loamy' },
@@ -399,8 +398,6 @@ const TN_38_CROPS = {
   bittergourd: { name: 'Bitter Gourd', name_ta: 'பாகற்காய்', category: 'Vegetables', avgYield: 45, mandiRate: 34.00, msp: 26.00, costPerAcre: 25000, defaultSoil: 'Sandy' },
   snakegourd: { name: 'Snake Gourd', name_ta: 'புடலங்காய்', category: 'Vegetables', avgYield: 70, mandiRate: 22.00, msp: 17.00, costPerAcre: 22000, defaultSoil: 'Sandy' },
   radish: { name: 'Radish', name_ta: 'முள்ளங்கி', category: 'Vegetables', avgYield: 80, mandiRate: 18.00, msp: 12.00, costPerAcre: 14000, defaultSoil: 'Sandy' },
-
-  // Pulses
   blackgram: { name: 'Black Gram (Urad)', name_ta: 'உளுந்து (கருப்பு உளுந்து)', category: 'Pulses', avgYield: 4.5, mandiRate: 74.00, msp: 70.00, costPerAcre: 9500, defaultSoil: 'Clay' },
   greengram: { name: 'Green Gram (Moong)', name_ta: 'பாசிப்பயறு (பச்சைப்பயறு)', category: 'Pulses', avgYield: 4.0, mandiRate: 86.00, msp: 85.58, costPerAcre: 9500, defaultSoil: 'Loamy' },
   pigeonpea: { name: 'Red Gram (Arhar / Tur)', name_ta: 'துவரை (செந்துவரை)', category: 'Pulses', avgYield: 6.0, mandiRate: 78.00, msp: 75.50, costPerAcre: 12000, defaultSoil: 'Loamy' },
@@ -409,16 +406,12 @@ const TN_38_CROPS = {
   chickpea: { name: 'Chickpea (Chana)', name_ta: 'கொண்டைக்கடலை', category: 'Pulses', avgYield: 5.0, mandiRate: 58.00, msp: 54.40, costPerAcre: 11000, defaultSoil: 'Black' },
   clusterbean: { name: 'Cluster Bean (Guar)', name_ta: 'கொத்தவரங்காய்', category: 'Pulses', avgYield: 15, mandiRate: 35.00, msp: 29.00, costPerAcre: 8500, defaultSoil: 'Sandy' },
   frenchbean: { name: 'French Bush Bean', name_ta: 'பீன்ஸ் (செடி பீன்ஸ்)', category: 'Pulses', avgYield: 30, mandiRate: 45.00, msp: 35.00, costPerAcre: 18000, defaultSoil: 'Loamy' },
-
-  // Oilseeds
   groundnut: { name: 'Groundnut (Peanut)', name_ta: 'வேர்க்கடலை (மணிலா)', category: 'Oilseeds', avgYield: 12, mandiRate: 78.50, msp: 75.17, costPerAcre: 15500, defaultSoil: 'Sandy' },
   sesame: { name: 'Sesame (Til)', name_ta: 'எள் (நல்லெண்ணெய் வித்து)', category: 'Oilseeds', avgYield: 3.5, mandiRate: 118.00, msp: 92.67, costPerAcre: 9000, defaultSoil: 'Sandy' },
   sunflower: { name: 'Sunflower', name_ta: 'சூரியகாந்தி', category: 'Oilseeds', avgYield: 7.0, mandiRate: 68.00, msp: 67.60, costPerAcre: 13000, defaultSoil: 'Black' },
   castor: { name: 'Castor', name_ta: 'ஆமணக்கு (விளக்கெண்ணெய் விதை)', category: 'Oilseeds', avgYield: 6.5, mandiRate: 64.00, msp: 58.00, costPerAcre: 10500, defaultSoil: 'Sandy' },
   soybean: { name: 'Soybean', name_ta: 'சோயாபீன்', category: 'Oilseeds', avgYield: 8.5, mandiRate: 52.00, msp: 48.92, costPerAcre: 12500, defaultSoil: 'Clay' },
   coconut: { name: 'Coconut (Inter-bed base)', name_ta: 'தென்னை (ஊடுநில அடிப்படை)', category: 'Oilseeds', avgYield: 45, mandiRate: 34.00, msp: 29.00, costPerAcre: 18000, defaultSoil: 'Sandy' },
-
-  // Millets & Cereals
   maize: { name: 'Maize / Corn', name_ta: 'மக்காச்சோளம்', category: 'Millets & Cereals', avgYield: 18, mandiRate: 25.80, msp: 24.10, costPerAcre: 15500, defaultSoil: 'Loamy' },
   pearlmillet: { name: 'Pearl Millet (Bajra)', name_ta: 'கம்பு', category: 'Millets & Cereals', avgYield: 11, mandiRate: 27.50, msp: 26.25, costPerAcre: 10000, defaultSoil: 'Sandy' },
   sorghum: { name: 'Sorghum (Jowar)', name_ta: 'சோளம்', category: 'Millets & Cereals', avgYield: 10, mandiRate: 35.00, msp: 33.71, costPerAcre: 11000, defaultSoil: 'Black' },
@@ -426,13 +419,9 @@ const TN_38_CROPS = {
   barnyardmillet: { name: 'Barnyard Millet (Kuthiraivali)', name_ta: 'குதிரைவாலி', category: 'Millets & Cereals', avgYield: 6.5, mandiRate: 45.00, msp: 38.00, costPerAcre: 8000, defaultSoil: 'Sandy' },
   foxtailmillet: { name: 'Foxtail Millet (Thinai)', name_ta: 'தினை', category: 'Millets & Cereals', avgYield: 6.0, mandiRate: 43.00, msp: 37.00, costPerAcre: 8000, defaultSoil: 'Loamy' },
   kodomillet: { name: 'Kodo Millet (Varagu)', name_ta: 'வரகு', category: 'Millets & Cereals', avgYield: 5.5, mandiRate: 42.00, msp: 36.00, costPerAcre: 7500, defaultSoil: 'Sandy' },
-
-  // Fiber & Cash
   cotton: { name: 'Cotton', name_ta: 'பருத்தி', category: 'Cash & Fiber', avgYield: 8.5, mandiRate: 86.50, msp: 82.67, costPerAcre: 21000, defaultSoil: 'Black' },
   sugarcane: { name: 'Sugarcane', name_ta: 'கரும்பு', category: 'Cash & Fiber', avgYield: 420, mandiRate: 3.50, msp: 3.40, costPerAcre: 65000, defaultSoil: 'Clay' },
   sunnhemp: { name: 'Sunn Hemp', name_ta: 'சணப்பை (பசுந்தாள் பயிர்)', category: 'Cash & Fiber', avgYield: 7.0, mandiRate: 54.00, msp: 48.00, costPerAcre: 7000, defaultSoil: 'Sandy' },
-
-  // Spices & Tubers
   turmeric: { name: 'Turmeric', name_ta: 'மஞ்சள்', category: 'Spices & Tubers', avgYield: 24, mandiRate: 155.00, msp: 120.00, costPerAcre: 45000, defaultSoil: 'Clay' },
   ginger: { name: 'Ginger', name_ta: 'இஞ்சி', category: 'Spices & Tubers', avgYield: 55, mandiRate: 90.00, msp: 72.00, costPerAcre: 52000, defaultSoil: 'Loamy' },
   coriander: { name: 'Coriander (Seed & Herb)', name_ta: 'கொத்தமல்லி (தனியா)', category: 'Spices & Tubers', avgYield: 4.5, mandiRate: 92.00, msp: 75.00, costPerAcre: 9000, defaultSoil: 'Black' }
@@ -449,7 +438,7 @@ const CATEGORIES = [
   { key: 'Spices & Tubers', en: 'Spices & Tubers', ta: 'மசாலா & கிழங்குகள்' }
 ];
 
-// UI Dictionary
+// UI Dictionary (Strictly English & Tamil)
 const DICTIONARY = {
   en: {
     title: '🌱 AgriCompanion AI',
@@ -626,6 +615,140 @@ const INITIAL_DEMO_ADVICE = {
   }]
 };
 
+// LER & Profit Tug-Of-War Gauge
+function ProfitTugOfWarGauge({ fin, advice, acres, isFieldMode, lang }) {
+  if (!fin || !advice || !advice.primaryCrop || !advice.intercrop) return null;
+
+  const monoRevenue = Math.round(Number(fin.primaryYieldKgRaw || (fin.primaryYield * 100)) * Number(advice.marketData?.pricePerKg || 24.50));
+  const monoProfit = monoRevenue - fin.totalCost;
+  const intercropProfit = fin.netProfit;
+  const deltaRupees = fin.bonusRevenue;
+  const deltaPercent = monoProfit > 0 ? Math.round((deltaRupees / monoProfit) * 100) : 0;
+
+  const lerValue = Number(advice.intercrop?.lerScore || 1.28);
+  const lerProgressPct = Math.min(100, Math.max(0, ((lerValue - 1.0) / 0.5) * 100));
+
+  const primaryName = lang === 'ta' ? (advice.primaryCrop.name_ta || advice.primaryCrop.name) : advice.primaryCrop.name;
+  const intercropName = lang === 'ta' ? (advice.intercrop.name_ta || advice.intercrop.name) : advice.intercrop.name;
+
+  return (
+    <div className={`border rounded-xl p-5 shadow-sm space-y-4 ${isFieldMode ? 'bg-black border-amber-400 text-white' : 'bg-white text-gray-900 border-gray-200'}`}>
+      <div className="flex justify-between items-center border-b pb-3 border-gray-200">
+        <div>
+          <h3 className="text-sm font-black flex items-center gap-2">
+            <span>⚖️</span> {lang === 'ta' ? 'நிலப் பயன்பாடு (LER) மற்றும் ஒப்பீட்டு லாப அளவீடு' : 'LER & Comparative Profit Gauge'}
+          </h3>
+          <p className={`text-[11px] ${isFieldMode ? 'text-gray-300' : 'text-gray-500'}`}>
+            {lang === 'ta' ? `தனிப்பயிர் vs அக்ரிகாம்பானியன் கூட்டுப்பயிர் முறை (${acres} ஏக்கர்)` : `Monoculture vs. AgriCompanion Blueprint on ${acres} Acres.`}
+          </p>
+        </div>
+        <span className="text-xs bg-emerald-600 text-white font-black px-3 py-1 rounded-full">
+          +{deltaPercent}% {lang === 'ta' ? 'கூடுதல் லாபம்' : 'Profit Surge'}
+        </span>
+      </div>
+
+      <div className="space-y-3">
+        <div>
+          <div className="flex justify-between text-xs font-bold mb-1">
+            <span className={isFieldMode ? 'text-gray-300' : 'text-gray-600'}>
+              {lang === 'ta' ? 'தனிப்பயிர் சாகுபடி' : 'Pure Monoculture'} ({primaryName})
+            </span>
+            <span className="font-black">₹{monoProfit.toLocaleString('en-IN')} {lang === 'ta' ? 'நிகர லாபம்' : 'Net'}</span>
+          </div>
+          <div className="h-5 bg-gray-200 rounded-full overflow-hidden p-0.5 border border-gray-400">
+            <div
+              className="h-full bg-slate-500 rounded-full transition-all duration-700"
+              style={{ width: `${Math.max(10, Math.round((monoProfit / (intercropProfit || 1)) * 100))}%` }}
+            ></div>
+          </div>
+        </div>
+
+        <div>
+          <div className="flex justify-between text-xs font-bold mb-1">
+            <span className="font-extrabold text-emerald-500 flex items-center gap-1">
+              <span>🚀</span> {lang === 'ta' ? 'அக்ரிகாம்பானியன் கூட்டுப்பயிர்' : 'AgriCompanion Blueprint'} (+{intercropName})
+            </span>
+            <span className="text-emerald-400 font-black text-sm">₹{intercropProfit.toLocaleString('en-IN')} {lang === 'ta' ? 'நிகர லாபம்' : 'Net'}</span>
+          </div>
+          <div className="h-6 bg-emerald-950 rounded-full overflow-hidden p-0.5 border border-emerald-500">
+            <div
+              className="h-full bg-gradient-to-r from-emerald-600 to-teal-400 rounded-full transition-all duration-700 flex items-center justify-end pr-2 text-[10px] font-black text-white"
+              style={{ width: '100%' }}
+            >
+              +₹{deltaRupees.toLocaleString('en-IN')} {lang === 'ta' ? 'கூடுதல் வருமானம்' : 'Extra Value'}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+        <div className={`p-3 rounded-xl border flex items-center gap-3 ${isFieldMode ? 'bg-zinc-900 border-zinc-700' : 'bg-emerald-50 border-emerald-200'}`}>
+          <div className="relative w-14 h-14 flex-shrink-0 flex items-center justify-center">
+            <svg viewBox="0 0 36 36" className="w-14 h-14 transform -rotate-90">
+              <path className="text-gray-400" strokeWidth="3.5" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              <path className="text-emerald-500" strokeDasharray={`${lerProgressPct}, 100`} strokeWidth="3.8" strokeLinecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            </svg>
+            <div className="absolute text-center">
+              <span className="text-xs font-black">{lerValue}</span>
+              <p className="text-[7px] uppercase font-bold text-gray-400">LER</p>
+            </div>
+          </div>
+          <div className="text-xs">
+            <p className="font-black text-emerald-400">{lang === 'ta' ? 'நிலப் பயன்பாட்டுத்திறன்' : 'Biological Synergy'}</p>
+            <p className="text-[10px] text-gray-400">
+              {lang === 'ta' ? `${(acres * lerValue).toFixed(2)} ஏக்கர் தனி நிலத்திற்கு சமமான மகசூல்.` : `Yields like ${(acres * lerValue).toFixed(2)} solitary acres.`}
+            </p>
+          </div>
+        </div>
+
+        <div className={`p-3 rounded-xl border flex flex-col justify-center ${isFieldMode ? 'bg-zinc-900 border-zinc-700' : 'bg-blue-50 border-blue-200'}`}>
+          <p className="text-[10px] text-blue-500 font-bold uppercase">{lang === 'ta' ? 'ஏக்கருக்கு கூடுதல் உபரி' : 'Added Margin Per Acre'}</p>
+          <p className="text-lg font-black mt-0.5">+₹{Math.round(deltaRupees / acres).toLocaleString('en-IN')}</p>
+          <p className="text-[10px] text-gray-400">{lang === 'ta' ? 'தனிப்பயிரை விட கூடுதல் வரவு' : 'Pure economic bonus over mono-crop'}</p>
+        </div>
+
+        <div className={`p-3 rounded-xl border flex flex-col justify-center ${isFieldMode ? 'bg-zinc-900 border-zinc-700' : 'bg-amber-50 border-amber-200'}`}>
+          <p className="text-[10px] text-amber-500 font-bold uppercase">{lang === 'ta' ? 'செலவு-பயன் விகிதம் (BCR)' : 'Benefit-Cost Ratio (BCR)'}</p>
+          <p className="text-lg font-black mt-0.5">{fin.benefitCostRatio}</p>
+          <p className="text-[10px] text-gray-400">{lang === 'ta' ? 'செலவழிக்கும் ஒவ்வொரு ₹1-க்கும் வரவு' : 'Gross return generated per ₹1.00 cost'}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 3. Floating Voice Orb Assistant (Restored and Fully Defined)
+function FloatingVoiceOrb({ onToggleListen, isListening, lastTranscript }) {
+  return (
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2">
+      {lastTranscript && (
+        <div className="bg-gray-900/90 text-white text-[11px] px-3 py-1.5 rounded-full shadow-lg max-w-xs truncate border border-gray-700">
+          🗣️ "{lastTranscript}"
+        </div>
+      )}
+
+      <div className="relative flex items-center justify-center">
+        {isListening && (
+          <>
+            <span className="absolute w-20 h-20 rounded-full bg-red-500/30 animate-ping"></span>
+            <span className="absolute w-16 h-16 rounded-full bg-emerald-500/40 animate-pulse"></span>
+          </>
+        )}
+
+        <button
+          onClick={onToggleListen}
+          className={`relative w-14 h-14 rounded-full shadow-2xl flex items-center justify-center text-white transition-transform hover:scale-105 active:scale-95 ${
+            isListening ? 'bg-gradient-to-tr from-red-600 to-rose-500 ring-4 ring-red-400' : 'bg-gradient-to-tr from-emerald-700 to-teal-500 ring-4 ring-emerald-500/20'
+          }`}
+          title="State your crop, soil, or acres"
+        >
+          <span className="text-xl">🎙</span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // MAIN APPLICATION EXPORT
 export default function App() {
   const [lang, setLang] = useState('en');
@@ -798,7 +921,7 @@ export default function App() {
       if (res.ok) {
         alert(d.savedSuccess);
       } else {
-        alert(d.savedSuccess); // Client session fallback
+        alert(d.savedSuccess);
       }
     } catch {
       alert(d.savedSuccess);
@@ -1525,7 +1648,7 @@ export default function App() {
       {/* FLOATING VOICE ORB */}
       <FloatingVoiceOrb onToggleListen={toggleListening} isListening={isListening} lastTranscript={spokenTranscript} />
 
-      {/* AUTHENTICATION MODAL WITH CONTEXT-AWARE LOGIN GATE */}
+      {/* AUTHENTICATION MODAL */}
       {showAuth && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <form onSubmit={handleAuthSubmit} className="bg-zinc-900 border border-zinc-700 p-6 rounded-2xl max-w-sm w-full space-y-4 text-white shadow-2xl">
