@@ -64,8 +64,9 @@ const initDatabase = async () => {
 
 initDatabase();
 
-// Crop Meta Registry with Storage & Baseline Soil Chemistries
+// Crop Meta Registry with Storage & Baseline Soil Chemistries (Tobacco Removed)
 export const STATEWIDE_CROP_DIRECTORY = {
+  // Vegetables
   brinjal: { name: 'Brinjal / Eggplant', category: 'Vegetables', avgYield: 110, mandiRate: 24.50, msp: 18.00, costPerAcre: 26000, defaultSoil: 'Clay', harvestDur: '4 - 5 Months', safeMoisturePct: 85.0, ambientDays: 4, coldDays: 25 },
   tomato: { name: 'Tomato', category: 'Vegetables', avgYield: 140, mandiRate: 22.00, msp: 15.00, costPerAcre: 32000, defaultSoil: 'Loamy', harvestDur: '3 - 4 Months', safeMoisturePct: 88.0, ambientDays: 6, coldDays: 28 },
   bhendi: { name: 'Bhendi (Okra)', category: 'Vegetables', avgYield: 50, mandiRate: 28.00, msp: 20.00, costPerAcre: 18000, defaultSoil: 'Loamy', harvestDur: '3 Months', safeMoisturePct: 86.0, ambientDays: 3, coldDays: 14 },
@@ -76,6 +77,8 @@ export const STATEWIDE_CROP_DIRECTORY = {
   bittergourd: { name: 'Bitter Gourd', category: 'Vegetables', avgYield: 45, mandiRate: 34.00, msp: 26.00, costPerAcre: 25000, defaultSoil: 'Sandy', harvestDur: '3 - 4 Months', safeMoisturePct: 88.0, ambientDays: 4, coldDays: 18 },
   snakegourd: { name: 'Snake Gourd', category: 'Vegetables', avgYield: 70, mandiRate: 22.00, msp: 17.00, costPerAcre: 22000, defaultSoil: 'Sandy', harvestDur: '4 Months', safeMoisturePct: 90.0, ambientDays: 4, coldDays: 14 },
   radish: { name: 'Radish', category: 'Vegetables', avgYield: 80, mandiRate: 18.00, msp: 12.00, costPerAcre: 14000, defaultSoil: 'Sandy', harvestDur: '45 - 55 Days', safeMoisturePct: 90.0, ambientDays: 3, coldDays: 21 },
+
+  // Pulses
   blackgram: { name: 'Black Gram (Urad)', category: 'Pulses', avgYield: 4.5, mandiRate: 74.00, msp: 70.00, costPerAcre: 9500, defaultSoil: 'Clay', harvestDur: '70 - 75 Days', safeMoisturePct: 10.0, ambientDays: 240, coldDays: 540 },
   greengram: { name: 'Green Gram (Moong)', category: 'Pulses', avgYield: 4.0, mandiRate: 86.00, msp: 85.58, costPerAcre: 9500, defaultSoil: 'Loamy', harvestDur: '60 - 65 Days', safeMoisturePct: 10.0, ambientDays: 240, coldDays: 540 },
   pigeonpea: { name: 'Red Gram (Arhar / Tur)', category: 'Pulses', avgYield: 6.0, mandiRate: 78.00, msp: 75.50, costPerAcre: 12000, defaultSoil: 'Loamy', harvestDur: '5 - 6 Months', safeMoisturePct: 10.5, ambientDays: 300, coldDays: 540 },
@@ -84,12 +87,16 @@ export const STATEWIDE_CROP_DIRECTORY = {
   chickpea: { name: 'Chickpea (Chana)', category: 'Pulses', avgYield: 5.0, mandiRate: 58.00, msp: 54.40, costPerAcre: 11000, defaultSoil: 'Black', harvestDur: '90 - 100 Days', safeMoisturePct: 9.5, ambientDays: 300, coldDays: 600 },
   clusterbean: { name: 'Cluster Bean (Guar)', category: 'Pulses', avgYield: 15, mandiRate: 35.00, msp: 29.00, costPerAcre: 8500, defaultSoil: 'Sandy', harvestDur: '85 - 95 Days', safeMoisturePct: 11.0, ambientDays: 180, coldDays: 365 },
   frenchbean: { name: 'French Bush Bean', category: 'Pulses', avgYield: 30, mandiRate: 45.00, msp: 35.00, costPerAcre: 18000, defaultSoil: 'Loamy', harvestDur: '55 - 65 Days', safeMoisturePct: 85.0, ambientDays: 4, coldDays: 20 },
+
+  // Oilseeds
   groundnut: { name: 'Groundnut (Peanut)', category: 'Oilseeds', avgYield: 12, mandiRate: 78.50, msp: 75.17, costPerAcre: 15500, defaultSoil: 'Sandy', harvestDur: '105 - 115 Days', safeMoisturePct: 8.0, ambientDays: 180, coldDays: 365 },
   sesame: { name: 'Sesame (Til)', category: 'Oilseeds', avgYield: 3.5, mandiRate: 118.00, msp: 92.67, costPerAcre: 9000, defaultSoil: 'Sandy', harvestDur: '75 - 85 Days', safeMoisturePct: 7.0, ambientDays: 240, coldDays: 450 },
   sunflower: { name: 'Sunflower', category: 'Oilseeds', avgYield: 7.0, mandiRate: 68.00, msp: 67.60, costPerAcre: 13000, defaultSoil: 'Black', harvestDur: '85 - 90 Days', safeMoisturePct: 8.5, ambientDays: 150, coldDays: 300 },
   castor: { name: 'Castor', category: 'Oilseeds', avgYield: 6.5, mandiRate: 64.00, msp: 58.00, costPerAcre: 10500, defaultSoil: 'Sandy', harvestDur: '140 - 160 Days', safeMoisturePct: 8.0, ambientDays: 240, coldDays: 500 },
   soybean: { name: 'Soybean', category: 'Oilseeds', avgYield: 8.5, mandiRate: 52.00, msp: 48.92, costPerAcre: 12500, defaultSoil: 'Clay', harvestDur: '85 - 90 Days', safeMoisturePct: 10.0, ambientDays: 210, coldDays: 400 },
   coconut: { name: 'Coconut (Inter-bed base)', category: 'Oilseeds', avgYield: 45, mandiRate: 34.00, msp: 29.00, costPerAcre: 18000, defaultSoil: 'Sandy', harvestDur: 'Perennial', safeMoisturePct: 6.0, ambientDays: 90, coldDays: 240 },
+
+  // Millets & Cereals
   maize: { name: 'Maize / Corn', category: 'Millets & Cereals', avgYield: 18, mandiRate: 25.80, msp: 24.10, costPerAcre: 15500, defaultSoil: 'Loamy', harvestDur: '3 - 4 Months', safeMoisturePct: 12.0, ambientDays: 180, coldDays: 540 },
   pearlmillet: { name: 'Pearl Millet (Bajra)', category: 'Millets & Cereals', avgYield: 11, mandiRate: 27.50, msp: 26.25, costPerAcre: 10000, defaultSoil: 'Sandy', harvestDur: '80 - 85 Days', safeMoisturePct: 11.5, ambientDays: 240, coldDays: 600 },
   sorghum: { name: 'Sorghum (Jowar)', category: 'Millets & Cereals', avgYield: 10, mandiRate: 35.00, msp: 33.71, costPerAcre: 11000, defaultSoil: 'Black', harvestDur: '100 - 110 Days', safeMoisturePct: 11.0, ambientDays: 240, coldDays: 600 },
@@ -97,10 +104,13 @@ export const STATEWIDE_CROP_DIRECTORY = {
   barnyardmillet: { name: 'Barnyard Millet (Kuthiraivali)', category: 'Millets & Cereals', avgYield: 6.5, mandiRate: 45.00, msp: 38.00, costPerAcre: 8000, defaultSoil: 'Sandy', harvestDur: '90 - 100 Days', safeMoisturePct: 11.0, ambientDays: 300, coldDays: 650 },
   foxtailmillet: { name: 'Foxtail Millet (Thinai)', category: 'Millets & Cereals', avgYield: 6.0, mandiRate: 43.00, msp: 37.00, costPerAcre: 8000, defaultSoil: 'Loamy', harvestDur: '80 - 90 Days', safeMoisturePct: 10.5, ambientDays: 300, coldDays: 650 },
   kodomillet: { name: 'Kodo Millet (Varagu)', category: 'Millets & Cereals', avgYield: 5.5, mandiRate: 42.00, msp: 36.00, costPerAcre: 7500, defaultSoil: 'Sandy', harvestDur: '110 - 120 Days', safeMoisturePct: 10.5, ambientDays: 300, coldDays: 650 },
+
+  // Fiber & Cash (Tobacco Removed)
   cotton: { name: 'Cotton', category: 'Cash & Fiber', avgYield: 8.5, mandiRate: 86.50, msp: 82.67, costPerAcre: 21000, defaultSoil: 'Black', harvestDur: '5 - 6 Months', safeMoisturePct: 8.5, ambientDays: 240, coldDays: 700 },
   sugarcane: { name: 'Sugarcane', category: 'Cash & Fiber', avgYield: 420, mandiRate: 3.50, msp: 3.40, costPerAcre: 65000, defaultSoil: 'Clay', harvestDur: '10 - 12 Months', safeMoisturePct: 70.0, ambientDays: 3, coldDays: 10 },
   sunnhemp: { name: 'Sunn Hemp', category: 'Cash & Fiber', avgYield: 7.0, mandiRate: 54.00, msp: 48.00, costPerAcre: 7000, defaultSoil: 'Sandy', harvestDur: '75 - 90 Days', safeMoisturePct: 10.0, ambientDays: 240, coldDays: 500 },
-  tobacco: { name: 'Tobacco', category: 'Cash & Fiber', avgYield: 9.0, mandiRate: 90.00, msp: 80.00, costPerAcre: 28000, defaultSoil: 'Loamy', harvestDur: '110 - 120 Days', safeMoisturePct: 14.0, ambientDays: 180, coldDays: 365 },
+
+  // Spices & Tubers
   turmeric: { name: 'Turmeric', category: 'Spices & Tubers', avgYield: 24, mandiRate: 155.00, msp: 120.00, costPerAcre: 45000, defaultSoil: 'Clay', harvestDur: '8 - 9 Months', safeMoisturePct: 9.0, ambientDays: 365, coldDays: 720 },
   ginger: { name: 'Ginger', category: 'Spices & Tubers', avgYield: 55, mandiRate: 90.00, msp: 72.00, costPerAcre: 52000, defaultSoil: 'Loamy', harvestDur: '8 - 9 Months', safeMoisturePct: 75.0, ambientDays: 20, coldDays: 90 },
   coriander: { name: 'Coriander (Seed & Herb)', category: 'Spices & Tubers', avgYield: 4.5, mandiRate: 92.00, msp: 75.00, costPerAcre: 9000, defaultSoil: 'Black', harvestDur: '35 - 45 Days', safeMoisturePct: 9.0, ambientDays: 180, coldDays: 365 }
@@ -195,7 +205,7 @@ const getDistinctCompanions = (cropKey, lang = 'en') => {
   ];
 };
 
-// Recommendation Endpoint (Fixed Parameter Destructuring)
+// Recommendation Endpoint
 app.post('/api/recommend', async (req, res) => {
   try {
     const { primaryCropKey, soilType, lang } = req.body;

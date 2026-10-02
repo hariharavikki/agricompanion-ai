@@ -18,7 +18,7 @@ const TN_AGRO_DISTRICTS = {
   salem: { name: 'Salem', zone: 'North Western Zone', defaultSoil: 'Loamy', coords: [11.6643, 78.1460] }
 };
 
-// 38 Commercial Crops of Tamil Nadu
+// Commercial Crops of Tamil Nadu (Tobacco Removed)
 const TN_38_CROPS = {
   brinjal: { name: 'Brinjal / Eggplant', category: 'Vegetables', avgYield: 110, mandiRate: 24.50, msp: 18.00, costPerAcre: 26000, defaultSoil: 'Clay' },
   tomato: { name: 'Tomato', category: 'Vegetables', avgYield: 140, mandiRate: 22.00, msp: 15.00, costPerAcre: 32000, defaultSoil: 'Loamy' },
@@ -54,7 +54,6 @@ const TN_38_CROPS = {
   cotton: { name: 'Cotton', category: 'Cash & Fiber', avgYield: 8.5, mandiRate: 86.50, msp: 82.67, costPerAcre: 21000, defaultSoil: 'Black' },
   sugarcane: { name: 'Sugarcane', category: 'Cash & Fiber', avgYield: 420, mandiRate: 3.50, msp: 3.40, costPerAcre: 65000, defaultSoil: 'Clay' },
   sunnhemp: { name: 'Sunn Hemp', category: 'Cash & Fiber', avgYield: 7.0, mandiRate: 54.00, msp: 48.00, costPerAcre: 7000, defaultSoil: 'Sandy' },
-  tobacco: { name: 'Tobacco', category: 'Cash & Fiber', avgYield: 9.0, mandiRate: 90.00, msp: 80.00, costPerAcre: 28000, defaultSoil: 'Loamy' },
   turmeric: { name: 'Turmeric', category: 'Spices & Tubers', avgYield: 24, mandiRate: 155.00, msp: 120.00, costPerAcre: 45000, defaultSoil: 'Clay' },
   ginger: { name: 'Ginger', category: 'Spices & Tubers', avgYield: 55, mandiRate: 90.00, msp: 72.00, costPerAcre: 52000, defaultSoil: 'Loamy' },
   coriander: { name: 'Coriander (Seed & Herb)', category: 'Spices & Tubers', avgYield: 4.5, mandiRate: 92.00, msp: 75.00, costPerAcre: 9000, defaultSoil: 'Black' }
@@ -284,7 +283,7 @@ export default function App() {
     }
   };
 
-  // Robust Client-Side Fallback Generator
+  // Robust Client-Side Fallback Generator (Tobacco Removed)
   const generateClientFallback = (cropKey, sType) => {
     const cMeta = TN_38_CROPS[cropKey] || TN_38_CROPS.brinjal;
     const cName = cMeta.name;
