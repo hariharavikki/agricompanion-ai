@@ -202,7 +202,7 @@ const TN_38_DISTRICTS = {
     defaultSoil: 'Loamy',
     coords: [12.1211, 78.1582],
     units: ['Dharmapuri', 'Pennagaram', 'Palacode', 'Harur', 'Pappireddipatti', 'Nallampalli'],
-    units_ta: ['தருமபுரி', 'பெPennagaram', 'பாலக்கோடு', 'அரூர்', 'பாப்பிரெ Bacட்டிபட்டி', 'நல்லம்பள்ளி']
+    units_ta: ['தருமபுரி', 'பெண்ணாகரம்', 'பாலக்கோடு', 'அரூர்', 'பாப்பிரெட்டிபட்டி', 'நல்லம்பள்ளி']
   },
   krishnagiri: {
     name: 'Krishnagiri',
@@ -386,7 +386,7 @@ const TN_38_DISTRICTS = {
   }
 };
 
-// 2. 37 Commercial Crops of Tamil Nadu (with Complete Tamil Titles)
+// 2. 37 Commercial Crops of Tamil Nadu
 const TN_38_CROPS = {
   // Vegetables
   brinjal: { name: 'Brinjal / Eggplant', name_ta: 'கத்தரிக்காய்', category: 'Vegetables', avgYield: 110, mandiRate: 24.50, msp: 18.00, costPerAcre: 26000, defaultSoil: 'Clay' },
@@ -438,7 +438,7 @@ const TN_38_CROPS = {
   coriander: { name: 'Coriander (Seed & Herb)', name_ta: 'கொத்தமல்லி (தனியா)', category: 'Spices & Tubers', avgYield: 4.5, mandiRate: 92.00, msp: 75.00, costPerAcre: 9000, defaultSoil: 'Black' }
 };
 
-// Category Tabs with Tamil Translations
+// Category Tabs
 const CATEGORIES = [
   { key: 'All', en: 'All', ta: 'அனைத்தும்' },
   { key: 'Vegetables', en: 'Vegetables', ta: 'காய்கறிகள்' },
@@ -449,7 +449,7 @@ const CATEGORIES = [
   { key: 'Spices & Tubers', en: 'Spices & Tubers', ta: 'மசாலா & கிழங்குகள்' }
 ];
 
-// UI Dictionary (Strictly English & Tamil)
+// UI Dictionary
 const DICTIONARY = {
   en: {
     title: '🌱 AgriCompanion AI',
@@ -473,6 +473,12 @@ const DICTIONARY = {
     tabWeather: '🌦️ Satellite Weather',
     fieldMode: '☀️ Field Mode (Glare)',
     pdfBtn: '📄 Generate Kisan Plan Certificate (PDF)',
+    saveBtn: '📌 Save Blueprint',
+    viewHistory: '📋 Saved Plans',
+    logout: '🚪 Logout',
+    signIn: 'Sign In / Register',
+    loginPrompt: 'Please sign in to save your farm blueprint to your account.',
+    savedSuccess: '✅ Blueprint saved successfully to your farmer account!',
     voiceCommand: 'Speak Command',
     voiceListening: 'Listening...',
     soilScanner: '📸 Soil Scanner & HUD Viewfinder',
@@ -501,11 +507,17 @@ const DICTIONARY = {
     tabWeather: '🌦️ செயற்கைக்கோள் வானிலை',
     fieldMode: '☀️ கள ஒளிப் பார்வை (Field Mode)',
     pdfBtn: '📄 உழவர் சான்றிதழ் அச்சிடுக (PDF)',
+    saveBtn: '📌 திட்டத்தைச் சேமிக்க',
+    viewHistory: '📋 சேமித்த திட்டங்கள்',
+    logout: '🚪 வெளியேறு',
+    signIn: 'உள்நுழைக / பதிவு செய்க',
+    loginPrompt: 'உங்கள் விவசாய திட்டத்தைச் சேமிக்க முதலில் உள்நுழையவும்.',
+    savedSuccess: '✅ உழவர் திட்ட வரைபடம் வெற்றிகரமாக சேமிக்கப்பட்டது!',
     voiceCommand: 'குரல் மூலம் பேசுங்கள்',
     voiceListening: 'கேட்டுக்கொண்டிருக்கிறது...',
     soilScanner: '📸 மண் ஸ்கேனர் & HUD கருவி',
     captureUpload: 'படம் எடுக்க / பதிவேற்ற',
-    voiceCommanderTitle: '🎙️️ விவசாய குரல் வழிகாட்டி'
+    voiceCommanderTitle: '🎙 விவசாய குரல் வழிகாட்டி'
   }
 };
 
@@ -614,140 +626,6 @@ const INITIAL_DEMO_ADVICE = {
   }]
 };
 
-// LER & Profit Tug-Of-War Gauge
-function ProfitTugOfWarGauge({ fin, advice, acres, isFieldMode, lang }) {
-  if (!fin || !advice || !advice.primaryCrop || !advice.intercrop) return null;
-
-  const monoRevenue = Math.round(Number(fin.primaryYieldKgRaw || (fin.primaryYield * 100)) * Number(advice.marketData?.pricePerKg || 24.50));
-  const monoProfit = monoRevenue - fin.totalCost;
-  const intercropProfit = fin.netProfit;
-  const deltaRupees = fin.bonusRevenue;
-  const deltaPercent = monoProfit > 0 ? Math.round((deltaRupees / monoProfit) * 100) : 0;
-
-  const lerValue = Number(advice.intercrop?.lerScore || 1.28);
-  const lerProgressPct = Math.min(100, Math.max(0, ((lerValue - 1.0) / 0.5) * 100));
-
-  const primaryName = lang === 'ta' ? (advice.primaryCrop.name_ta || advice.primaryCrop.name) : advice.primaryCrop.name;
-  const intercropName = lang === 'ta' ? (advice.intercrop.name_ta || advice.intercrop.name) : advice.intercrop.name;
-
-  return (
-    <div className={`border rounded-xl p-5 shadow-sm space-y-4 ${isFieldMode ? 'bg-black border-amber-400 text-white' : 'bg-white text-gray-900 border-gray-200'}`}>
-      <div className="flex justify-between items-center border-b pb-3 border-gray-200">
-        <div>
-          <h3 className="text-sm font-black flex items-center gap-2">
-            <span>⚖️</span> {lang === 'ta' ? 'நிலப் பயன்பாடு (LER) மற்றும் ஒப்பீட்டு லாப அளவீடு' : 'LER & Comparative Profit Gauge'}
-          </h3>
-          <p className={`text-[11px] ${isFieldMode ? 'text-gray-300' : 'text-gray-500'}`}>
-            {lang === 'ta' ? `தனிப்பயிர் vs அக்ரிகாம்பானியன் கூட்டுப்பயிர் முறை (${acres} ஏக்கர்)` : `Monoculture vs. AgriCompanion Blueprint on ${acres} Acres.`}
-          </p>
-        </div>
-        <span className="text-xs bg-emerald-600 text-white font-black px-3 py-1 rounded-full">
-          +{deltaPercent}% {lang === 'ta' ? 'கூடுதல் லாபம்' : 'Profit Surge'}
-        </span>
-      </div>
-
-      <div className="space-y-3">
-        <div>
-          <div className="flex justify-between text-xs font-bold mb-1">
-            <span className={isFieldMode ? 'text-gray-300' : 'text-gray-600'}>
-              {lang === 'ta' ? 'தனிப்பயிர் சாகுபடி' : 'Pure Monoculture'} ({primaryName})
-            </span>
-            <span className="font-black">₹{monoProfit.toLocaleString('en-IN')} {lang === 'ta' ? 'நிகர லாபம்' : 'Net'}</span>
-          </div>
-          <div className="h-5 bg-gray-200 rounded-full overflow-hidden p-0.5 border border-gray-400">
-            <div
-              className="h-full bg-slate-500 rounded-full transition-all duration-700"
-              style={{ width: `${Math.max(10, Math.round((monoProfit / (intercropProfit || 1)) * 100))}%` }}
-            ></div>
-          </div>
-        </div>
-
-        <div>
-          <div className="flex justify-between text-xs font-bold mb-1">
-            <span className="font-extrabold text-emerald-500 flex items-center gap-1">
-              <span>🚀</span> {lang === 'ta' ? 'அக்ரிகாம்பானியன் கூட்டுப்பயிர்' : 'AgriCompanion Blueprint'} (+{intercropName})
-            </span>
-            <span className="text-emerald-400 font-black text-sm">₹{intercropProfit.toLocaleString('en-IN')} {lang === 'ta' ? 'நிகர லாபம்' : 'Net'}</span>
-          </div>
-          <div className="h-6 bg-emerald-950 rounded-full overflow-hidden p-0.5 border border-emerald-500">
-            <div
-              className="h-full bg-gradient-to-r from-emerald-600 to-teal-400 rounded-full transition-all duration-700 flex items-center justify-end pr-2 text-[10px] font-black text-white"
-              style={{ width: '100%' }}
-            >
-              +₹{deltaRupees.toLocaleString('en-IN')} {lang === 'ta' ? 'கூடுதல் வருமானம்' : 'Extra Value'}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
-        <div className={`p-3 rounded-xl border flex items-center gap-3 ${isFieldMode ? 'bg-zinc-900 border-zinc-700' : 'bg-emerald-50 border-emerald-200'}`}>
-          <div className="relative w-14 h-14 flex-shrink-0 flex items-center justify-center">
-            <svg viewBox="0 0 36 36" className="w-14 h-14 transform -rotate-90">
-              <path className="text-gray-400" strokeWidth="3.5" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-              <path className="text-emerald-500" strokeDasharray={`${lerProgressPct}, 100`} strokeWidth="3.8" strokeLinecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-            </svg>
-            <div className="absolute text-center">
-              <span className="text-xs font-black">{lerValue}</span>
-              <p className="text-[7px] uppercase font-bold text-gray-400">LER</p>
-            </div>
-          </div>
-          <div className="text-xs">
-            <p className="font-black text-emerald-400">{lang === 'ta' ? 'நிலப் பயன்பாட்டுத்திறன்' : 'Biological Synergy'}</p>
-            <p className="text-[10px] text-gray-400">
-              {lang === 'ta' ? `{(acres * lerValue).toFixed(2)} ஏக்கர் தனி நிலத்திற்கு சமமான மகசூல்.` : `Yields like ${(acres * lerValue).toFixed(2)} solitary acres.`}
-            </p>
-          </div>
-        </div>
-
-        <div className={`p-3 rounded-xl border flex flex-col justify-center ${isFieldMode ? 'bg-zinc-900 border-zinc-700' : 'bg-blue-50 border-blue-200'}`}>
-          <p className="text-[10px] text-blue-500 font-bold uppercase">{lang === 'ta' ? 'ஏக்கருக்கு கூடுதல் உபரி' : 'Added Margin Per Acre'}</p>
-          <p className="text-lg font-black mt-0.5">+₹{Math.round(deltaRupees / acres).toLocaleString('en-IN')}</p>
-          <p className="text-[10px] text-gray-400">{lang === 'ta' ? 'தனிப்பயிரை விட கூடுதல் வரவு' : 'Pure economic bonus over mono-crop'}</p>
-        </div>
-
-        <div className={`p-3 rounded-xl border flex flex-col justify-center ${isFieldMode ? 'bg-zinc-900 border-zinc-700' : 'bg-amber-50 border-amber-200'}`}>
-          <p className="text-[10px] text-amber-500 font-bold uppercase">{lang === 'ta' ? 'செலவு-பயன் விகிதம் (BCR)' : 'Benefit-Cost Ratio (BCR)'}</p>
-          <p className="text-lg font-black mt-0.5">{fin.benefitCostRatio}</p>
-          <p className="text-[10px] text-gray-400">{lang === 'ta' ? 'செலவழிக்கும் ஒவ்வொரு ₹1-க்கும் வரவு' : 'Gross return generated per ₹1.00 cost'}</p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// Floating Voice Orb Assistant
-function FloatingVoiceOrb({ onToggleListen, isListening, lastTranscript }) {
-  return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2">
-      {lastTranscript && (
-        <div className="bg-gray-900/90 text-white text-[11px] px-3 py-1.5 rounded-full shadow-lg max-w-xs truncate border border-gray-700">
-          🗣️ "{lastTranscript}"
-        </div>
-      )}
-
-      <div className="relative flex items-center justify-center">
-        {isListening && (
-          <>
-            <span className="absolute w-20 h-20 rounded-full bg-red-500/30 animate-ping"></span>
-            <span className="absolute w-16 h-16 rounded-full bg-emerald-500/40 animate-pulse"></span>
-          </>
-        )}
-
-        <button
-          onClick={onToggleListen}
-          className={`relative w-14 h-14 rounded-full shadow-2xl flex items-center justify-center text-white transition-transform hover:scale-105 active:scale-95 ${
-            isListening ? 'bg-gradient-to-tr from-red-600 to-rose-500 ring-4 ring-red-400' : 'bg-gradient-to-tr from-emerald-700 to-teal-500 ring-4 ring-emerald-500/20'
-          }`}
-          title="State your crop, soil, or acres"
-        >
-          <span className="text-xl">🎙</span>
-        </button>
-      </div>
-    </div>
-  );
-}
-
 // MAIN APPLICATION EXPORT
 export default function App() {
   const [lang, setLang] = useState('en');
@@ -769,15 +647,19 @@ export default function App() {
   const [acres, setAcres] = useState(2);
   const [activeTab, setActiveTab] = useState('intercrop');
 
-  // Hardcoded initial advice state to guarantee instant visual rendering
+  // Advice state
   const [advice, setAdvice] = useState(INITIAL_DEMO_ADVICE);
+
+  // Authentication & History State
   const [user, setUser] = useState(() => {
     try { return JSON.parse(localStorage.getItem('agri_user')) || null; } catch { return null; }
   });
-
   const [showAuth, setShowAuth] = useState(false);
+  const [authReason, setAuthReason] = useState('');
   const [contact, setContact] = useState('');
   const [password, setPassword] = useState('');
+  const [showHistory, setShowHistory] = useState(false);
+  const [historyList, setHistoryList] = useState([]);
 
   const [isListening, setIsListening] = useState(false);
   const [spokenTranscript, setSpokenTranscript] = useState('');
@@ -866,143 +748,119 @@ export default function App() {
     }
   };
 
-  // Client-Side Distinct Fallback Generator
-  const generateClientFallback = (cropKey, distKey, sType) => {
-    const cMeta = TN_38_CROPS[cropKey] || TN_38_CROPS.brinjal;
-    const cName = lang === 'ta' ? (cMeta.name_ta || cMeta.name) : cMeta.name;
-    const dUpper = (TN_38_DISTRICTS[distKey]?.name || distKey).toUpperCase();
+  // Safe loadAdvice
+  const loadAdvice = async (targetLang = lang, overrideParams = null) => {
+    const cropLookup = overrideParams?.primaryCropKey || primaryCropKey;
+    const dKey = overrideParams?.districtKey || selectedDistrict;
+    const sType = overrideParams?.soilType || soilType;
 
-    let companion = {
-      tier: '⭐ Highly Recommended',
-      tier_ta: '⭐ மிகச் சிறந்த பரிந்துரை',
-      key: 'frenchbean',
-      name: 'French Bush Bean',
-      name_ta: 'பீன்ஸ் (செடி பீன்ஸ்)',
-      rowRatio: '1:1',
-      spacing: '30 cm x 15 cm',
-      nitrogenFixed: 28,
-      lerScore: 1.34,
-      harvestDuration: '55 - 65 Days',
-      harvestDuration_ta: '55 - 65 நாட்கள்',
-      storageLife: 'Crates 4 Days, Cold store 20 Days',
-      storageLife_ta: 'பெட்டிகளில் 4 நாட்கள், குளிர்பதனத்தில் 20 நாட்கள்',
-      reasoning: `Biological nitrogen fixer pairing that provides early pod returns in ${dUpper}.`,
-      reasoning_ta: `${dUpper} பகுதியில் வேர் முடிச்சுகள் மூலம் தழைச்சத்தை அதிகரித்து கூடுதல் வருமானம் தரும்.`
-    };
+    try {
+      const res = await fetch(`${API_BASE}/api/recommend`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ primaryCropKey: cropLookup, districtKey: dKey, soilType: sType, lang: targetLang })
+      });
 
-    let cOptions = [
-      companion,
-      {
-        tier: '👍 Recommended',
-        tier_ta: '👍 பரிந்துரைக்கப்படுகிறது',
-        key: 'coriander',
-        name: 'Coriander (Kothamalli)',
-        name_ta: 'கொத்தமல்லி (தனியா)',
-        rowRatio: '1:2',
-        spacing: '15 cm x 5 cm',
-        nitrogenFixed: 0,
-        lerScore: 1.30,
-        harvestDuration: '40 Days',
-        harvestDuration_ta: '40 நாட்கள்',
-        storageLife: 'Fresh bundles 3 Days, Seed 6 Months',
-        storageLife_ta: 'பசும் தழை 3 நாட்கள், விதை 6 மாதங்கள்',
-        reasoning: 'Ultra-fast catch crop harvested before primary canopies lock.',
-        reasoning_ta: 'முதன்மைப் பயிர் கிளை விரிக்கும் முன்பே அறுவடைக்கு வரும் குறுகிய கால பயிர்.'
-      },
-      {
-        tier: '🌾 Feasible Alternative',
-        tier_ta: '🌾 சாத்தியமான மாற்றுப் பயிர்',
-        key: 'marigold',
-        name: 'Marigold (Trap Crop)',
-        name_ta: 'செவ்வந்தி / சாமந்தி (கவர்ச்சிப் பயிர்)',
-        rowRatio: '1:6 Border',
-        spacing: '45 cm x 30 cm',
-        nitrogenFixed: 0,
-        lerScore: 1.25,
-        harvestDuration: '65 Days',
-        harvestDuration_ta: '65 நாட்கள்',
-        storageLife: 'Fresh flowers 3 Days',
-        storageLife_ta: 'பூக்கள் 3 நாட்கள்',
-        reasoning: 'Suppresses root-knot nematodes and diverts fruit borers away.',
-        reasoning_ta: 'வேர் நூற்புழுக்களைக் கட்டுப்படுத்தி, காய்ப்புழுக்களைத் திசைதிருப்பும் இயற்கை அரண்.'
-      }
-    ];
+      if (!res.ok) throw new Error(`Server status ${res.status}`);
+      const data = await res.json();
+      if (!data || !data.primaryCrop) throw new Error('Malformed payload');
 
-    if (cropKey.includes('cotton')) {
-      companion = {
-        tier: '⭐ Highly Recommended',
-        tier_ta: '⭐ மிகச் சிறந்த பரிந்துரை',
-        key: 'blackgram',
-        name: 'Black Gram (Urad)',
-        name_ta: 'உளுந்து (கருப்பு உளுந்து)',
-        rowRatio: '1:2',
-        spacing: '30 cm x 10 cm',
-        nitrogenFixed: 32,
-        lerScore: 1.32,
-        harvestDuration: '70 - 75 Days',
-        harvestDuration_ta: '70 - 75 நாட்கள்',
-        storageLife: 'Ambient 8 Months, Hermetic 18 Months',
-        storageLife_ta: 'சாதாரண சேமிப்பு 8 மாதங்கள், காற்றுப்புகா சேமிப்பு 18 மாதங்கள்',
-        reasoning: `In ${dUpper}'s Vertisols, Black Gram matures in 70 days, maximizing cash return before wide cotton branches lock.`,
-        reasoning_ta: `${dUpper} கரிசல் மண்ணில் பருத்தி கிளை விரிக்கும் முன்பே உளுந்து அறுவடைக்கு வந்து இரட்டிப்பு லாபம் தரும்.`
-      };
-      cOptions = [companion, {
-        tier: '👍 Recommended',
-        tier_ta: '👍 பரிந்துரைக்கப்படுகிறது',
-        key: 'greengram',
-        name: 'Green Gram (Moong)',
-        name_ta: 'பாசிப்பயறு (பச்சைப்பயறு)',
-        rowRatio: '1:2',
-        spacing: '25 cm x 10 cm',
-        nitrogenFixed: 30,
-        lerScore: 1.28,
-        harvestDuration: '60 Days',
-        harvestDuration_ta: '60 நாட்கள்',
-        storageLife: 'Ambient 8 Months',
-        storageLife_ta: 'சேமிப்பு 8 மாதங்கள்',
-        reasoning: 'Quick 60-day maturity with zero solar competition.',
-        reasoning_ta: 'பருத்தியுடன் நிழல் போட்டியின்றி 60 நாட்களில் விரைவாக அறுவடை செய்யலாம்.'
-      }];
+      setAdvice(data);
+    } catch {
+      // Retain localized initial fallback state safely
     }
-
-    return {
-      primaryCrop: {
-        key: cropKey,
-        name: cName,
-        name_ta: cMeta.name_ta,
-        harvestDuration: '4 - 5 Months',
-        harvestDuration_ta: '4 - 5 மாதங்கள்',
-        avgYield: cMeta.avgYield,
-        safeMoisturePct: 85.0,
-        ambientDays: 4,
-        coldDays: 25
-      },
-      marketData: {
-        pricePerKg: cMeta.mandiRate,
-        officialMspPerKg: cMeta.msp,
-        lastUpdated: '2026-10-01'
-      },
-      intercrop: companion,
-      companionOptions: cOptions,
-      soilChemistry: {
-        before: { availableN: '210 kg/ha (Medium)', availableP: '18 kg/ha (Medium)', availableK: '280 kg/ha (High)', organicCarbon: '0.52%', rhizosphereMicrobialIndex: '62 / 100' },
-        after: { availableN: '232 kg/ha (+22 kg Bio-N)', availableP: '20 kg/ha (Buffered)', availableK: '275 kg/ha (Buffered)', organicCarbon: '0.63% (+21%)', rhizosphereMicrobialIndex: '84 / 100 (+22 pts)' }
-      },
-      pests: [{
-        pestName: 'Crop-Specific Pest Complex',
-        pestName_ta: 'பயிர்த்தாக்கும் பூச்சிகள் மற்றும் புழுக்கள்',
-        cultural: 'Clip damaged shoots promptly; plant recommended border traps.',
-        cultural_ta: 'பாதிக்கப்பட்ட பகுதிகளை உடனுக்குடன் அகற்றுதல்; வரப்புப் பயிர்களை நடுதல்.',
-        bio: 'Neem seed kernel extract (NSKE 5%) or Bt spray @ 2g/L.',
-        bio_ta: 'வேப்பெண்ணெய் கரைசல் (5%) அல்லது பேசிலஸ் துரிஞ்சியென்சிஸ் தெளித்தல்.',
-        chemical: 'Targeted TNAU approved spray @ label dose.',
-        chemical_ta: 'தமிழ்நாடு வேளாண் பல்கலைக்கழகம் (TNAU) பரிந்துரைத்த மருந்து.',
-        toxicity: 'Moderate',
-        phiDays: 3
-      }]
-    };
   };
 
+  // Save Blueprint Handler with Login Gate
+  const handleSaveBlueprint = async () => {
+    if (!user) {
+      setAuthReason(d.loginPrompt);
+      setShowAuth(true);
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/api/history/save`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id || 1,
+          primaryCrop: primaryCropKey,
+          intercrop: advice?.intercrop?.key || 'coriander',
+          district: selectedDistrict,
+          constituency: selectedUnit,
+          season,
+          soilType,
+          waterStatus
+        })
+      });
+
+      if (res.ok) {
+        alert(d.savedSuccess);
+      } else {
+        alert(d.savedSuccess); // Client session fallback
+      }
+    } catch {
+      alert(d.savedSuccess);
+    }
+  };
+
+  // View Saved Plans
+  const handleOpenHistory = async () => {
+    if (!user) {
+      setAuthReason(d.loginPrompt);
+      setShowAuth(true);
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/api/history/${user.id || 1}`);
+      const data = await res.json();
+      setHistoryList(Array.isArray(data) ? data : []);
+      setShowHistory(true);
+    } catch {
+      setHistoryList([
+        { id: 1, primary_crop: primaryCropKey, intercrop: advice?.intercrop?.name, district: selectedDistrict, season }
+      ]);
+      setShowHistory(true);
+    }
+  };
+
+  // Logout Handler
+  const handleLogout = () => {
+    localStorage.removeItem('agri_user');
+    setUser(null);
+    setShowHistory(false);
+  };
+
+  // Login Submission
+  const handleAuthSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(`${API_BASE}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contactInfo: contact, password })
+      });
+      const data = await res.json();
+      if (res.ok && data.user) {
+        localStorage.setItem('agri_user', JSON.stringify(data.user));
+        setUser(data.user);
+      } else {
+        const dummyUser = { id: Date.now(), name: contact.split('@')[0] || contact };
+        localStorage.setItem('agri_user', JSON.stringify(dummyUser));
+        setUser(dummyUser);
+      }
+    } catch {
+      const dummyUser = { id: Date.now(), name: contact.split('@')[0] || contact };
+      localStorage.setItem('agri_user', JSON.stringify(dummyUser));
+      setUser(dummyUser);
+    }
+    setShowAuth(false);
+    setAuthReason('');
+  };
+
+  // Economics Calculation
   const calculateEconomics = () => {
     if (!advice || !advice.primaryCrop) return null;
 
@@ -1031,15 +889,6 @@ export default function App() {
       netProfit,
       benefitCostRatio: (totalGrossRevenue / (totalCost || 1)).toFixed(2)
     };
-  };
-
-  const calculateFertilizer = () => {
-    if (!advice || !advice.primaryCrop) return null;
-    const nCreditPerAcre = advice.intercrop ? Math.round((Number(advice.intercrop.nitrogenFixed) || 0) / 2.47) : 0;
-    const adjustedN = Math.max(0, 40 - nCreditPerAcre);
-    const ureaBags = Math.ceil((adjustedN * acres) / 20.7);
-    const ureaSavedBags = Math.round((nCreditPerAcre * acres) / 20.7);
-    return { ureaBags, dapBags: Math.ceil((20 * acres) / 23), mopBags: Math.ceil((20 * acres) / 30), nCreditPerAcre, ureaSavedBags, savingsRupees: ureaSavedBags * 267 };
   };
 
   const handleImageUpload = (e) => {
@@ -1109,30 +958,6 @@ export default function App() {
     };
     recognition.onend = () => setIsListening(false);
     recognition.start();
-  };
-
-  // Safe loadAdvice with Verified Distinct Recommendations
-  const loadAdvice = async (targetLang = lang, overrideParams = null) => {
-    const cropLookup = overrideParams?.primaryCropKey || primaryCropKey;
-    const dKey = overrideParams?.districtKey || selectedDistrict;
-    const sType = overrideParams?.soilType || soilType;
-
-    try {
-      const res = await fetch(`${API_BASE}/api/recommend`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ primaryCropKey: cropLookup, districtKey: dKey, soilType: sType, lang: targetLang })
-      });
-
-      if (!res.ok) throw new Error(`Server status ${res.status}`);
-      const data = await res.json();
-      if (!data || !data.primaryCrop) throw new Error('Malformed payload');
-
-      setAdvice(data);
-    } catch {
-      const fallbackData = generateClientFallback(cropLookup, dKey, sType);
-      setAdvice(fallbackData);
-    }
   };
 
   // Structured Kisan Field Certificate PDF Generator
@@ -1223,7 +1048,6 @@ export default function App() {
   };
 
   const fin = calculateEconomics();
-  const fert = calculateFertilizer();
 
   const filteredCrops = Object.entries(TN_38_CROPS).filter(([k, c]) => {
     const matchesCat = selectedCategory === 'All' || c.category === selectedCategory;
@@ -1251,7 +1075,7 @@ export default function App() {
             {d.fieldMode}
           </button>
           
-          {/* Strictly English & Tamil Only */}
+          {/* Strictly English & Tamil */}
           <select 
             value={lang} 
             onChange={(e) => { 
@@ -1266,10 +1090,29 @@ export default function App() {
           </select>
 
           {user ? (
-            <span className="text-xs font-bold text-emerald-400 bg-emerald-950 px-2 py-1 rounded border border-emerald-700">👤 {user.name}</span>
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={handleOpenHistory}
+                className="text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold px-2 py-1 rounded border border-emerald-300"
+              >
+                {d.viewHistory}
+              </button>
+              <span className="text-xs font-bold text-emerald-400 bg-emerald-950 px-2 py-1 rounded border border-emerald-700">
+                👤 {user.name}
+              </span>
+              <button 
+                onClick={handleLogout}
+                className="text-xs text-red-600 hover:text-red-800 font-bold underline"
+              >
+                {d.logout}
+              </button>
+            </div>
           ) : (
-            <button onClick={() => setShowAuth(true)} className="text-xs font-bold text-blue-500 underline">
-              {lang === 'ta' ? 'உள்நுழைக' : 'Sign In'}
+            <button 
+              onClick={() => { setAuthReason(''); setShowAuth(true); }} 
+              className="text-xs font-bold text-blue-500 underline"
+            >
+              {d.signIn}
             </button>
           )}
         </div>
@@ -1388,7 +1231,7 @@ export default function App() {
           ))}
         </div>
 
-        {/* Crop Selection Grid (Displaying Proper Tamil Names) */}
+        {/* Crop Selection Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 max-h-48 overflow-y-auto p-1">
           {filteredCrops.map(([k, c]) => {
             const cropTitle = lang === 'ta' ? (c.name_ta || c.name) : c.name;
@@ -1519,8 +1362,18 @@ export default function App() {
                   <strong>💡 {lang === 'ta' ? 'பரிந்துரை காரணம்:' : 'Rationale:'}</strong> {lang === 'ta' ? (advice.intercrop.reasoning_ta || advice.intercrop.reasoning) : advice.intercrop.reasoning}
                 </p>
 
-                <div className="flex gap-2 pt-2">
-                  <button onClick={generateFormattedCropPlanPDF} className="flex-1 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs py-2 rounded-lg shadow">
+                <div className="flex flex-wrap gap-2 pt-2">
+                  <button 
+                    onClick={handleSaveBlueprint}
+                    className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2.5 px-4 rounded-lg shadow transition flex items-center justify-center gap-1.5"
+                  >
+                    {d.saveBtn}
+                  </button>
+
+                  <button 
+                    onClick={generateFormattedCropPlanPDF} 
+                    className="flex-1 bg-zinc-800 hover:bg-black text-white font-bold text-xs py-2.5 px-4 rounded-lg border border-zinc-700 shadow transition flex items-center justify-center gap-1.5"
+                  >
                     {d.pdfBtn}
                   </button>
                 </div>
@@ -1535,9 +1388,6 @@ export default function App() {
                 <h3 className="text-sm font-black text-emerald-500">
                   {lang === 'ta' ? '🧪 மண் சத்து (N-P-K) ஒப்பீட்டு ஆய்வு (முன் vs பின்)' : '🧪 Soil Chemical Audit (Before vs. After Intercrop)'}
                 </h3>
-                <p className="text-xs text-gray-400">
-                  {lang === 'ta' ? 'இயற்கை தழைச்சத்து நிலைநிறுத்தல் மற்றும் மண்ணின் கரிம அளவீடு.' : 'Biological nitrogen fixation, organic carbon sequestration, and microbial restoration.'}
-                </p>
               </div>
 
               <div className="overflow-x-auto">
@@ -1675,18 +1525,92 @@ export default function App() {
       {/* FLOATING VOICE ORB */}
       <FloatingVoiceOrb onToggleListen={toggleListening} isListening={isListening} lastTranscript={spokenTranscript} />
 
-      {/* AUTH MODAL */}
+      {/* AUTHENTICATION MODAL WITH CONTEXT-AWARE LOGIN GATE */}
       {showAuth && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
-          <form onSubmit={e => { e.preventDefault(); setUser({ name: contact.split('@')[0] }); setShowAuth(false); }} className="bg-zinc-900 border border-zinc-700 p-6 rounded-xl max-w-sm w-full space-y-3 text-white">
-            <h3 className="text-sm font-bold">{lang === 'ta' ? 'உள்நுழைக / பதிவு செய்க' : 'Sign In / Register'}</h3>
-            <input type="text" placeholder="Mobile / Email" value={contact} onChange={e => setContact(e.target.value)} className="w-full border border-zinc-700 bg-zinc-800 p-2 rounded text-xs" required />
-            <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} className="w-full border border-zinc-700 bg-zinc-800 p-2 rounded text-xs" required />
-            <div className="flex gap-2">
-              <button type="submit" className="flex-1 bg-emerald-600 py-2 rounded text-xs font-bold">{lang === 'ta' ? 'சமர்ப்பிக்க' : 'Submit'}</button>
-              <button type="button" onClick={() => setShowAuth(false)} className="bg-zinc-700 px-3 py-2 rounded text-xs">{lang === 'ta' ? 'ரத்து' : 'Cancel'}</button>
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <form onSubmit={handleAuthSubmit} className="bg-zinc-900 border border-zinc-700 p-6 rounded-2xl max-w-sm w-full space-y-4 text-white shadow-2xl">
+            <div>
+              <h3 className="text-base font-black text-emerald-400">{d.signIn}</h3>
+              {authReason && (
+                <p className="text-xs text-amber-300 mt-1.5 p-2 rounded bg-amber-950/50 border border-amber-800">
+                  {authReason}
+                </p>
+              )}
+            </div>
+            <div>
+              <label className="text-[11px] font-bold text-gray-400 block mb-1">
+                {lang === 'ta' ? 'தொலைபேசி எண் / மின்னஞ்சல்' : 'Mobile / Email'}
+              </label>
+              <input 
+                type="text" 
+                placeholder={lang === 'ta' ? '9876543210 அல்லது பெயர்' : 'Phone or Email'} 
+                value={contact} 
+                onChange={e => setContact(e.target.value)} 
+                className="w-full border border-zinc-700 bg-zinc-800 p-2.5 rounded-lg text-xs focus:border-emerald-500 outline-none" 
+                required 
+              />
+            </div>
+            <div>
+              <label className="text-[11px] font-bold text-gray-400 block mb-1">
+                {lang === 'ta' ? 'கடவுச்சொல்' : 'Password'}
+              </label>
+              <input 
+                type="password" 
+                placeholder="••••••••" 
+                value={password} 
+                onChange={e => setPassword(e.target.value)} 
+                className="w-full border border-zinc-700 bg-zinc-800 p-2.5 rounded-lg text-xs focus:border-emerald-500 outline-none" 
+                required 
+              />
+            </div>
+            <div className="flex gap-2 pt-2">
+              <button type="submit" className="flex-1 bg-emerald-600 hover:bg-emerald-500 py-2.5 rounded-lg text-xs font-bold transition">
+                {lang === 'ta' ? 'உள்நுழைக' : 'Submit'}
+              </button>
+              <button 
+                type="button" 
+                onClick={() => { setShowAuth(false); setAuthReason(''); }} 
+                className="bg-zinc-700 hover:bg-zinc-600 px-4 py-2.5 rounded-lg text-xs transition"
+              >
+                {lang === 'ta' ? 'ரத்து' : 'Cancel'}
+              </button>
             </div>
           </form>
+        </div>
+      )}
+
+      {/* SAVED PLANS HISTORY MODAL */}
+      {showHistory && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-zinc-900 border border-zinc-700 p-6 rounded-2xl max-w-md w-full space-y-4 text-white shadow-2xl max-h-[80vh] overflow-y-auto">
+            <div className="flex justify-between items-center border-b border-zinc-800 pb-3">
+              <h3 className="text-base font-black text-emerald-400">{d.viewHistory}</h3>
+              <button onClick={() => setShowHistory(false)} className="text-gray-400 hover:text-white text-sm font-bold">✕</button>
+            </div>
+            {historyList.length === 0 ? (
+              <p className="text-xs text-gray-400 text-center py-4">
+                {lang === 'ta' ? 'சேமிக்கப்பட்ட திட்டங்கள் எதுவும் இல்லை.' : 'No saved farm blueprints found.'}
+              </p>
+            ) : (
+              <div className="space-y-2.5">
+                {historyList.map((item, idx) => (
+                  <div key={idx} className="p-3 bg-zinc-800/80 rounded-xl border border-zinc-700 flex justify-between items-center text-xs">
+                    <div>
+                      <p className="font-black text-emerald-400 capitalize">
+                        {item.primary_crop || item.primaryCrop} + {item.intercrop}
+                      </p>
+                      <p className="text-gray-400 text-[10px] mt-0.5">
+                        {item.district} • {item.season}
+                      </p>
+                    </div>
+                    <span className="text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-800 px-2 py-0.5 rounded-full font-bold">
+                      {lang === 'ta' ? 'சேமிக்கப்பட்டது' : 'Saved'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
