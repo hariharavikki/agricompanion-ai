@@ -218,7 +218,6 @@ export default function App() {
   const [acres, setAcres] = useState(2);
   const [activeTab, setActiveTab] = useState('intercrop');
 
-  // Advice starts as null to prevent premature rendering
   const [advice, setAdvice] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -277,7 +276,7 @@ export default function App() {
         setLocationName(`${unitLabel}, ${distLabel} (${lat.toFixed(2)}°N, ${lon.toFixed(2)}°E)`);
       }
     } catch {
-      // Fallback in state
+      // Fallback
     }
   };
 
@@ -297,7 +296,6 @@ export default function App() {
     }
   };
 
-  // Safe handler for image upload
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -321,14 +319,11 @@ export default function App() {
           rSum += imgData[i]; gSum += imgData[i + 1]; bSum += imgData[i + 2];
         }
         const total = imgData.length / 4;
-        const avgR = Math.round(rSum / total), avgG = Math.round(gSum / total), avgB = Math.round(bSum / total);
-
-        const toHex = (c) => ('0' + Math.max(0, Math.min(255, c)).toString(16)).slice(-2);
-        setExtractedSwatches([`#${toHex(avgR)}${toHex(avgG)}${toHex(avgB)}`, `#${toHex(avgR + 15)}${toHex(avgG + 10)}${toHex(avgB + 5)}`, `#${toHex(avgR - 15)}${toHex(avgG - 10)}${toHex(avgB - 10)}`]);
+        const avgR = Math.round(rSum / total);
 
         setTimeout(() => {
-          let detectedSoil = avgR > avgB * 1.55 ? 'Clay' : avgR > 140 ? 'Sandy' : 'Loamy';
-          let detectedCrop = detectedSoil === 'Clay' ? 'brinjal' : detectedSoil === 'Sandy' ? 'groundnut' : 'tomato';
+          let detectedSoil = avgR > 140 ? 'Sandy' : 'Loamy';
+          let detectedCrop = detectedSoil === 'Sandy' ? 'groundnut' : 'tomato';
 
           setImageAnalysisResult({ isValid: true, soilType: detectedSoil, suggestedCrop: detectedCrop, confidence: '94%' });
           setSoilType(detectedSoil);
@@ -341,7 +336,7 @@ export default function App() {
     reader.readAsDataURL(file);
   };
 
-  // Explicit Fallback covering all 37 distinct primary crops
+  // CLIENT-SIDE DISTINCT MAP COVERING ALL 37 CROPS
   const generateClientFallback = (cropKey, targetLang) => {
     const cropMeta = TN_38_CROPS[cropKey] || TN_38_CROPS.brinjal;
     const isTa = targetLang === 'ta';
