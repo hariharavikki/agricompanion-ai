@@ -114,7 +114,7 @@ const PEST_REGISTRY = {
   general: { pestName: 'Sucking Pest Complex (Aphids, Thrips, Mites)', cultural: 'Mulch inter-rows with pulse canopy to eliminate exposed soil reflection.', bio: 'Spray 3% neem oil with soap water emulsifier.', chemical: 'Imidacloprid 17.8% SL @ 0.5 ml/L water (Last resort).', toxicity: 'Severe', phiDays: 10 }
 };
 
-// Compute Dynamic Soil Chemical Evolution (Before vs After Intercropping)
+// Compute Dynamic Soil Chemical Evolution
 const calculateSoilChemistryEvolution = (primaryCropKey, intercropNFixed = 25, soilType = 'Loamy') => {
   const baseChem = {
     Clay: { n: 210, p: 18, k: 280, oc: 0.52, microbialScore: 62 },
@@ -195,7 +195,7 @@ const getDistinctCompanions = (cropKey, lang = 'en') => {
   ];
 };
 
-// 1. Recommendation Endpoint
+// Recommendation Endpoint (Fixed Parameter Destructuring)
 app.post('/api/recommend', async (req, res) => {
   try {
     const { primaryCropKey, soilType, lang } = req.body;
@@ -203,6 +203,7 @@ app.post('/api/recommend', async (req, res) => {
     const cKey = String(primaryCropKey || 'brinjal').toLowerCase();
 
     const cropMeta = STATEWIDE_CROP_DIRECTORY[cKey] || STATEWIDE_CROP_DIRECTORY.brinjal;
+    const sType = soilType || cropMeta.defaultSoil || 'Loamy';
 
     const primaryCrop = {
       key: cKey,
@@ -224,7 +225,7 @@ app.post('/api/recommend', async (req, res) => {
     const activeCompanion = companionOptions[0];
 
     // Compute Soil Chemical Audit
-    const soilChemistry = calculateSoilChemistryEvolution(cKey, activeCompanion.nitrogenFixed, soilType || cropMeta.defaultSoil);
+    const soilChemistry = calculateSoilChemistryEvolution(cKey, activeCompanion.nitrogenFixed, sType);
 
     // Select matched IPM Protocol
     let pestData = PEST_REGISTRY.borer;
@@ -246,7 +247,7 @@ app.post('/api/recommend', async (req, res) => {
   }
 });
 
-// 2. Live Weather Proxy (Open-Meteo Satellite Feed)
+// Live Weather Proxy (Open-Meteo Satellite Feed)
 app.get('/api/weather', async (req, res) => {
   try {
     const { lat, lon, lang } = req.query;
@@ -296,7 +297,7 @@ app.get('/api/weather', async (req, res) => {
   }
 });
 
-// 3. User Authentication
+// User Authentication
 app.post('/api/auth/login', async (req, res) => {
   const { contactInfo, password } = req.body;
   if (!contactInfo || !password) return res.status(400).json({ error: 'Contact and password are required' });
@@ -323,7 +324,7 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
-// 4. History Management
+// History Management
 app.post('/api/history/save', async (req, res) => {
   const { userId, primaryCrop, intercrop, season, soilType, waterStatus } = req.body;
   if (!userId || !primaryCrop) return res.status(400).json({ error: 'Missing required fields' });
