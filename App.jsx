@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import ReactDOM from 'react-dom/client';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5002';
 
@@ -273,7 +272,7 @@ const TN_38_DISTRICTS = {
   }
 };
 
-// 37 Commercial Crops of Tamil Nadu (Tobacco & Rice Excluded)
+// 37 Commercial Crops of Tamil Nadu (No Tobacco, No Rice)
 const TN_38_CROPS = {
   brinjal: { name: 'Brinjal / Eggplant', category: 'Vegetables', avgYield: 110, mandiRate: 24.50, msp: 18.00, costPerAcre: 26000, defaultSoil: 'Clay' },
   tomato: { name: 'Tomato', category: 'Vegetables', avgYield: 140, mandiRate: 22.00, msp: 15.00, costPerAcre: 32000, defaultSoil: 'Loamy' },
@@ -316,6 +315,134 @@ const TN_38_CROPS = {
 
 const CATEGORIES = ['All', 'Vegetables', 'Pulses', 'Oilseeds', 'Millets & Cereals', 'Cash & Fiber', 'Spices & Tubers'];
 
+// LER & PROFIT TUG-OF-WAR GAUGE
+function ProfitTugOfWarGauge({ fin, advice, acres, isFieldMode }) {
+  if (!fin || !advice || !advice.primaryCrop || !advice.intercrop) return null;
+
+  const monoRevenue = Math.round(Number(fin.primaryYieldKgRaw || (fin.primaryYield * 100)) * Number(advice.marketData?.pricePerKg || 24.50));
+  const monoProfit = monoRevenue - fin.totalCost;
+  const intercropProfit = fin.netProfit;
+  const deltaRupees = fin.bonusRevenue;
+  const deltaPercent = monoProfit > 0 ? Math.round((deltaRupees / monoProfit) * 100) : 0;
+
+  const lerValue = Number(advice.intercrop?.lerScore || 1.28);
+  const lerProgressPct = Math.min(100, Math.max(0, ((lerValue - 1.0) / 0.5) * 100));
+
+  return (
+    <div className={`border rounded-xl p-5 shadow-sm space-y-4 ${isFieldMode ? 'bg-black border-amber-400 text-white' : 'bg-white'}`}>
+      <div className="flex justify-between items-center border-b pb-3">
+        <div>
+          <h3 className="text-sm font-black flex items-center gap-2">
+            <span>⚖️</span> LER & Comparative Profit Gauge
+          </h3>
+          <p className={`text-[11px] ${isFieldMode ? 'text-gray-300' : 'text-gray-500'}`}>
+            Monoculture vs. AgriCompanion Blueprint on {acres} Acres.
+          </p>
+        </div>
+        <span className="text-xs bg-emerald-600 text-white font-black px-3 py-1 rounded-full">
+          +{deltaPercent}% Profit Surge
+        </span>
+      </div>
+
+      <div className="space-y-3">
+        <div>
+          <div className="flex justify-between text-xs font-bold mb-1">
+            <span className={isFieldMode ? 'text-gray-300' : 'text-gray-600'}>Pure Monoculture ({advice.primaryCrop.name})</span>
+            <span className="font-black">₹{monoProfit.toLocaleString('en-IN')} Net</span>
+          </div>
+          <div className="h-5 bg-gray-200 rounded-full overflow-hidden p-0.5 border border-gray-400">
+            <div
+              className="h-full bg-slate-500 rounded-full transition-all duration-700"
+              style={{ width: `${Math.max(10, Math.round((monoProfit / (intercropProfit || 1)) * 100))}%` }}
+            ></div>
+          </div>
+        </div>
+
+        <div>
+          <div className="flex justify-between text-xs font-bold mb-1">
+            <span className="font-extrabold text-emerald-500 flex items-center gap-1">
+              <span>🚀</span> AgriCompanion Blueprint (+{advice.intercrop.name})
+            </span>
+            <span className="text-emerald-400 font-black text-sm">₹{intercropProfit.toLocaleString('en-IN')} Net</span>
+          </div>
+          <div className="h-6 bg-emerald-950 rounded-full overflow-hidden p-0.5 border border-emerald-500">
+            <div
+              className="h-full bg-gradient-to-r from-emerald-600 to-teal-400 rounded-full transition-all duration-700 flex items-center justify-end pr-2 text-[10px] font-black text-white"
+              style={{ width: '100%' }}
+            >
+              +₹{deltaRupees.toLocaleString('en-IN')} Extra Value
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+        <div className={`p-3 rounded-xl border flex items-center gap-3 ${isFieldMode ? 'bg-zinc-900 border-zinc-700' : 'bg-emerald-50 border-emerald-200'}`}>
+          <div className="relative w-14 h-14 flex-shrink-0 flex items-center justify-center">
+            <svg viewBox="0 0 36 36" className="w-14 h-14 transform -rotate-90">
+              <path className="text-gray-400" strokeWidth="3.5" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              <path className="text-emerald-500" strokeDasharray={`${lerProgressPct}, 100`} strokeWidth="3.8" strokeLinecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            </svg>
+            <div className="absolute text-center">
+              <span className="text-xs font-black">{lerValue}</span>
+              <p className="text-[7px] uppercase font-bold text-gray-400">LER</p>
+            </div>
+          </div>
+          <div className="text-xs">
+            <p className="font-black text-emerald-400">Biological Synergy</p>
+            <p className="text-[10px] text-gray-300">Yields like {(acres * lerValue).toFixed(2)} solitary acres.</p>
+          </div>
+        </div>
+
+        <div className={`p-3 rounded-xl border flex flex-col justify-center ${isFieldMode ? 'bg-zinc-900 border-zinc-700' : 'bg-blue-50 border-blue-200'}`}>
+          <p className="text-[10px] text-blue-400 font-bold uppercase">Added Margin Per Acre</p>
+          <p className="text-lg font-black mt-0.5">+₹{Math.round(deltaRupees / acres).toLocaleString('en-IN')}</p>
+          <p className="text-[10px] text-gray-400">Pure economic bonus over mono-crop</p>
+        </div>
+
+        <div className={`p-3 rounded-xl border flex flex-col justify-center ${isFieldMode ? 'bg-zinc-900 border-zinc-700' : 'bg-amber-50 border-amber-200'}`}>
+          <p className="text-[10px] text-amber-400 font-bold uppercase">Benefit-Cost Ratio (BCR)</p>
+          <p className="text-lg font-black mt-0.5">{fin.benefitCostRatio}</p>
+          <p className="text-[10px] text-gray-400">Gross ₹{fin.benefitCostRatio} generated per ₹1.00 cost</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// FLOATING VOICE ORB
+function FloatingVoiceOrb({ onToggleListen, isListening, lastTranscript }) {
+  return (
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2">
+      {lastTranscript && (
+        <div className="bg-gray-900/90 text-white text-[11px] px-3 py-1.5 rounded-full shadow-lg max-w-xs truncate border border-gray-700">
+          🗣️ "{lastTranscript}"
+        </div>
+      )}
+
+      <div className="relative flex items-center justify-center">
+        {isListening && (
+          <>
+            <span className="absolute w-20 h-20 rounded-full bg-red-500/30 animate-ping"></span>
+            <span className="absolute w-16 h-16 rounded-full bg-emerald-500/40 animate-pulse"></span>
+          </>
+        )}
+
+        <button
+          onClick={onToggleListen}
+          className={`relative w-14 h-14 rounded-full shadow-2xl flex items-center justify-center text-white transition-transform hover:scale-105 active:scale-95 ${
+            isListening ? 'bg-gradient-to-tr from-red-600 to-rose-500 ring-4 ring-red-400' : 'bg-gradient-to-tr from-emerald-700 to-teal-500 ring-4 ring-emerald-500/20'
+          }`}
+          title="State your crop, soil, or acres"
+        >
+          <span className="text-xl">🎙️</span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// MAIN APPLICATION (EXPORT DEFAULT)
 export default function App() {
   const [lang, setLang] = useState('en');
   const [isFieldMode, setIsFieldMode] = useState(false);
@@ -390,18 +517,6 @@ export default function App() {
       setWeatherLoading(false);
     }
   };
-
-  useEffect(() => {
-    if ('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => fetchLiveForecast(pos.coords.latitude, pos.coords.longitude),
-        () => fetchLiveForecast(10.7870, 79.1378),
-        { timeout: 7000 }
-      );
-    } else {
-      fetchLiveForecast(10.7870, 79.1378);
-    }
-  }, []);
 
   // District Switch Event
   const handleDistrictChange = (distKey) => {
@@ -617,6 +732,11 @@ export default function App() {
       setAdvice(fallbackData);
     }
   };
+
+  // Auto-load Initial Advice on Mount
+  useEffect(() => {
+    loadAdvice('en', { primaryCropKey: 'brinjal', districtKey: 'thanjavur', soilType: 'Clay' });
+  }, []);
 
   // Structured Kisan Field Certificate PDF Generator
   const generateFormattedCropPlanPDF = () => {
@@ -1168,10 +1288,4 @@ export default function App() {
       )}
     </div>
   );
-}
-
-const rootElement = document.getElementById('root');
-if (rootElement && !rootElement._reactRootContainer) {
-  const root = ReactDOM.createRoot(rootElement);
-  root.render(<App />);
 }
