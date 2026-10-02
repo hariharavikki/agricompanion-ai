@@ -261,7 +261,7 @@ const AGRONOMIC_TRANSLATIONS = {
     marigold: { en: 'Marigold (Trap Crop)', ta: 'செவ்வந்தி / சாமந்தி (கவர்ச்சிப் பயிர்)', hi: 'गेंदा (ट्रैप फसल)' },
     cowpea: { en: 'Cowpea (Lobia)', ta: 'காராமணி (தட்டப்பயறு)', hi: 'लोबिया (चौलाई)' },
     greengram: { en: 'Green Gram (Moong)', ta: 'பாசிப்பயறு (பச்சைப்பயறு)', hi: 'मूंग (Green Gram)' },
-    blackgram: { en: 'Black Gram (Urad)', ta: 'உளுந்து (கருப்பு உளுந்து)', hi: 'உड़द (Black Gram)' },
+    blackgram: { en: 'Black Gram (Urad)', ta: 'உளுந்து (கருப்பு உளுந்து)', hi: 'उड़द (Black Gram)' },
     soybean: { en: 'Soybean', ta: 'சோயாபீன்', hi: 'சோயாபீன்' },
     horsegram: { en: 'Horse Gram (Kulthi)', ta: 'கொள்ளு (Horse Gram)', hi: 'कुलथी (Horse Gram)' },
     clusterbean: { en: 'Cluster Bean (Guar)', ta: 'கொத்தவரங்காய் (Guar)', hi: 'ग्वारफली (Cluster Bean)' },
@@ -329,7 +329,6 @@ const normalizeCompanion = (item, lang = 'en') => {
   };
 };
 
-// MULTI-CROP CLIENT FALLBACK MATRIX (Brinjal, Maize, Cotton, Groundnut)
 const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
   const s = String(szn || '').toLowerCase();
   const so = String(soil || '').toLowerCase();
@@ -351,7 +350,7 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
     greengram: { en: 'Green Gram (Moong)', ta: 'பாசிப்பயறு (பச்சைப்பயறு)', hi: 'मूंग (Green Gram)' },
     cowpea: { en: 'Cowpea (Lobia)', ta: 'காராமணி (தட்டப்பயறு)', hi: 'लोबिया (चौलाई)' },
     blackgram: { en: 'Black Gram (Urad)', ta: 'உளுந்து (கருப்பு உளுந்து)', hi: 'उड़द (Black Gram)' },
-    soybean: { en: 'Soybean', ta: 'சோயாபீன்', hi: 'சோயாபீன் (Soybean)' },
+    soybean: { en: 'Soybean', ta: 'சோயாபீன்', hi: 'சோயாबीन (Soybean)' },
     horsegram: { en: 'Horse Gram (Kulthi)', ta: 'கொள்ளு (Horse Gram)', hi: 'कुलथी (Horse Gram)' },
     clusterbean: { en: 'Cluster Bean (Guar)', ta: 'கொத்தவரங்காய் (Guar)', hi: 'ग्वारफली (Cluster Bean)' },
     pearlmillet: { en: 'Pearl Millet (Bajra)', ta: 'கம்பு (Bajra)', hi: 'बाजरा (Pearl Millet)' },
@@ -609,7 +608,7 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
           spacing: '45 cm x 15 cm',
           nitrogenFixed: 0,
           lerScore: 1.28,
-          harvestDuration: lang === 'ta' ? '80 - 85 நாட்கள்' : lang === 'hi' ? '80 - 85 দিন' : '80 - 85 Days',
+          harvestDuration: lang === 'ta' ? '80 - 85 நாட்கள்' : lang === 'hi' ? '80 - 85 दिन' : '80 - 85 Days',
           sowingOffset: 'Simultaneous on Day 0',
           rootZoneSynergy: 'Tall perimeter micro-climate barrier',
           reasoning: 'Tall Bajra border rows deflect dry winds in sandy zones, conserving humidity for groundnut pegging.',
@@ -654,7 +653,7 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
         spacing: '60 cm x 15 cm',
         nitrogenFixed: 42,
         lerScore: 1.36,
-        harvestDuration: lang === 'ta' ? '130 - 150 நாட்கள்' : lang === 'hi' ? '130 - 150 দিন' : '130 - 150 Days',
+        harvestDuration: lang === 'ta' ? '130 - 150 நாட்கள்' : lang === 'hi' ? '130 - 150 दिन' : '130 - 150 Days',
         sowingOffset: 'Simultaneous on Day 0',
         rootZoneSynergy: 'Deep taproot (1.5m) + Shallow groundnut peg layer (20cm)',
         reasoning: 'Classic ICAR pairing: groundnut finishes in 105 days, leaving Pigeon Pea to exploit late-season soil moisture and sunlight.',
@@ -668,7 +667,7 @@ const getClientTop3Companions = (crop, szn, soil, water, lang = 'en') => {
         spacing: '90 cm x 30 cm',
         nitrogenFixed: 0,
         lerScore: 1.30,
-        harvestDuration: lang === 'ta' ? '140 - 160 நாட்கள்' : lang === 'hi' ? '140 - 160 দিন' : '140 - 160 Days',
+        harvestDuration: lang === 'ta' ? '140 - 160 நாட்கள்' : lang === 'hi' ? '140 - 160 दिन' : '140 - 160 Days',
         sowingOffset: 'Simultaneous on Day 0',
         rootZoneSynergy: 'Deep taproot with vertical canopy branching',
         reasoning: 'Castor provides heavy secondary commercial returns and acts as an effective trap crop for Spodoptera caterpillars.',
@@ -2195,7 +2194,7 @@ export default function App() {
 
                   {weatherLoading ? (
                     <div className="py-8 text-center text-xs text-emerald-700 animate-pulse font-bold">
-                      🛰️ Contacting weather satellite & retrieving live field forecast...
+                      🛰️️ Contacting weather satellite & retrieving live field forecast...
                     </div>
                   ) : (
                     <div className="grid grid-cols-5 gap-2 text-center text-xs">
