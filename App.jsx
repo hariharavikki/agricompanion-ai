@@ -411,14 +411,14 @@ const TN_38_CROPS = {
   sunflower: { name: 'Sunflower', name_ta: 'சூரியகாந்தி', category: 'Oilseeds', avgYield: 7.0, mandiRate: 68.00, msp: 67.60, costPerAcre: 13000, defaultSoil: 'Black', waterReqMm: 450 },
   castor: { name: 'Castor', name_ta: 'ஆமணக்கு (விளக்கெண்ணெய் விதை)', category: 'Oilseeds', avgYield: 6.5, mandiRate: 64.00, msp: 58.00, costPerAcre: 10500, defaultSoil: 'Sandy', waterReqMm: 480 },
   soybean: { name: 'Soybean', name_ta: 'சோயாபீன்', category: 'Oilseeds', avgYield: 8.5, mandiRate: 52.00, msp: 48.92, costPerAcre: 12500, defaultSoil: 'Clay', waterReqMm: 480 },
-  coconut: { name: 'Coconut (Inter-bed base)', name_ta: 'தென்னை (ஊடுநில அடிப்படை)', category: 'Oilseeds', avgYield: 45, mandiRate: 34.00, msp: 29.00, costPerAcre: 18000, defaultSoil: 'Sandy', waterReqMm: 950 },
+  coconut: { name: 'Coconut', name_ta: 'தென்னை', category: 'Oilseeds', avgYield: 45, mandiRate: 34.00, msp: 29.00, costPerAcre: 18000, defaultSoil: 'Sandy', waterReqMm: 950 },
   maize: { name: 'Maize / Corn', name_ta: 'மக்காச்சோளம்', category: 'Millets & Cereals', avgYield: 18, mandiRate: 25.80, msp: 24.10, costPerAcre: 15500, defaultSoil: 'Loamy', waterReqMm: 500 },
   pearlmillet: { name: 'Pearl Millet (Bajra)', name_ta: 'கம்பு', category: 'Millets & Cereals', avgYield: 11, mandiRate: 27.50, msp: 26.25, costPerAcre: 10000, defaultSoil: 'Sandy', waterReqMm: 300 },
   sorghum: { name: 'Sorghum (Jowar)', name_ta: 'சோளம்', category: 'Millets & Cereals', avgYield: 10, mandiRate: 35.00, msp: 33.71, costPerAcre: 11000, defaultSoil: 'Black', waterReqMm: 350 },
   fingermillet: { name: 'Finger Millet (Ragi)', name_ta: 'கேழ்வரகு (ராகி)', category: 'Millets & Cereals', avgYield: 9.5, mandiRate: 44.00, msp: 42.90, costPerAcre: 11500, defaultSoil: 'Loamy', waterReqMm: 350 },
-  barnyardmillet: { name: 'Barnyard Millet (Kuthiraivali)', name_ta: 'குதிரைவாலி', category: 'Millets & Cereals', avgYield: 6.5, mandiRate: 45.00, msp: 38.00, costPerAcre: 8000, defaultSoil: 'Sandy', waterReqMm: 260 },
-  foxtailmillet: { name: 'Foxtail Millet (Thinai)', name_ta: 'தினை', category: 'Millets & Cereals', avgYield: 6.0, mandiRate: 43.00, msp: 37.00, costPerAcre: 8000, defaultSoil: 'Loamy', waterReqMm: 250 },
-  kodomillet: { name: 'Kodo Millet (Varagu)', name_ta: 'வரகு', category: 'Millets & Cereals', avgYield: 5.5, mandiRate: 42.00, msp: 36.00, costPerAcre: 7500, defaultSoil: 'Sandy', waterReqMm: 270 },
+  barnyardmillet: { name: 'Barnyard Millet', name_ta: 'குதிரைவாலி', category: 'Millets & Cereals', avgYield: 6.5, mandiRate: 45.00, msp: 38.00, costPerAcre: 8000, defaultSoil: 'Sandy', waterReqMm: 260 },
+  foxtailmillet: { name: 'Foxtail Millet', name_ta: 'தினை', category: 'Millets & Cereals', avgYield: 6.0, mandiRate: 43.00, msp: 37.00, costPerAcre: 8000, defaultSoil: 'Loamy', waterReqMm: 250 },
+  kodomillet: { name: 'Kodo Millet', name_ta: 'வரகு', category: 'Millets & Cereals', avgYield: 5.5, mandiRate: 42.00, msp: 36.00, costPerAcre: 7500, defaultSoil: 'Sandy', waterReqMm: 270 },
   cotton: { name: 'Cotton', name_ta: 'பருத்தி', category: 'Cash & Fiber', avgYield: 8.5, mandiRate: 86.50, msp: 82.67, costPerAcre: 21000, defaultSoil: 'Black', waterReqMm: 650 },
   sugarcane: { name: 'Sugarcane', name_ta: 'கரும்பு', category: 'Cash & Fiber', avgYield: 420, mandiRate: 3.50, msp: 3.40, costPerAcre: 65000, defaultSoil: 'Clay', waterReqMm: 1600 },
   sunnhemp: { name: 'Sunn Hemp', name_ta: 'சணப்பை (பசுந்தாள் பயிர்)', category: 'Cash & Fiber', avgYield: 7.0, mandiRate: 54.00, msp: 48.00, costPerAcre: 7000, defaultSoil: 'Sandy', waterReqMm: 260 },
@@ -427,7 +427,6 @@ const TN_38_CROPS = {
   coriander: { name: 'Coriander (Seed & Herb)', name_ta: 'கொத்தமல்லி (தனியா)', category: 'Spices & Tubers', avgYield: 4.5, mandiRate: 92.00, msp: 75.00, costPerAcre: 9000, defaultSoil: 'Black', waterReqMm: 240 }
 };
 
-// Category Tabs
 const CATEGORIES = [
   { key: 'All', en: 'All', ta: 'அனைத்தும்' },
   { key: 'Vegetables', en: 'Vegetables', ta: 'காய்கறிகள்' },
@@ -438,7 +437,6 @@ const CATEGORIES = [
   { key: 'Spices & Tubers', en: 'Spices & Tubers', ta: 'மசாலா & கிழங்குகள்' }
 ];
 
-// UI Dictionary (Strictly English & Tamil)
 const DICTIONARY = {
   en: {
     title: '🌱 AgriCompanion AI',
@@ -512,107 +510,6 @@ const DICTIONARY = {
   }
 };
 
-// Initial safe mock state
-const INITIAL_DEMO_ADVICE = {
-  primaryCrop: {
-    key: 'brinjal',
-    name: 'Brinjal / Eggplant',
-    name_ta: 'கத்தரிக்காய்',
-    harvestDuration: '4 - 5 Months',
-    harvestDuration_ta: '4 - 5 மாதங்கள்',
-    avgYield: 110,
-    safeMoisturePct: 85.0,
-    ambientDays: 4,
-    coldDays: 25
-  },
-  marketData: {
-    pricePerKg: 24.50,
-    officialMspPerKg: 18.00,
-    lastUpdated: '2026-10-01'
-  },
-  intercrop: {
-    tier: '⭐ Highly Recommended',
-    tier_ta: '⭐ மிகச் சிறந்த பரிந்துரை',
-    key: 'coriander',
-    name: 'Coriander (Kothamalli)',
-    name_ta: 'கொத்தமல்லி (தனியா)',
-    rowRatio: '1:2',
-    spacing: '15 cm x 5 cm',
-    nitrogenFixed: 0,
-    lerScore: 1.34,
-    harvestDuration: '35 - 45 Days',
-    harvestDuration_ta: '35 - 45 நாட்கள்',
-    storageLife: 'Fresh 3 Days, Seed 6 Months',
-    storageLife_ta: 'பசும் தழை 3 நாட்கள், விதை 6 மாதங்கள்',
-    reasoning: 'In Thanjavur riverbed alluvium, Coriander matures in 40 days, generating early cash flow before brinjal canopies close.',
-    reasoning_ta: 'தஞ்சாவூர் வண்டல் மண்ணில் 40 நாட்களில் கொத்தமல்லி அறுவடைக்கு வந்து, கத்தரி கிளை பரப்பும் முன்பே உடனடி வருமானம் தரும்.'
-  },
-  companionOptions: [
-    {
-      tier: '⭐ Highly Recommended',
-      tier_ta: '⭐ மிகச் சிறந்த பரிந்துரை',
-      key: 'coriander',
-      name: 'Coriander (Kothamalli)',
-      name_ta: 'கொத்தமல்லி (தனியா)',
-      rowRatio: '1:2',
-      spacing: '15 cm x 5 cm',
-      nitrogenFixed: 0,
-      lerScore: 1.34,
-      harvestDuration: '35 - 45 Days',
-      harvestDuration_ta: '35 - 45 நாட்கள்',
-      storageLife: 'Fresh 3 Days, Seed 6 Months',
-      storageLife_ta: 'பசும் தழை 3 நாட்கள், விதை 6 மாதங்கள்',
-      reasoning: 'In Thanjavur riverbed alluvium, Coriander matures in 40 days, generating early cash flow before brinjal canopies close.',
-      reasoning_ta: 'தஞ்சாவூர் வண்டல் மண்ணில் 40 நாட்களில் கொத்தமல்லி அறுவடைக்கு வந்து, கத்தரி கிளை பரப்பும் முன்பே உடனடி வருமானம் தரும்.'
-    },
-    {
-      tier: '👍 Recommended',
-      tier_ta: '👍 பரிந்துரைக்கப்படுகிறது',
-      key: 'frenchbean',
-      name: 'French Bush Bean',
-      name_ta: 'பீன்ஸ் (செடி பீன்ஸ்)',
-      rowRatio: '1:1',
-      spacing: '30 cm x 15 cm',
-      nitrogenFixed: 26,
-      lerScore: 1.29,
-      harvestDuration: '55 - 65 Days',
-      harvestDuration_ta: '55 - 65 நாட்கள்',
-      storageLife: 'Crates 4 Days, Cold store 20 Days',
-      storageLife_ta: 'பெட்டிகளில் 4 நாட்கள், குளிர்பதனத்தில் 20 நாட்கள்',
-      reasoning: 'Bush legume adding active atmospheric nitrogen into heavy-feeder brinjal root zones.',
-      reasoning_ta: 'கத்தரிக்குத் தேவையான இயற்கை தழைச்சத்தை வேர் முடிச்சுகள் மூலம் நிலைநிறுத்துகிறது.'
-    }
-  ],
-  waterFootprint: {
-    floodLitersPerAcre: 2225773,
-    dripLitersPerAcre: 1068371,
-    waterSavedLitersPerAcre: 1157402,
-    waterSavedPercent: 52,
-    dripSchedule: {
-      runtimeHoursPerCycle: 1.5,
-      irrigationIntervalDays: 3,
-      soilInfiltrationNote: 'Slow (High Moisture Retention)',
-      evaporationReduction: '32% due to canopy soil shading'
-    }
-  },
-  soilChemistry: {
-    before: { availableN: '210 kg/ha (Medium)', availableP: '18 kg/ha (Medium)', availableK: '280 kg/ha (High)', organicCarbon: '0.52%', rhizosphereMicrobialIndex: '62 / 100' },
-    after: { availableN: '232 kg/ha (+22 kg Bio-N)', availableP: '20 kg/ha (Buffered)', availableK: '275 kg/ha (Buffered)', organicCarbon: '0.63% (+21%)', rhizosphereMicrobialIndex: '84 / 100 (+22 pts)' }
-  },
-  pests: [{
-    pestName: 'Fruit & Shoot Borer Complex (Leucinodes orbonalis)',
-    pestName_ta: 'காய் மற்றும் தண்டு துளைப்பான் புழு',
-    cultural: 'Prompt clipping of wilted shoots; install Marigold trap borders.',
-    cultural_ta: 'வாடிய குருத்துகளை உடனுக்குடன் கிள்ளி அழித்தல்; சாமந்திப் பூக்களை வரப்புகளில் நடுதல்.',
-    bio: 'Neem seed kernel extract (NSKE 5%) or Bt spray @ 2g/L.',
-    bio_ta: 'வேப்பங்கொட்டை கரைசல் (5%) அல்லது பேசிலஸ் துரிஞ்சியென்சிஸ் (Bt) தெளித்தல்.',
-    chemical: 'Chlorantraniliprole 18.5% SC @ 0.3 ml/L water.',
-    toxicity: 'Moderate',
-    phiDays: 3
-  }]
-};
-
-// 3. Floating Voice Orb Assistant
 function FloatingVoiceOrb({ onToggleListen, isListening, lastTranscript }) {
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2">
@@ -646,7 +543,6 @@ function FloatingVoiceOrb({ onToggleListen, isListening, lastTranscript }) {
   );
 }
 
-// MAIN APPLICATION EXPORT
 export default function App() {
   const [lang, setLang] = useState('en');
   const d = DICTIONARY[lang] || DICTIONARY.en;
@@ -655,20 +551,19 @@ export default function App() {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Dual District & Constituency Selectors
+  // Form selections
   const [selectedDistrict, setSelectedDistrict] = useState('thanjavur');
   const [selectedUnit, setSelectedUnit] = useState('Thanjavur');
-
   const [season, setSeason] = useState('Kharif');
   const [soilType, setSoilType] = useState('Clay');
   const [waterStatus, setWaterStatus] = useState('Medium');
   const [primaryCropKey, setPrimaryCropKey] = useState('brinjal');
-
   const [acres, setAcres] = useState(2);
   const [activeTab, setActiveTab] = useState('intercrop');
 
-  // Advice state
-  const [advice, setAdvice] = useState(INITIAL_DEMO_ADVICE);
+  // Blueprint advice is NULL initially (does not auto-generate on load)
+  const [advice, setAdvice] = useState(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   // Authentication & History State
   const [user, setUser] = useState(() => {
@@ -692,7 +587,7 @@ export default function App() {
   const [extractedSwatches, setExtractedSwatches] = useState([]);
   const fileInputRef = useRef(null);
 
-  // Live Satellite Weather
+  // Satellite Weather Forecast
   const [weatherForecast, setWeatherForecast] = useState([
     { day: 'Day 1', temp: 32, rainProb: 15, windKmh: 12, sprayRisk: 'Low' },
     { day: 'Day 2', temp: 31, rainProb: 20, windKmh: 14, sprayRisk: 'Low' },
@@ -702,7 +597,6 @@ export default function App() {
   ]);
   const [locationName, setLocationName] = useState('Thanjavur Basin, Cauvery Delta');
 
-  // Live Weather Streamer
   const fetchLiveForecast = async (lat, lon, unitLabel = selectedUnit, distLabel = TN_38_DISTRICTS[selectedDistrict]?.name) => {
     try {
       const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,precipitation_probability_max,wind_speed_10m_max&timezone=auto`;
@@ -734,51 +628,139 @@ export default function App() {
   };
 
   useEffect(() => {
-    if ('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => fetchLiveForecast(pos.coords.latitude, pos.coords.longitude),
-        () => fetchLiveForecast(10.7870, 79.1378),
-        { timeout: 7000 }
-      );
-    } else {
-      fetchLiveForecast(10.7870, 79.1378);
+    const dist = TN_38_DISTRICTS[selectedDistrict];
+    if (dist) {
+      fetchLiveForecast(dist.coords[0], dist.coords[1], selectedUnit, dist.name);
     }
-  }, [lang]);
+  }, [selectedDistrict, selectedUnit, lang]);
 
-  // District Switch Event
   const handleDistrictChange = (distKey) => {
     setSelectedDistrict(distKey);
     const dist = TN_38_DISTRICTS[distKey];
     if (dist) {
-      const firstUnit = dist.units[0];
-      setSelectedUnit(firstUnit);
+      setSelectedUnit(dist.units[0]);
       setSoilType(dist.defaultSoil);
-      fetchLiveForecast(dist.coords[0], dist.coords[1], firstUnit, dist.name);
-      loadAdvice(lang, { districtKey: distKey, soilType: dist.defaultSoil, primaryCropKey, season, waterStatus });
     }
   };
 
-  // Constituency / Taluk Switch Event
-  const handleUnitChange = (unitName) => {
-    setSelectedUnit(unitName);
-    const dist = TN_38_DISTRICTS[selectedDistrict];
-    if (dist) {
-      fetchLiveForecast(dist.coords[0], dist.coords[1], unitName, dist.name);
-      loadAdvice(lang, { districtKey: selectedDistrict, soilType, primaryCropKey, season, waterStatus });
-    }
+  // CLIENT-SIDE DISTINCT FALLBACK MAP
+  const generateClientFallback = (cropKey, targetLang) => {
+    const cropMeta = TN_38_CROPS[cropKey] || TN_38_CROPS.brinjal;
+    const isTa = targetLang === 'ta';
+
+    const matrix = {
+      tomato: { key: 'frenchbean', name: 'French Bush Bean', name_ta: 'பீன்ஸ்', ler: 1.34, nFixed: 28, ratio: '1:1', sp: '30 cm x 15 cm', dur: '55 - 65 Days', dur_ta: '55 - 65 நாட்கள்', why: 'Supplies active nitrogen to tomato root zones without shading vines.', why_ta: 'தக்காளி கொடிகளை மறைக்காமல் வேர்ப்பகுதிக்கு தழைச்சத்தை ஊட்டுகிறது.' },
+      bhendi: { key: 'radish', name: 'Radish', name_ta: 'முள்ளங்கி', ler: 1.28, nFixed: 0, ratio: '1:1', sp: '20 cm x 10 cm', dur: '40 - 45 Days', dur_ta: '40 - 45 நாட்கள்', why: 'Grows quickly on bed ridges, breaking heavy soil crusts.', why_ta: 'வெண்டை வளரும் முன் பாத்தி விளிம்புகளில் வேகமாக வளர்ந்து மண்ணைத் தளர்த்தும்.' },
+      chilli: { key: 'onion', name: 'Small Onion (Shallot)', name_ta: 'சின்ன வெங்காயம்', ler: 1.36, nFixed: 0, ratio: '1:2', sp: '15 cm x 10 cm', dur: '70 Days', dur_ta: '70 நாட்கள்', why: 'Sulfur volatiles deter thrips while bulbs mature before peak chilli flushes.', why_ta: 'வெங்காயத்தின் வாசனை இலைப்பேன் பூச்சிகளை விரட்டும், இரட்டை லாபம் தரும்.' },
+      tapioca: { key: 'groundnut', name: 'Groundnut (Peanut)', name_ta: 'வேர்க்கடலை', ler: 1.41, nFixed: 25, ratio: '1:2', sp: '30 cm x 10 cm', dur: '105 Days', dur_ta: '105 நாட்கள்', why: 'Exploits wide 90cm spaces between cassava setts during juvenile stage.', why_ta: 'மரவள்ளி வளரும் வரை உள்ள 90 செ.மீ இடைவெளியைப் பயன்படுத்தி கூடுதல் லாபம் ஈட்டலாம்.' },
+      cotton: { key: 'blackgram', name: 'Black Gram (Urad)', name_ta: 'உளுந்து', ler: 1.32, nFixed: 32, ratio: '1:2', sp: '30 cm x 10 cm', dur: '70 - 75 Days', dur_ta: '70 - 75 நாட்கள்', why: 'Completes harvest in 70 days before wide cotton branches lock.', why_ta: 'பருத்தி கிளை விரிக்கும் முன்பே உளுந்து அறுவடை முடிந்து கூடுதல் பண வரவு தரும்.' },
+      groundnut: { key: 'pearlmillet', name: 'Pearl Millet (Bajra)', name_ta: 'கம்பு', ler: 1.34, nFixed: 0, ratio: '6:1 Border', sp: '45 cm x 15 cm', dur: '80 - 85 Days', dur_ta: '80 - 85 நாட்கள்', why: 'Tall border rows deflect drying winds, preserving pegging micro-humidity.', why_ta: 'கம்பு வரப்புப் பயிராக இருந்து மணிலா விழுதுகள் இறங்குவதற்குத் தேவையான ஈரப்பதத்தைக் காக்கும்.' },
+      maize: { key: 'cowpea', name: 'Cowpea (Lobia)', name_ta: 'தட்டப்பயறு', ler: 1.35, nFixed: 35, ratio: '2:1', sp: '30 cm x 10 cm', dur: '65 - 75 Days', dur_ta: '65 - 75 நாட்கள்', why: 'Erect stalks allow dense cowpea foliage to smother weed flushes.', why_ta: 'மக்காச்சோளத் தட்டைகளுக்கு இடையே தட்டப்பயறு களைகளை ஒடுக்கி உரம் சேர்க்கும்.' },
+      sorghum: { key: 'cowpea', name: 'Cowpea (Lobia)', name_ta: 'தட்டப்பயறு', ler: 1.33, nFixed: 35, ratio: '2:1', sp: '30 cm x 10 cm', dur: '70 Days', dur_ta: '70 நாட்கள்', why: 'Drought-hardy cereal and legume pairing for semi-arid zones.', why_ta: 'மானாவாரி நிலங்களுக்கு ஏற்ற சிறந்த தானிய-பருப்பு ஊடுபயிர் முறை.' },
+      coconut: { key: 'drumstick', name: 'Drumstick (Moringa)', name_ta: 'முருங்கை', ler: 1.52, nFixed: 0, ratio: 'Inter-Basin Alley', sp: '2.5m x 2.5m', dur: 'Perennial', dur_ta: 'ஆண்டு முழுவதும்', why: 'Agroforestry companion maximizing sun in wide palm alleys.', why_ta: 'தென்னந்தோப்பின் அகன்ற வரிசைகளில் சூரிய ஒளியைப் பயன்படுத்தி நிரந்தர வருமானம் தரும்.' },
+      sugarcane: { key: 'soybean', name: 'Soybean', name_ta: 'சோயாபீன்', ler: 1.39, nFixed: 36, ratio: '1:2', sp: '30 cm x 10 cm', dur: '85 Days', dur_ta: '85 நாட்கள்', why: 'Thrives in wide 120cm cane rows during the 90-day slow tillering phase.', why_ta: 'கரும்பு ஆரம்பத்தில் மெதுவாக வளரும் 90 நாட்களில் சோயாபீன் நல்ல வருமானம் தரும்.' },
+      turmeric: { key: 'onion', name: 'Small Onion (Shallot)', name_ta: 'சின்ன வெங்காயம்', ler: 1.37, nFixed: 0, ratio: '1:2 Raised Bed', sp: '15 cm x 10 cm', dur: '70 Days', dur_ta: '70 நாட்கள்', why: 'Onions mature in 70 days, paying off bed preparation costs early.', why_ta: 'மஞ்சள் முளைத்து வரும் முன்பே வெங்காயம் அறுவடைக்கு வந்து உழவுச் செலவை ஈடு செய்யும்.' }
+    };
+
+    const comp = matrix[cropKey] || {
+      key: 'coriander', name: 'Coriander (Kothamalli)', name_ta: 'கொத்தமல்லி', ler: 1.34, nFixed: 0, ratio: '1:2', sp: '15 cm x 5 cm', dur: '35 - 45 Days', dur_ta: '35 - 45 நாட்கள்',
+      why: 'Quick catch crop providing fast cash before primary branches spread.',
+      why_ta: 'முதன்மைப் பயிர் கிளை பரப்பும் முன்பே 40 நாட்களில் உடனடி பண வரவு தரும் குறுகிய காலப் பயிர்.'
+    };
+
+    return {
+      primaryCrop: {
+        key: cropKey,
+        name: cropMeta.name,
+        name_ta: cropMeta.name_ta,
+        harvestDuration: '3 - 5 Months',
+        harvestDuration_ta: '3 - 5 மாதங்கள்',
+        avgYield: cropMeta.avgYield,
+        safeMoisturePct: 85.0,
+        ambientDays: 4,
+        coldDays: 25
+      },
+      marketData: {
+        pricePerKg: cropMeta.mandiRate,
+        officialMspPerKg: cropMeta.msp,
+        lastUpdated: '2026-10-01'
+      },
+      intercrop: {
+        tier: isTa ? '⭐ மிகச் சிறந்த பரிந்துரை' : '⭐ Highly Recommended',
+        tier_ta: '⭐ மிகச் சிறந்த பரிந்துரை',
+        key: comp.key,
+        name: comp.name,
+        name_ta: comp.name_ta,
+        rowRatio: comp.ratio,
+        spacing: comp.sp,
+        nitrogenFixed: comp.nFixed,
+        lerScore: comp.ler,
+        harvestDuration: comp.dur,
+        harvestDuration_ta: comp.dur_ta,
+        storageLife: 'Fresh Storage Available',
+        storageLife_ta: 'பசும் சேமிப்பு முறை',
+        reasoning: comp.why,
+        reasoning_ta: comp.why_ta
+      },
+      companionOptions: [
+        {
+          tier: isTa ? '⭐ மிகச் சிறந்த பரிந்துரை' : '⭐ Highly Recommended',
+          tier_ta: '⭐ மிகச் சிறந்த பரிந்துரை',
+          key: comp.key,
+          name: comp.name,
+          name_ta: comp.name_ta,
+          rowRatio: comp.ratio,
+          spacing: comp.sp,
+          nitrogenFixed: comp.nFixed,
+          lerScore: comp.ler,
+          harvestDuration: comp.dur,
+          harvestDuration_ta: comp.dur_ta,
+          reasoning: comp.why,
+          reasoning_ta: comp.why_ta
+        }
+      ],
+      waterFootprint: {
+        floodLitersPerAcre: Math.round((cropMeta.waterReqMm || 500) * 4046.86),
+        dripLitersPerAcre: Math.round((cropMeta.waterReqMm || 500) * 4046.86 * 0.48),
+        waterSavedLitersPerAcre: Math.round((cropMeta.waterReqMm || 500) * 4046.86 * 0.52),
+        waterSavedPercent: 52,
+        dripSchedule: {
+          runtimeHoursPerCycle: 1.5,
+          irrigationIntervalDays: 3,
+          soilInfiltrationNote: 'Moderate Infiltration Rate',
+          evaporationReduction: '32% due to canopy soil shading'
+        }
+      },
+      soilChemistry: {
+        before: { availableN: '210 kg/ha', availableP: '18 kg/ha', availableK: '280 kg/ha', organicCarbon: '0.52%' },
+        after: { availableN: '235 kg/ha (+25 kg Bio-N)', availableP: '20 kg/ha (Buffered)', availableK: '275 kg/ha', organicCarbon: '0.64% (+23%)' }
+      },
+      pests: [{
+        pestName: 'Crop Specific Pest Complex',
+        pestName_ta: 'பயிர்த்தாக்கும் பூச்சிகள் மற்றும் புழுக்கள்',
+        cultural: 'Prompt clipping of wilted shoots; install pheromone traps.',
+        cultural_ta: 'பாதிக்கப்பட்ட பகுதிகளை உடனுக்குடன் அகற்றுதல்; இனக்கவர்ச்சி பொறி வைத்தல்.',
+        bio: 'Neem seed kernel extract (NSKE 5%) or Bt spray @ 2g/L.',
+        bio_ta: 'வேப்பங்கொட்டை கரைசல் (5%) அல்லது பேசிலஸ் துரிஞ்சியென்சிஸ் தெளித்தல்.',
+        toxicity: 'Moderate',
+        phiDays: 3
+      }]
+    };
   };
 
-  // Safe loadAdvice
-  const loadAdvice = async (targetLang = lang, overrideParams = null) => {
-    const cropLookup = overrideParams?.primaryCropKey || primaryCropKey;
-    const dKey = overrideParams?.districtKey || selectedDistrict;
-    const sType = overrideParams?.soilType || soilType;
-
+  // Generate Blueprint ONLY on Button Click
+  const handleGenerateBlueprint = async () => {
+    setIsGenerating(true);
     try {
       const res = await fetch(`${API_BASE}/api/recommend`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ primaryCropKey: cropLookup, districtKey: dKey, soilType: sType, lang: targetLang })
+        body: JSON.stringify({
+          primaryCropKey,
+          districtKey: selectedDistrict,
+          soilType,
+          lang
+        })
       });
 
       if (!res.ok) throw new Error(`Server status ${res.status}`);
@@ -787,7 +769,11 @@ export default function App() {
 
       setAdvice(data);
     } catch {
-      // Retain safe client fallback
+      // Apply exact distinct pairing client-side if server is offline
+      const fallbackData = generateClientFallback(primaryCropKey, lang);
+      setAdvice(fallbackData);
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -806,7 +792,7 @@ export default function App() {
         body: JSON.stringify({
           userId: user.id || 1,
           primaryCrop: primaryCropKey,
-          intercrop: advice?.intercrop?.key || 'coriander',
+          intercrop: advice?.intercrop?.key || 'companion',
           district: selectedDistrict,
           constituency: selectedUnit,
           season,
@@ -820,7 +806,6 @@ export default function App() {
     }
   };
 
-  // View Saved Plans
   const handleOpenHistory = async () => {
     if (!user) {
       setAuthReason(d.loginPrompt);
@@ -841,14 +826,12 @@ export default function App() {
     }
   };
 
-  // Logout Handler
   const handleLogout = () => {
     localStorage.removeItem('agri_user');
     setUser(null);
     setShowHistory(false);
   };
 
-  // Login Submission
   const handleAuthSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -875,7 +858,6 @@ export default function App() {
     setAuthReason('');
   };
 
-  // Economics Calculation
   const calculateEconomics = () => {
     if (!advice || !advice.primaryCrop) return null;
 
@@ -942,7 +924,6 @@ export default function App() {
           setSoilType(detectedSoil);
           setPrimaryCropKey(detectedCrop);
           setIsAnalyzingImage(false);
-          loadAdvice(lang, { districtKey: selectedDistrict, primaryCropKey: detectedCrop, season, soilType: detectedSoil, waterStatus });
         }, 600);
       };
       img.src = dataUrl;
@@ -969,13 +950,11 @@ export default function App() {
           break;
         }
       }
-      loadAdvice(lang, { districtKey: selectedDistrict, primaryCropKey, season, soilType, waterStatus });
     };
     recognition.onend = () => setIsListening(false);
     recognition.start();
   };
 
-  // Structured Kisan Field Certificate PDF Generator
   const generateFormattedCropPlanPDF = () => {
     if (!advice || !advice.primaryCrop || !fin) return;
 
@@ -1081,7 +1060,7 @@ export default function App() {
       }`}
     >
       
-      {/* HEADER WITH RICH ACCENT GRADIENTS */}
+      {/* HEADER */}
       <div className={`flex flex-wrap justify-between items-center p-5 rounded-2xl shadow-sm border mb-6 gap-3 transition-all ${
         isFieldMode 
           ? 'bg-black border-amber-400/80 shadow-amber-950/20' 
@@ -1116,7 +1095,10 @@ export default function App() {
             onChange={(e) => { 
               const newL = e.target.value;
               setLang(newL); 
-              loadAdvice(newL); 
+              if (advice) {
+                // If advice is already generated, refresh it with new language
+                loadAdvice(newL);
+              }
             }} 
             className={`border p-1.5 rounded-xl text-xs font-bold transition-all shadow-sm ${
               isFieldMode ? 'bg-zinc-900 text-white border-zinc-700' : 'bg-white border-slate-200 text-slate-700'
@@ -1225,7 +1207,7 @@ export default function App() {
         </div>
       </div>
 
-      {/* CROP SELECTOR WITH VIBRANT PILLS & ELEVATION */}
+      {/* CROP SELECTOR */}
       <div className={`p-6 rounded-2xl border mb-6 space-y-4 transition-all ${
         isFieldMode 
           ? 'bg-black border-zinc-700' 
@@ -1255,7 +1237,7 @@ export default function App() {
             <label className="text-xs font-bold block mb-1 text-slate-700">{d.constituency}</label>
             <select
               value={selectedUnit}
-              onChange={(e) => handleUnitChange(e.target.value)}
+              onChange={(e) => setSelectedUnit(e.target.value)}
               className={`w-full border p-2.5 rounded-xl text-xs font-bold shadow-sm transition ${
                 isFieldMode ? 'bg-zinc-900 border-zinc-700 text-emerald-400' : 'bg-slate-50 border-slate-200 text-emerald-700 font-extrabold'
               }`}
@@ -1281,7 +1263,7 @@ export default function App() {
           />
         </div>
 
-        {/* Category Pills (Color Highlighted) */}
+        {/* Category Pills */}
         <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
           {CATEGORIES.map((cat) => (
             <button
@@ -1311,7 +1293,6 @@ export default function App() {
                 onClick={() => {
                   setPrimaryCropKey(k);
                   setSoilType(c.defaultSoil);
-                  loadAdvice(lang, { districtKey: selectedDistrict, primaryCropKey: k, season, soilType: c.defaultSoil, waterStatus });
                 }}
                 className={`p-2.5 rounded-xl text-left border text-xs font-bold truncate transition-all shadow-sm ${
                   isSelected 
@@ -1348,15 +1329,16 @@ export default function App() {
             />
           </div>
           <button 
-            onClick={() => loadAdvice(lang, { districtKey: selectedDistrict, primaryCropKey, season, soilType, waterStatus })} 
-            className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-700 hover:to-teal-700 text-white font-black text-xs px-6 py-3 rounded-xl shadow-lg shadow-emerald-700/20 transition-all transform hover:-translate-y-0.5"
+            onClick={handleGenerateBlueprint} 
+            disabled={isGenerating}
+            className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-700 hover:to-teal-700 text-white font-black text-xs px-6 py-3 rounded-xl shadow-lg shadow-emerald-700/20 transition-all transform hover:-translate-y-0.5 disabled:opacity-50"
           >
-            {d.btnGet}
+            {isGenerating ? '...' : d.btnGet}
           </button>
         </div>
       </div>
 
-      {/* TABS & DETAILS */}
+      {/* TABS & DETAILS (ONLY VISIBLE ONCE GENERATED) */}
       {advice && advice.primaryCrop && (
         <div className="space-y-4">
           
@@ -1482,7 +1464,6 @@ export default function App() {
                   <strong>💡 {lang === 'ta' ? 'பரிந்துரை காரணம்:' : 'Rationale:'}</strong> {lang === 'ta' ? (advice.intercrop.reasoning_ta || advice.intercrop.reasoning) : advice.intercrop.reasoning}
                 </p>
 
-                {/* Action Buttons with Gradient Colors */}
                 <div className="flex flex-wrap gap-2.5 pt-1">
                   <button 
                     onClick={handleSaveBlueprint}
@@ -1516,12 +1497,9 @@ export default function App() {
                 </p>
               </div>
 
-              {/* Water Volume Cards with Ocean & Amber Colors */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div className={`p-4 rounded-2xl border transition-all ${
-                  isFieldMode 
-                    ? 'bg-zinc-900 border-zinc-800' 
-                    : 'bg-gradient-to-br from-rose-50 to-orange-50/40 border-rose-100 shadow-sm'
+                  isFieldMode ? 'bg-zinc-900 border-zinc-800' : 'bg-gradient-to-br from-rose-50 to-orange-50/40 border-rose-100 shadow-sm'
                 }`}>
                   <p className="text-[10px] font-extrabold text-rose-500 uppercase">{lang === 'ta' ? 'பாரம்பரிய வாய்க்கால் பாசனம்' : 'Conventional Flood Irrigation'}</p>
                   <p className="text-xl font-black mt-1 text-rose-600">
@@ -1531,9 +1509,7 @@ export default function App() {
                 </div>
 
                 <div className={`p-4 rounded-2xl border transition-all ${
-                  isFieldMode 
-                    ? 'bg-zinc-900 border-zinc-800' 
-                    : 'bg-gradient-to-br from-cyan-50 to-blue-50/40 border-cyan-100 shadow-sm'
+                  isFieldMode ? 'bg-zinc-900 border-zinc-800' : 'bg-gradient-to-br from-cyan-50 to-blue-50/40 border-cyan-100 shadow-sm'
                 }`}>
                   <p className="text-[10px] font-extrabold text-cyan-600 uppercase">{lang === 'ta' ? 'பரிந்துரைக்கப்படும் சொட்டுநீர் தேவை' : 'AgriCompanion Drip System'}</p>
                   <p className="text-xl font-black mt-1 text-cyan-700">
@@ -1543,9 +1519,7 @@ export default function App() {
                 </div>
 
                 <div className={`p-4 rounded-2xl border transition-all ${
-                  isFieldMode 
-                    ? 'bg-zinc-900 border-zinc-800' 
-                    : 'bg-gradient-to-br from-emerald-50 to-teal-50/40 border-emerald-100 shadow-sm'
+                  isFieldMode ? 'bg-zinc-900 border-zinc-800' : 'bg-gradient-to-br from-emerald-50 to-teal-50/40 border-emerald-100 shadow-sm'
                 }`}>
                   <p className="text-[10px] font-extrabold text-emerald-600 uppercase">{lang === 'ta' ? 'சேமிக்கப்படும் நிகர நீர்' : 'Net Water Conserved'}</p>
                   <p className="text-xl font-black mt-1 text-emerald-600">
@@ -1557,11 +1531,8 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Drip Schedule Card */}
               <div className={`p-4 rounded-2xl border space-y-2 text-xs ${
-                isFieldMode 
-                  ? 'bg-zinc-900/60 border-zinc-800' 
-                  : 'bg-slate-50 border-slate-200'
+                isFieldMode ? 'bg-zinc-900/60 border-zinc-800' : 'bg-slate-50 border-slate-200'
               }`}>
                 <h4 className="font-extrabold text-emerald-700 text-xs uppercase flex items-center gap-1.5">
                   <span>⏱️</span> {lang === 'ta' ? 'பரிந்துரைக்கப்படும் சொட்டுநீர் அட்டவணை' : 'Precision Drip Scheduling Guide'}
@@ -1755,7 +1726,7 @@ export default function App() {
 
       {/* AUTHENTICATION MODAL */}
       {showAuth && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <form onSubmit={handleAuthSubmit} className="bg-white border border-emerald-100 p-6 rounded-2xl max-w-sm w-full space-y-4 text-slate-800 shadow-2xl">
             <div>
               <h3 className="text-base font-black text-emerald-700">{d.signIn}</h3>
@@ -1809,7 +1780,7 @@ export default function App() {
 
       {/* SAVED PLANS HISTORY MODAL */}
       {showHistory && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-white border border-emerald-100 p-6 rounded-2xl max-w-md w-full space-y-4 text-slate-800 shadow-2xl max-h-[80vh] overflow-y-auto">
             <div className="flex justify-between items-center border-b border-slate-100 pb-3">
               <h3 className="text-base font-black text-emerald-700">{d.viewHistory}</h3>
