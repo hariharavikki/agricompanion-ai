@@ -515,7 +515,7 @@ function FloatingVoiceOrb({ onToggleListen, isListening, lastTranscript }) {
           }`}
           title="State your crop, soil, or acres"
         >
-          <span className="text-xl">🎙️️</span>
+          <span className="text-xl">🎙</span>
         </button>
       </div>
     </div>
@@ -610,6 +610,8 @@ export default function App() {
         () => fetchLiveForecast(10.7870, 79.1378),
         { timeout: 7000 }
       );
+    } else {
+      fetchLiveForecast(10.7870, 79.1378);
     }
   }, []);
 

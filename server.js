@@ -118,7 +118,7 @@ export const STATEWIDE_CROP_DIRECTORY = {
   coriander: { name: 'Coriander (Seed & Herb)', category: 'Spices & Tubers', avgYield: 4.5, mandiRate: 92.00, msp: 75.00, costPerAcre: 9000, defaultSoil: 'Black', harvestDur: '35 - 45 Days', safeMoisturePct: 9.0, ambientDays: 180, coldDays: 365 }
 };
 
-// IPM Protocols
+// IPM Protocol Engine
 const PEST_REGISTRY = {
   borer: { pestName: 'Fruit & Shoot Borer Complex (Leucinodes / Helicoverpa)', cultural: 'Prompt clipping of wilted shoots; install pheromone traps (5/acre) and Marigold trap borders.', bio: 'Neem seed kernel extract (NSKE 5%) or Bacillus thuringiensis (Bt) @ 2g/L.', chemical: 'Chlorantraniliprole 18.5% SC @ 0.3 ml/L water.', toxicity: 'Moderate', phiDays: 3 },
   bollworm: { pestName: 'Bollworm Complex & Whitefly (Bemisia tabaci)', cultural: 'Erect 15 yellow sticky cards per acre; remove alternate weed hosts.', bio: 'Beauveria bassiana @ 10g/L or release Chrysoperla predator larvae.', chemical: 'Flonicamid 50% WG @ 4g/10L water.', toxicity: 'Moderate', phiDays: 21 },
@@ -126,7 +126,7 @@ const PEST_REGISTRY = {
   general: { pestName: 'Sucking Pest Complex (Aphids, Thrips, Mites)', cultural: 'Mulch inter-rows with pulse canopy to eliminate exposed soil reflection.', bio: 'Spray 3% neem oil with soap water emulsifier.', chemical: 'Imidacloprid 17.8% SL @ 0.5 ml/L water (Last resort).', toxicity: 'Severe', phiDays: 10 }
 };
 
-// Soil Chemical Evolution (Before vs After Intercropping)
+// Soil Chemistry Audit Engine
 const calculateSoilChemistryEvolution = (primaryCropKey, intercropNFixed = 25, soilType = 'Loamy') => {
   const baseChem = {
     Clay: { n: 210, p: 18, k: 280, oc: 0.52, microbialScore: 62 },
