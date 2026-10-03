@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5002';
+const API_BASE = import.meta.env.VITE_API_BASE || '';
 
 // 1. All 38 Districts of Tamil Nadu
 const TN_38_DISTRICTS = {
@@ -46,159 +46,396 @@ const TN_38_DISTRICTS = {
 
 // 2. 37 Commercial Crops of Tamil Nadu
 const TN_38_CROPS = {
-  brinjal: { name: 'Brinjal / Eggplant', name_ta: 'கத்தரிக்காய்', category: 'Vegetables', avgYield: 110, mandiRate: 24.50, msp: 18.00, costPerAcre: 26000, defaultSoil: 'Clay', waterReqMm: 550 },
-  tomato: { name: 'Tomato', name_ta: 'தக்காளி', category: 'Vegetables', avgYield: 140, mandiRate: 22.00, msp: 15.00, costPerAcre: 32000, defaultSoil: 'Loamy', waterReqMm: 500 },
-  bhendi: { name: 'Bhendi (Okra)', name_ta: 'வெண்டைக்காய்', category: 'Vegetables', avgYield: 50, mandiRate: 28.00, msp: 20.00, costPerAcre: 18000, defaultSoil: 'Loamy', waterReqMm: 400 },
-  chilli: { name: 'Chilli', name_ta: 'மிளகாய்', category: 'Vegetables', avgYield: 18, mandiRate: 120.00, msp: 100.00, costPerAcre: 35000, defaultSoil: 'Black', waterReqMm: 600 },
-  tapioca: { name: 'Tapioca (Cassava)', name_ta: 'மரவள்ளிக்கிழங்கு', category: 'Vegetables', avgYield: 120, mandiRate: 11.50, msp: 9.50, costPerAcre: 24000, defaultSoil: 'Sandy', waterReqMm: 750 },
-  onion: { name: 'Small Onion (Shallot)', name_ta: 'சின்ன வெங்காயம்', category: 'Vegetables', avgYield: 60, mandiRate: 38.00, msp: 30.00, costPerAcre: 38000, defaultSoil: 'Loamy', waterReqMm: 380 },
-  drumstick: { name: 'Drumstick (Moringa)', name_ta: 'முருங்கை', category: 'Vegetables', avgYield: 80, mandiRate: 32.00, msp: 24.00, costPerAcre: 20000, defaultSoil: 'Sandy', waterReqMm: 450 },
-  bittergourd: { name: 'Bitter Gourd', name_ta: 'பாகற்காய்', category: 'Vegetables', avgYield: 45, mandiRate: 34.00, msp: 26.00, costPerAcre: 25000, defaultSoil: 'Sandy', waterReqMm: 420 },
-  snakegourd: { name: 'Snake Gourd', name_ta: 'புடலங்காய்', category: 'Vegetables', avgYield: 70, mandiRate: 22.00, msp: 17.00, costPerAcre: 22000, defaultSoil: 'Sandy', waterReqMm: 450 },
-  radish: { name: 'Radish', name_ta: 'முள்ளங்கி', category: 'Vegetables', avgYield: 80, mandiRate: 18.00, msp: 12.00, costPerAcre: 14000, defaultSoil: 'Sandy', waterReqMm: 280 },
-  blackgram: { name: 'Black Gram (Urad)', name_ta: 'உளுந்து (கருப்பு உளுந்து)', category: 'Pulses', avgYield: 4.5, mandiRate: 74.00, msp: 70.00, costPerAcre: 9500, defaultSoil: 'Clay', waterReqMm: 300 },
-  greengram: { name: 'Green Gram (Moong)', name_ta: 'பாசிப்பயறு (பச்சைப்பயறு)', category: 'Pulses', avgYield: 4.0, mandiRate: 86.00, msp: 85.58, costPerAcre: 9500, defaultSoil: 'Loamy', waterReqMm: 280 },
+  brinjal: { name: 'Brinjal / Eggplant', name_ta: 'கத்தரிக்காய்', category: 'Vegetables', avgYield: 110, mandiRate: 24.50, msp: 18.00, costPerAcre: 26000, defaultSoil: 'Clay', harvestDur: '4 - 5 Months', safeMoisturePct: 85.0, ambientDays: 4, coldDays: 25, waterReqMm: 550 },
+  tomato: { name: 'Tomato', name_ta: 'தக்காளி', category: 'Vegetables', avgYield: 140, mandiRate: 22.00, msp: 15.00, costPerAcre: 32000, defaultSoil: 'Loamy', harvestDur: '3 - 4 Months', safeMoisturePct: 88.0, ambientDays: 6, coldDays: 28, waterReqMm: 500 },
+  bhendi: { name: 'Bhendi (Okra)', name_ta: 'வெண்டைக்காய்', category: 'Vegetables', avgYield: 50, mandiRate: 28.00, msp: 20.00, costPerAcre: 18000, defaultSoil: 'Loamy', harvestDur: '3 Months', safeMoisturePct: 86.0, ambientDays: 3, coldDays: 14, waterReqMm: 400 },
+  chilli: { name: 'Chilli', name_ta: 'மிளகாய்', category: 'Vegetables', avgYield: 18, mandiRate: 120.00, msp: 100.00, costPerAcre: 35000, defaultSoil: 'Black', harvestDur: '5 - 6 Months', safeMoisturePct: 10.0, ambientDays: 180, coldDays: 365, waterReqMm: 600 },
+  tapioca: { name: 'Tapioca (Cassava)', name_ta: 'மரவள்ளிக்கிழங்கு', category: 'Vegetables', avgYield: 120, mandiRate: 11.50, msp: 9.50, costPerAcre: 24000, defaultSoil: 'Sandy', harvestDur: '9 - 10 Months', safeMoisturePct: 65.0, ambientDays: 3, coldDays: 20, waterReqMm: 750 },
+  onion: { name: 'Small Onion (Shallot)', name_ta: 'சின்ன வெங்காயம்', category: 'Vegetables', avgYield: 60, mandiRate: 38.00, msp: 30.00, costPerAcre: 38000, defaultSoil: 'Loamy', harvestDur: '70 - 80 Days', safeMoisturePct: 12.0, ambientDays: 90, coldDays: 210, waterReqMm: 380 },
+  drumstick: { name: 'Drumstick (Moringa)', name_ta: 'முருங்கை', category: 'Vegetables', avgYield: 80, mandiRate: 32.00, msp: 24.00, costPerAcre: 20000, defaultSoil: 'Sandy', harvestDur: 'Perennial', safeMoisturePct: 82.0, ambientDays: 5, coldDays: 21, waterReqMm: 450 },
+  bittergourd: { name: 'Bitter Gourd', name_ta: 'பாகற்காய்', category: 'Vegetables', avgYield: 45, mandiRate: 34.00, msp: 26.00, costPerAcre: 25000, defaultSoil: 'Sandy', harvestDur: '3 - 4 Months', safeMoisturePct: 88.0, ambientDays: 4, coldDays: 18, waterReqMm: 420 },
+  snakegourd: { name: 'Snake Gourd', name_ta: 'புடலங்காய்', category: 'Vegetables', avgYield: 70, mandiRate: 22.00, msp: 17.00, costPerAcre: 22000, defaultSoil: 'Sandy', harvestDur: '4 Months', safeMoisturePct: 90.0, ambientDays: 4, coldDays: 14, waterReqMm: 450 },
+  radish: { name: 'Radish', name_ta: 'முள்ளங்கி', category: 'Vegetables', avgYield: 80, mandiRate: 18.00, msp: 12.00, costPerAcre: 14000, defaultSoil: 'Sandy', harvestDur: '45 - 55 Days', safeMoisturePct: 90.0, ambientDays: 3, coldDays: 21, waterReqMm: 280 },
+  blackgram: { name: 'Black Gram (Urad)', name_ta: 'உளுந்து (கருப்பு உளுந்து)', category: 'Pulses', avgYield: 4.5, mandiRate: 74.00, msp: 70.00, costPerAcre: 9500, defaultSoil: 'Clay', harvestDur: '70 - 75 Days', safeMoisturePct: 10.0, ambientDays: 240, coldDays: 540, waterReqMm: 300 },
+  greengram: { name: 'Green Gram (Moong)', name_ta: 'பாசிப்பயறு (பச்சைப்பயறு)', category: 'Pulses', avgYield: 4.0, mandiRate: 86.00, msp: 85.58, costPerAcre: 9500, defaultSoil: 'Loamy', harvestDur: '60 - 65 Days', safeMoisturePct: 10.0, ambientDays: 240, coldDays: 540, waterReqMm: 280 },
   pigeonpea: { name: 'Red Gram (Arhar / Tur)', name_ta: 'துவரை (செந்துவரை)', category: 'Pulses', avgYield: 6.0, mandiRate: 78.00, msp: 75.50, costPerAcre: 12000, defaultSoil: 'Loamy', harvestDur: '5 - 6 Months', safeMoisturePct: 10.5, ambientDays: 300, coldDays: 540, waterReqMm: 450 },
-  cowpea: { name: 'Cowpea (Lobia)', name_ta: 'தட்டப்பயறு (காராமணி)', category: 'Pulses', avgYield: 5.5, mandiRate: 64.00, msp: 58.00, costPerAcre: 9000, defaultSoil: 'Sandy', waterReqMm: 320 },
-  horsegram: { name: 'Horse Gram (Kulthi)', name_ta: 'கொள்ளு', category: 'Pulses', avgYield: 3.5, mandiRate: 48.00, msp: 42.00, costPerAcre: 6500, defaultSoil: 'Sandy', waterReqMm: 220 },
-  chickpea: { name: 'Chickpea (Chana)', name_ta: 'கொண்டைக்கடலை', category: 'Pulses', avgYield: 5.0, mandiRate: 58.00, msp: 54.40, costPerAcre: 11000, defaultSoil: 'Black', waterReqMm: 290 },
+  cowpea: { name: 'Cowpea (Lobia)', name_ta: 'தட்டப்பயறு (காராமணி)', category: 'Pulses', avgYield: 5.5, mandiRate: 64.00, msp: 58.00, costPerAcre: 9000, defaultSoil: 'Sandy', harvestDur: '65 - 75 Days', safeMoisturePct: 10.0, ambientDays: 210, coldDays: 500, waterReqMm: 320 },
+  horsegram: { name: 'Horse Gram (Kulthi)', name_ta: 'கொள்ளு', category: 'Pulses', avgYield: 3.5, mandiRate: 48.00, msp: 42.00, costPerAcre: 6500, defaultSoil: 'Sandy', harvestDur: '80 - 90 Days', safeMoisturePct: 9.5, ambientDays: 365, coldDays: 700, waterReqMm: 220 },
+  chickpea: { name: 'Chickpea (Chana)', name_ta: 'கொண்டைக்கடலை', category: 'Pulses', avgYield: 5.0, mandiRate: 58.00, msp: 54.40, costPerAcre: 11000, defaultSoil: 'Black', harvestDur: '90 - 100 Days', safeMoisturePct: 9.5, ambientDays: 300, coldDays: 600, waterReqMm: 290 },
   clusterbean: { name: 'Cluster Bean (Guar)', name_ta: 'கொத்தவரங்காய்', category: 'Pulses', avgYield: 15, mandiRate: 35.00, msp: 29.00, costPerAcre: 8500, defaultSoil: 'Sandy', harvestDur: '85 - 95 Days', safeMoisturePct: 11.0, ambientDays: 180, coldDays: 365, waterReqMm: 310 },
-  frenchbean: { name: 'French Bush Bean', name_ta: 'பீன்ஸ் (செடி பீன்ஸ்)', category: 'Pulses', avgYield: 30, mandiRate: 45.00, msp: 35.00, costPerAcre: 18000, defaultSoil: 'Loamy', waterReqMm: 350 },
-  groundnut: { name: 'Groundnut (Peanut)', name_ta: 'வேர்க்கடலை (மணிலா)', category: 'Oilseeds', avgYield: 12, mandiRate: 78.50, msp: 75.17, costPerAcre: 15500, defaultSoil: 'Sandy', waterReqMm: 500 },
-  sesame: { name: 'Sesame (Til)', name_ta: 'எள் (நல்லெண்ணெய் வித்து)', category: 'Oilseeds', avgYield: 3.5, mandiRate: 118.00, msp: 92.67, costPerAcre: 9000, defaultSoil: 'Sandy', waterReqMm: 250 },
+  frenchbean: { name: 'French Bush Bean', name_ta: 'பீன்ஸ் (செடி பீன்ஸ்)', category: 'Pulses', avgYield: 30, mandiRate: 45.00, msp: 35.00, costPerAcre: 18000, defaultSoil: 'Loamy', harvestDur: '55 - 65 Days', safeMoisturePct: 85.0, ambientDays: 4, coldDays: 20, waterReqMm: 350 },
+  groundnut: { name: 'Groundnut (Peanut)', name_ta: 'வேர்க்கடலை (மணிலா)', category: 'Oilseeds', avgYield: 12, mandiRate: 78.50, msp: 75.17, costPerAcre: 15500, defaultSoil: 'Sandy', harvestDur: '105 - 115 Days', safeMoisturePct: 8.0, ambientDays: 180, coldDays: 365, waterReqMm: 500 },
+  sesame: { name: 'Sesame (Til)', name_ta: 'எள் (நல்லெண்ணெய் வித்து)', category: 'Oilseeds', avgYield: 3.5, mandiRate: 118.00, msp: 92.67, costPerAcre: 9000, defaultSoil: 'Sandy', harvestDur: '75 - 85 Days', safeMoisturePct: 7.0, ambientDays: 240, coldDays: 450, waterReqMm: 250 },
   sunflower: { name: 'Sunflower', name_ta: 'சூரியகாந்தி', category: 'Oilseeds', avgYield: 7.0, mandiRate: 68.00, msp: 67.60, costPerAcre: 13000, defaultSoil: 'Black', harvestDur: '85 - 90 Days', safeMoisturePct: 8.5, ambientDays: 150, coldDays: 300, waterReqMm: 450 },
-  castor: { name: 'Castor', name_ta: 'ஆமணக்கு (விளக்கெண்ணெய் விதை)', category: 'Oilseeds', avgYield: 6.5, mandiRate: 64.00, msp: 58.00, costPerAcre: 10500, defaultSoil: 'Sandy', waterReqMm: 480 },
-  soybean: { name: 'Soybean', name_ta: 'சோயாபீன்', category: 'Oilseeds', avgYield: 8.5, mandiRate: 52.00, msp: 48.92, costPerAcre: 12500, defaultSoil: 'Clay', waterReqMm: 480 },
-  coconut: { name: 'Coconut', name_ta: 'தென்னை', category: 'Oilseeds', avgYield: 45, mandiRate: 34.00, msp: 29.00, costPerAcre: 18000, defaultSoil: 'Sandy', waterReqMm: 950 },
-  maize: { name: 'Maize / Corn', name_ta: 'மக்காச்சோளம்', category: 'Millets & Cereals', avgYield: 18, mandiRate: 25.80, msp: 24.10, costPerAcre: 15500, defaultSoil: 'Loamy', waterReqMm: 500 },
-  pearlmillet: { name: 'Pearl Millet (Bajra)', name_ta: 'கம்பு', category: 'Millets & Cereals', avgYield: 11, mandiRate: 27.50, msp: 26.25, costPerAcre: 10000, defaultSoil: 'Sandy', waterReqMm: 300 },
-  sorghum: { name: 'Sorghum (Jowar)', name_ta: 'சோளம்', category: 'Millets & Cereals', avgYield: 10, mandiRate: 35.00, msp: 33.71, costPerAcre: 11000, defaultSoil: 'Black', waterReqMm: 350 },
-  fingermillet: { name: 'Finger Millet (Ragi)', name_ta: 'கேழ்வரகு (ராகி)', category: 'Millets & Cereals', avgYield: 9.5, mandiRate: 44.00, msp: 42.90, costPerAcre: 11500, defaultSoil: 'Loamy', waterReqMm: 350 },
-  barnyardmillet: { name: 'Barnyard Millet', name_ta: 'குதிரைவாலி', category: 'Millets & Cereals', avgYield: 6.5, mandiRate: 45.00, msp: 38.00, costPerAcre: 8000, defaultSoil: 'Sandy', waterReqMm: 260 },
-  foxtailmillet: { name: 'Foxtail Millet', name_ta: 'தினை', category: 'Millets & Cereals', avgYield: 6.0, mandiRate: 43.00, msp: 37.00, costPerAcre: 8000, defaultSoil: 'Loamy', waterReqMm: 250 },
-  kodomillet: { name: 'Kodo Millet', name_ta: 'வரகு', category: 'Millets & Cereals', avgYield: 5.5, mandiRate: 42.00, msp: 36.00, costPerAcre: 7500, defaultSoil: 'Sandy', waterReqMm: 270 },
-  cotton: { name: 'Cotton', name_ta: 'பருத்தி', category: 'Cash & Fiber', avgYield: 8.5, mandiRate: 86.50, msp: 82.67, costPerAcre: 21000, defaultSoil: 'Black', waterReqMm: 650 },
-  sugarcane: { name: 'Sugarcane', name_ta: 'கரும்பு', category: 'Cash & Fiber', avgYield: 420, mandiRate: 3.50, msp: 3.40, costPerAcre: 65000, defaultSoil: 'Clay', waterReqMm: 1600 },
-  sunnhemp: { name: 'Sunn Hemp', name_ta: 'சணப்பை (பசுந்தாள் பயிர்)', category: 'Cash & Fiber', avgYield: 7.0, mandiRate: 54.00, msp: 48.00, costPerAcre: 7000, defaultSoil: 'Sandy', waterReqMm: 260 },
-  turmeric: { name: 'Turmeric', name_ta: 'மஞ்சள்', category: 'Spices & Tubers', avgYield: 24, mandiRate: 155.00, msp: 120.00, costPerAcre: 45000, defaultSoil: 'Clay', waterReqMm: 900 },
-  ginger: { name: 'Ginger', name_ta: 'இஞ்சி', category: 'Spices & Tubers', avgYield: 55, mandiRate: 90.00, msp: 72.00, costPerAcre: 52000, defaultSoil: 'Loamy', waterReqMm: 850 },
-  coriander: { name: 'Coriander (Seed & Herb)', name_ta: 'கொத்தமல்லி (தனியா)', category: 'Spices & Tubers', avgYield: 4.5, mandiRate: 92.00, msp: 75.00, costPerAcre: 9000, defaultSoil: 'Black', waterReqMm: 240 }
+  castor: { name: 'Castor', name_ta: 'ஆமணக்கு (விளக்கெண்ணெய் விதை)', category: 'Oilseeds', avgYield: 6.5, mandiRate: 64.00, msp: 58.00, costPerAcre: 10500, defaultSoil: 'Sandy', harvestDur: '140 - 160 Days', safeMoisturePct: 8.0, ambientDays: 240, coldDays: 500, waterReqMm: 480 },
+  soybean: { name: 'Soybean', name_ta: 'சோயாபீன்', category: 'Oilseeds', avgYield: 8.5, mandiRate: 52.00, msp: 48.92, costPerAcre: 12500, defaultSoil: 'Clay', harvestDur: '85 - 90 Days', safeMoisturePct: 10.0, ambientDays: 210, coldDays: 400, waterReqMm: 480 },
+  coconut: { name: 'Coconut', name_ta: 'தென்னை', category: 'Oilseeds', avgYield: 45, mandiRate: 34.00, msp: 29.00, costPerAcre: 18000, defaultSoil: 'Sandy', harvestDur: 'Perennial', safeMoisturePct: 6.0, ambientDays: 90, coldDays: 240, waterReqMm: 950 },
+  maize: { name: 'Maize / Corn', name_ta: 'மக்காச்சோளம்', category: 'Millets & Cereals', avgYield: 18, mandiRate: 25.80, msp: 24.10, costPerAcre: 15500, defaultSoil: 'Loamy', harvestDur: '3 - 4 Months', safeMoisturePct: 12.0, ambientDays: 180, coldDays: 540, waterReqMm: 500 },
+  pearlmillet: { name: 'Pearl Millet (Bajra)', name_ta: 'கம்பு', category: 'Millets & Cereals', avgYield: 11, mandiRate: 27.50, msp: 26.25, costPerAcre: 10000, defaultSoil: 'Sandy', harvestDur: '80 - 85 Days', safeMoisturePct: 11.5, ambientDays: 240, coldDays: 600, waterReqMm: 300 },
+  sorghum: { name: 'Sorghum (Jowar)', name_ta: 'சோளம்', category: 'Millets & Cereals', avgYield: 10, mandiRate: 35.00, msp: 33.71, costPerAcre: 11000, defaultSoil: 'Black', harvestDur: '100 - 110 Days', safeMoisturePct: 11.0, ambientDays: 240, coldDays: 600, waterReqMm: 350 },
+  fingermillet: { name: 'Finger Millet (Ragi)', name_ta: 'கேழ்வரகு (ராகி)', category: 'Millets & Cereals', avgYield: 9.5, mandiRate: 44.00, msp: 42.90, costPerAcre: 11500, defaultSoil: 'Loamy', harvestDur: '110 - 120 Days', safeMoisturePct: 11.0, ambientDays: 365, coldDays: 720, waterReqMm: 350 },
+  barnyardmillet: { name: 'Barnyard Millet', name_ta: 'குதிரைவாலி', category: 'Millets & Cereals', avgYield: 6.5, mandiRate: 45.00, msp: 38.00, costPerAcre: 8000, defaultSoil: 'Sandy', harvestDur: '90 - 100 Days', safeMoisturePct: 11.0, ambientDays: 300, coldDays: 650, waterReqMm: 260 },
+  foxtailmillet: { name: 'Foxtail Millet', name_ta: 'தினை', category: 'Millets & Cereals', avgYield: 6.0, mandiRate: 43.00, msp: 37.00, costPerAcre: 8000, defaultSoil: 'Loamy', harvestDur: '80 - 90 Days', safeMoisturePct: 10.5, ambientDays: 300, coldDays: 650, waterReqMm: 250 },
+  kodomillet: { name: 'Kodo Millet', name_ta: 'வரகு', category: 'Millets & Cereals', avgYield: 5.5, mandiRate: 42.00, msp: 36.00, costPerAcre: 7500, defaultSoil: 'Sandy', harvestDur: '110 - 120 Days', safeMoisturePct: 10.5, ambientDays: 300, coldDays: 650, waterReqMm: 270 },
+  cotton: { name: 'Cotton', name_ta: 'பருத்தி', category: 'Cash & Fiber', avgYield: 8.5, mandiRate: 86.50, msp: 82.67, costPerAcre: 21000, defaultSoil: 'Black', harvestDur: '5 - 6 Months', safeMoisturePct: 8.5, ambientDays: 240, coldDays: 700, waterReqMm: 650 },
+  sugarcane: { name: 'Sugarcane', name_ta: 'கரும்பு', category: 'Cash & Fiber', avgYield: 420, mandiRate: 3.50, msp: 3.40, costPerAcre: 65000, defaultSoil: 'Clay', harvestDur: '10 - 12 Months', safeMoisturePct: 70.0, ambientDays: 3, coldDays: 10, waterReqMm: 1600 },
+  sunnhemp: { name: 'Sunn Hemp', name_ta: 'சணப்பை (பசுந்தாள் பயிர்)', category: 'Cash & Fiber', avgYield: 7.0, mandiRate: 54.00, msp: 48.00, costPerAcre: 7000, defaultSoil: 'Sandy', harvestDur: '75 - 90 Days', safeMoisturePct: 10.0, ambientDays: 240, coldDays: 500, waterReqMm: 260 },
+  turmeric: { name: 'Turmeric', name_ta: 'மஞ்சள்', category: 'Spices & Tubers', avgYield: 24, mandiRate: 155.00, msp: 120.00, costPerAcre: 45000, defaultSoil: 'Clay', harvestDur: '8 - 9 Months', safeMoisturePct: 9.0, ambientDays: 365, coldDays: 720, waterReqMm: 900 },
+  ginger: { name: 'Ginger', name_ta: 'இஞ்சி', category: 'Spices & Tubers', avgYield: 55, mandiRate: 90.00, msp: 72.00, costPerAcre: 52000, defaultSoil: 'Loamy', harvestDur: '8 - 9 Months', safeMoisturePct: 75.0, ambientDays: 20, coldDays: 90, waterReqMm: 850 },
+  coriander: { name: 'Coriander (Seed & Herb)', name_ta: 'கொத்தமல்லி (தனியா)', category: 'Spices & Tubers', avgYield: 4.5, mandiRate: 92.00, msp: 75.00, costPerAcre: 9000, defaultSoil: 'Black', harvestDur: '35 - 45 Days', safeMoisturePct: 9.0, ambientDays: 180, coldDays: 365, waterReqMm: 240 }
 };
 
-const CATEGORIES = [
-  { key: 'All', en: 'All', ta: 'அனைத்தும்' },
-  { key: 'Vegetables', en: 'Vegetables', ta: 'காய்கறிகள்' },
-  { key: 'Pulses', en: 'Pulses', ta: 'பருப்பு வகைகள்' },
-  { key: 'Oilseeds', en: 'Oilseeds', ta: 'எண்ணெய் வித்துக்கள்' },
-  { key: 'Millets & Cereals', en: 'Millets & Cereals', ta: 'தானியங்கள் & சிறுதானியங்கள்' },
-  { key: 'Cash & Fiber', en: 'Cash & Fiber', ta: 'பணப்பயிர்கள் & நார்ப்பயிர்கள்' },
-  { key: 'Spices & Tubers', en: 'Spices & Tubers', ta: 'மசாலா & கிழங்குகள்' }
-];
+// Complete 37 Distinct Agronomic Blueprint Registry
+const ALL_37_COMPANION_DATA = {
+  brinjal: [
+    { key: 'coriander', name: 'Coriander (Kothamalli)', name_ta: 'கொத்தமல்லி', ler: 1.34, nFixed: 0, ratio: '1:2', sp: '15 cm x 5 cm', dur: '35 - 45 Days', dur_ta: '35 - 45 நாட்கள்', why: 'Quick catch crop providing fast revenue before brinjal canopies close.', why_ta: 'கத்தரி கிளை பரப்பும் முன்பே 40 நாட்களில் பண வரவு தரும் குறுகிய காலப் பயிர்.' },
+    { key: 'frenchbean', name: 'French Bush Bean', name_ta: 'பீன்ஸ்', ler: 1.29, nFixed: 26, ratio: '1:1', sp: '30 cm x 15 cm', dur: '55 - 65 Days', dur_ta: '55 - 65 நாட்கள்', why: 'Biological nitrogen fixer enriching heavy-feeder brinjal rhizosphere.', why_ta: 'கத்தரிக்குத் தேவையான தழைச்சத்தை வேர் முடிச்சுகள் மூலம் நிலைநிறுத்துகிறது.' },
+    { key: 'marigold', name: 'Marigold (Trap Crop)', name_ta: 'சாமந்தி (கவர்ச்சிப் பயிர்)', ler: 1.24, nFixed: 0, ratio: '1:6 Border', sp: '45 cm x 30 cm', dur: '60 - 75 Days', dur_ta: '60 - 75 நாட்கள்', why: 'Root volatiles suppress nematodes and attract borer pests away.', why_ta: 'வேர் நூற்புழுக்களைக் கட்டுப்படுத்தி, காய்ப்புழுக்களைக் கவரும் இயற்கை அரண்.' }
+  ],
+  tomato: [
+    { key: 'frenchbean', name: 'French Bush Bean', name_ta: 'பீன்ஸ்', ler: 1.34, nFixed: 28, ratio: '1:1', sp: '30 cm x 15 cm', dur: '55 - 65 Days', dur_ta: '55 - 65 நாட்கள்', why: 'Supplies active nitrogen to tomato root zones without shading vines.', why_ta: 'தக்காளி கொடிகளை மறைக்காமல் வேர்ப்பகுதிக்கு தழைச்சத்தை ஊட்டுகிறது.' },
+    { key: 'marigold', name: 'Marigold (Trap Crop)', name_ta: 'சாமந்தி (கவர்ச்சிப் பயிர்)', ler: 1.29, nFixed: 0, ratio: '1:6 Border', sp: '45 cm x 30 cm', dur: '60 - 75 Days', dur_ta: '60 - 75 நாட்கள்', why: 'Repels root nematodes and lures fruit borer moths from tomato clusters.', why_ta: 'வேர் நூற்புழுக்களைக் கட்டுப்படுத்தி, காய்ப்புழுக்களைத் திசைதிருப்பும்.' },
+    { key: 'radish', name: 'Radish', name_ta: 'முள்ளங்கி', ler: 1.23, nFixed: 0, ratio: '1:2', sp: '20 cm x 10 cm', dur: '45 Days', dur_ta: '45 நாட்கள்', why: 'Fast root crop extracted from furrow shoulders before tomato vines droop.', why_ta: 'தக்காளி கொடிகள் படரும் முன்பே பாத்தி ஓரங்களில் அறுவடை முடிந்துவிடும்.' }
+  ],
+  bhendi: [
+    { key: 'radish', name: 'Radish', name_ta: 'முள்ளங்கி', ler: 1.28, nFixed: 0, ratio: '1:1', sp: '20 cm x 10 cm', dur: '40 - 45 Days', dur_ta: '40 - 45 நாட்கள்', why: 'Grows quickly on bed ridges, breaking heavy soil crusts.', why_ta: 'வெண்டை வளரும் முன் பாத்தி விளிம்புகளில் வேகமாக வளர்ந்து மண்ணைத் தளர்த்தும்.' },
+    { key: 'cowpea', name: 'Cowpea (Lobia)', name_ta: 'தட்டப்பயறு', ler: 1.31, nFixed: 32, ratio: '1:2', sp: '30 cm x 10 cm', dur: '65 Days', dur_ta: '65 நாட்கள்', why: 'Dense canopy covers open soil and fixes active biological nitrogen.', why_ta: 'களைகளைக் கட்டுப்படுத்தி வெண்டையின் வேருக்கு இயற்கை உரம் சேர்க்கும்.' },
+    { key: 'coriander', name: 'Coriander', name_ta: 'கொத்தமல்லி', ler: 1.22, nFixed: 0, ratio: '1:2', sp: '15 cm x 5 cm', dur: '35 Days', dur_ta: '35 நாட்கள்', why: 'Fast herb pulled before bhendi canopy shading occurs.', why_ta: 'வெண்டை நிழல் கொடுக்கும் முன்பே அறுவடை செய்யப்படும் பயிர்.' }
+  ],
+  chilli: [
+    { key: 'onion', name: 'Small Onion (Shallot)', name_ta: 'சின்ன வெங்காயம்', ler: 1.36, nFixed: 0, ratio: '1:2', sp: '15 cm x 10 cm', dur: '70 Days', dur_ta: '70 நாட்கள்', why: 'Sulfur volatiles deter thrips while bulbs mature before peak chilli flushes.', why_ta: 'வெங்காயத்தின் வாசனை இலைப்பேன் பூச்சிகளை விரட்டும், இரட்டை லாபம் தரும்.' },
+    { key: 'coriander', name: 'Coriander', name_ta: 'கொத்தமல்லி', ler: 1.29, nFixed: 0, ratio: '1:1', sp: '15 cm x 5 cm', dur: '40 Days', dur_ta: '40 நாட்கள்', why: 'Quick shallow herb yielding revenue in 4 weeks.', why_ta: 'நான்கே வாரங்களில் பலன் தரும் துரித ஊடுபயிர்.' },
+    { key: 'frenchbean', name: 'French Bush Bean', name_ta: 'பீன்ஸ்', ler: 1.25, nFixed: 24, ratio: '1:1', sp: '30 cm x 15 cm', dur: '60 Days', dur_ta: '60 நாட்கள்', why: 'Biological nitrogen enrichment feeding heavy-feeder chilli root zone.', why_ta: 'மிளகாய்க்குத் தேவையான இயற்கை தழைச்சத்தை வேருக்குக் கொடுக்கும்.' }
+  ],
+  tapioca: [
+    { key: 'groundnut', name: 'Groundnut (Peanut)', name_ta: 'வேர்க்கடலை', ler: 1.41, nFixed: 25, ratio: '1:2', sp: '30 cm x 10 cm', dur: '105 Days', dur_ta: '105 நாட்கள்', why: 'Exploits wide 90cm spaces between cassava setts during juvenile stage.', why_ta: 'மரவள்ளி வளரும் வரை உள்ள 90 செ.மீ இடைவெளியைப் பயன்படுத்தி கூடுதல் லாபம் ஈட்டலாம்.' },
+    { key: 'blackgram', name: 'Black Gram', name_ta: 'உளுந்து', ler: 1.33, nFixed: 30, ratio: '1:2', sp: '30 cm x 10 cm', dur: '70 Days', dur_ta: '70 நாட்கள்', why: 'Suppresses early weeds and leaves organic nitrogen residues.', why_ta: 'ஆரம்ப காலக் களைகளை அடக்கி மண்ணில் தழைச்சத்து சேர்க்கும்.' },
+    { key: 'cowpea', name: 'Cowpea', name_ta: 'தட்டப்பயறு', ler: 1.27, nFixed: 28, ratio: '1:2', sp: '30 cm x 10 cm', dur: '65 Days', dur_ta: '65 நாட்கள்', why: 'Living mulch that conserves topsoil moisture around expanding tubers.', why_ta: 'மரவள்ளிக் கிழங்குக்கு ஈரப்பதத்தைப் பாதுகாக்கும் மூடு பயிர்.' }
+  ],
+  onion: [
+    { key: 'coriander', name: 'Coriander', name_ta: 'கொத்தமல்லி', ler: 1.31, nFixed: 0, ratio: '1:1', sp: '15 cm x 5 cm', dur: '35 Days', dur_ta: '35 நாட்கள்', why: 'Fast shallow herb pulled before onion bulbs bulk.', why_ta: 'வெங்காயம் பருக்கும் முன்பே அறுவடை செய்யப்படும் குறுகிய காலப் பயிர்.' },
+    { key: 'radish', name: 'Radish', name_ta: 'முள்ளங்கி', ler: 1.26, nFixed: 0, ratio: '1:2', sp: '20 cm x 10 cm', dur: '45 Days', dur_ta: '45 நாட்கள்', why: 'Deep taproot loosens soil without interfering with shallow shallot clusters.', why_ta: 'மண்ணை நெகிழ்த்தி வெங்காயம் தாராளமாகப் பெருக்க உதவும்.' },
+    { key: 'frenchbean', name: 'French Bush Bean', name_ta: 'பீன்ஸ்', ler: 1.22, nFixed: 24, ratio: '1:2', sp: '30 cm x 15 cm', dur: '60 Days', dur_ta: '60 நாட்கள்', why: 'Fixes atmospheric nitrogen into nitrogen-demanding onion beds.', why_ta: 'வெங்காயப் பாத்திகளுக்கு இயற்கை தழைச்சத்தை வழங்கும்.' }
+  ],
+  drumstick: [
+    { key: 'cowpea', name: 'Cowpea (Lobia)', name_ta: 'தட்டப்பயறு', ler: 1.45, nFixed: 35, ratio: 'Inter-basin', sp: '30 cm x 10 cm', dur: '70 Days', dur_ta: '70 நாட்கள்', why: 'Fixes nitrogen and carpets wide alleys beneath moringa trees.', why_ta: 'முருங்கை மரங்களின் அகன்ற இடைவெளியில் இயற்கை நிலப்போர்வையாக வளரும்.' },
+    { key: 'blackgram', name: 'Black Gram', name_ta: 'உளுந்து', ler: 1.36, nFixed: 30, ratio: 'Inter-row', sp: '30 cm x 10 cm', dur: '70 Days', dur_ta: '70 நாட்கள்', why: 'Fast pulse yielding high market returns in moringa tree lanes.', why_ta: 'முருங்கை வரிசைகளுக்கு நடுவே குறுகிய காலத்தில் நல்ல வருமானம் தரும்.' },
+    { key: 'groundnut', name: 'Groundnut', name_ta: 'வேர்க்கடலை', ler: 1.30, nFixed: 26, ratio: 'Inter-strip', sp: '30 cm x 10 cm', dur: '105 Days', dur_ta: '105 நாட்கள்', why: 'Ground-hugging oilseed utilizing open moringa sunlight.', why_ta: 'முருங்கை மரங்களுக்கு இடையே கிடைக்கும் சூரிய ஒளியைப் பயன்படுத்தி வளரும்.' }
+  ],
+  bittergourd: [
+    { key: 'radish', name: 'Radish', name_ta: 'முள்ளங்கி', ler: 1.27, nFixed: 0, ratio: 'Bed Border', sp: '20 cm x 10 cm', dur: '40 Days', dur_ta: '40 நாட்கள்', why: 'Quick companion planted along furrow shoulders.', why_ta: 'பாகல் பந்தல் ஏறும் முன்பே பாத்தி கரைகளில் முள்ளங்கி அறுவடை முடிந்துவிடும்.' },
+    { key: 'onion', name: 'Small Onion', name_ta: 'சின்ன வெங்காயம்', ler: 1.29, nFixed: 0, ratio: '1:2', sp: '15 cm x 10 cm', dur: '70 Days', dur_ta: '70 நாட்கள்', why: 'Sulfur compounds repel fruit fly vectors in gourd rows.', why_ta: 'பாகற்காயைத் தாக்கும் பழ ஈக்களை விரட்டும் இயற்கை வாசனை.' },
+    { key: 'frenchbean', name: 'French Bush Bean', name_ta: 'பீன்ஸ்', ler: 1.23, nFixed: 24, ratio: '1:1', sp: '30 cm x 15 cm', dur: '60 Days', dur_ta: '60 நாட்கள்', why: 'Erect bush legume feeding nitrogen beneath trellis vines.', why_ta: 'பந்தலுக்கு கீழே படராமல் தரையோடு தழைச்சத்தை நிலைநிறுத்தும்.' }
+  ],
+  snakegourd: [
+    { key: 'frenchbean', name: 'French Bush Bean', name_ta: 'பீன்ஸ்', ler: 1.30, nFixed: 26, ratio: '1:1', sp: '30 cm x 15 cm', dur: '60 Days', dur_ta: '60 நாட்கள்', why: 'Bush legume fixes nitrogen below high overhead trellises.', why_ta: 'புடலை பந்தலின் அடியில் நிழல் போட்டி இல்லாமல் தழைச்சத்தை நிலைநிறுத்தும்.' },
+    { key: 'radish', name: 'Radish', name_ta: 'முள்ளங்கி', ler: 1.25, nFixed: 0, ratio: 'Bed Border', sp: '20 cm x 10 cm', dur: '45 Days', dur_ta: '45 நாட்கள்', why: 'Early taproot vegetable harvested while gourds establish.', why_ta: 'புடலை கொடி படரும் முன்பே அறுவடை செய்யப்படும் கிழங்குப் பயிர்.' },
+    { key: 'onion', name: 'Small Onion', name_ta: 'சின்ன வெங்காயம்', ler: 1.24, nFixed: 0, ratio: '1:2', sp: '15 cm x 10 cm', dur: '70 Days', dur_ta: '70 நாட்கள்', why: 'Compact allium companion preserving ridge moisture.', why_ta: 'பாத்தி விளிம்புகளைப் பயன்படுத்தி கூடுதல் லாபம் ஈட்டும் முறை.' }
+  ],
+  radish: [
+    { key: 'coriander', name: 'Coriander', name_ta: 'கொத்தமல்லி', ler: 1.32, nFixed: 0, ratio: '1:1', sp: '15 cm x 5 cm', dur: '40 Days', dur_ta: '40 நாட்கள்', why: 'Fast herb-root catch crop combination harvested synchronously.', why_ta: 'ஒரே நேரத்தில் அறுவடைக்கு வரும் இரட்டை குறுகிய கால காய்கறி-கீரை கூட்டணி.' },
+    { key: 'frenchbean', name: 'French Bush Bean', name_ta: 'பீன்ஸ்', ler: 1.27, nFixed: 24, ratio: '1:1', sp: '30 cm x 15 cm', dur: '55 Days', dur_ta: '55 நாட்கள்', why: 'Legume enriches soil nitrogen after radish tubers are extracted.', why_ta: 'முள்ளங்கி அறுவடைக்கு பின் நிலத்தில் தழைச்சத்தை நிலைநிறுத்தும்.' },
+    { key: 'onion', name: 'Small Onion', name_ta: 'சின்ன வெங்காயம்', ler: 1.23, nFixed: 0, ratio: '1:1', sp: '15 cm x 10 cm', dur: '70 Days', dur_ta: '70 நாட்கள்', why: 'Staggered dual root-bulb crop architecture.', why_ta: 'முள்ளங்கிக்கு பின் வெங்காயம் அறுவடைக்கு வரும் இரட்டை அடுக்கு முறை.' }
+  ],
+  blackgram: [
+    { key: 'sesame', name: 'Sesame (Til)', name_ta: 'எள்', ler: 1.32, nFixed: 0, ratio: '3:1', sp: '30 cm x 10 cm', dur: '75 Days', dur_ta: '75 நாட்கள்', why: 'Erect oilseed stems complement sprawling pulse canopies.', why_ta: 'செங்குத்தாக வளரும் எள், படரும் உளுந்துக்கு இடையே மிகச் சிறந்த ஒளி பயன்பாட்டைத் தரும்.' },
+    { key: 'pearlmillet', name: 'Pearl Millet (Bajra)', name_ta: 'கம்பு', ler: 1.28, nFixed: 0, ratio: '4:1 Border', sp: '45 cm x 15 cm', dur: '80 Days', dur_ta: '80 நாட்கள்', why: 'Border windbreak deflecting dry heat winds from pulse blooms.', why_ta: 'கம்பு வரப்புப் பயிராக இருந்து பூக்கள் உதிர்வதைத் தடுக்கும்.' },
+    { key: 'sunflower', name: 'Sunflower', name_ta: 'சூரியகாந்தி', ler: 1.24, nFixed: 0, ratio: '4:1', sp: '60 cm x 20 cm', dur: '85 Days', dur_ta: '85 நாட்கள்', why: 'High-value oilseed exploiting higher canopy layer above urad.', why_ta: 'உளுந்தின் மேல் அடுக்கில் சூரிய ஒளியைப் பயன்படுத்தி வளரும் எண்ணெய் வித்து.' }
+  ],
+  greengram: [
+    { key: 'pearlmillet', name: 'Pearl Millet (Bajra)', name_ta: 'கம்பு', ler: 1.33, nFixed: 0, ratio: '4:1 Border', sp: '45 cm x 15 cm', dur: '80 Days', dur_ta: '80 நாட்கள்', why: 'Tall border barrier protecting moong flowers from wind desiccation.', why_ta: 'கம்பு வரப்புப் பயிராக இருந்து பாசிப்பயறு மலர்களை வெம்மை காற்றில் இருந்து காக்கும்.' },
+    { key: 'sesame', name: 'Sesame (Til)', name_ta: 'எள்', ler: 1.28, nFixed: 0, ratio: '3:1', sp: '30 cm x 10 cm', dur: '75 Days', dur_ta: '75 நாட்கள்', why: 'Dual harvest pulse-oilseed pairing with shared low water needs.', why_ta: 'குறைந்த நீரில் அதிக லாபம் ஈட்டும் எள்-பாசிப்பயறு கூட்டணி.' },
+    { key: 'castor', name: 'Castor', name_ta: 'ஆமணக்கு', ler: 1.24, nFixed: 0, ratio: '6:1 Border', sp: '90 cm x 30 cm', dur: '140 Days', dur_ta: '140 நாட்கள்', why: 'Oviposition trap border deflecting lepidopteran caterpillar pests.', why_ta: 'புழுக்களை வரப்பிலேயே கவர்ந்து அழிக்கும் இயற்கை பொறிப் பயிர்.' }
+  ],
+  pigeonpea: [
+    { key: 'groundnut', name: 'Groundnut (Peanut)', name_ta: 'வேர்க்கடலை', ler: 1.39, nFixed: 28, ratio: '1:6', sp: '30 cm x 10 cm', dur: '105 Days', dur_ta: '105 நாட்கள்', why: 'Groundnut completes podding in 105 days, leaving deep tur to forage late moisture.', why_ta: 'வேர்க்கடலை அறுவடைக்கு பின் ஆழமான துவரை வேர்கள் எஞ்சிய ஈரத்தைப் பயன்படுத்தும்.' },
+    { key: 'foxtailmillet', name: 'Foxtail Millet (Thinai)', name_ta: 'தினை', ler: 1.31, nFixed: 0, ratio: '1:4', sp: '25 cm x 10 cm', dur: '80 Days', dur_ta: '80 நாட்கள்', why: 'Millet matures in 80 days before slow-starting pigeonpea locks its canopy.', why_ta: 'துவரை வளரும் முன்பே 80 நாட்களில் தினை அறுவடைக்கு வந்துவிடும்.' },
+    { key: 'sesame', name: 'Sesame (Til)', name_ta: 'எள்', ler: 1.25, nFixed: 0, ratio: '1:3', sp: '30 cm x 10 cm', dur: '75 Days', dur_ta: '75 நாட்கள்', why: 'Drought-hardy oilseed filling the early vegetative window of pigeon pea.', why_ta: 'துவரையின் ஆரம்ப மாதங்களில் கூடுதல் வருமானம் ஈட்டித் தரும்.' }
+  ],
+  cowpea: [
+    { key: 'sorghum', name: 'Sorghum (Jowar)', name_ta: 'சோளம்', ler: 1.34, nFixed: 0, ratio: '2:1', sp: '45 cm x 15 cm', dur: '100 Days', dur_ta: '100 நாட்கள்', why: 'Sorghum stalks act as windbreaks and structural support.', why_ta: 'சோளத் தட்டைகள் காற்றுத் தடுப்பாகவும் ஆதாரமாகவும் அமையும்.' },
+    { key: 'maize', name: 'Maize / Corn', name_ta: 'மக்காச்சோளம்', ler: 1.29, nFixed: 0, ratio: '2:1', sp: '45 cm x 15 cm', dur: '95 Days', dur_ta: '95 நாட்கள்', why: 'Erect cereal stalks allow cowpea vines to carpet furrow bottoms.', why_ta: 'மக்காச்சோளம் மேலே வளர, தட்டப்பயறு கீழே படர்ந்து நிலத்தைக் காக்கும்.' },
+    { key: 'pearlmillet', name: 'Pearl Millet (Bajra)', name_ta: 'கம்பு', ler: 1.24, nFixed: 0, ratio: '3:1', sp: '45 cm x 15 cm', dur: '80 Days', dur_ta: '80 நாட்கள்', why: 'Resilient dryland cereal-legume combination for low rainfall belts.', why_ta: 'குறைந்த மழைப்பொழிவு உள்ள பகுதிகளுக்கு ஏற்ற வறட்சி தாங்கும் கூட்டணி.' }
+  ],
+  horsegram: [
+    { key: 'foxtailmillet', name: 'Foxtail Millet (Thinai)', name_ta: 'தினை', ler: 1.28, nFixed: 0, ratio: '2:1', sp: '25 cm x 10 cm', dur: '80 Days', dur_ta: '80 நாட்கள்', why: 'Dryland dual drought-hardy grain and legume pairing.', why_ta: 'மானாவாரி நிலங்களுக்கான வறட்சியைத் தாங்கும் சிறுதானிய-பருப்பு இணைப்பு.' },
+    { key: 'barnyardmillet', name: 'Barnyard Millet (Kuthiraivali)', name_ta: 'குதிரைவாலி', ler: 1.26, nFixed: 0, ratio: '2:1', sp: '25 cm x 10 cm', dur: '90 Days', dur_ta: '90 நாட்கள்', why: 'Highly drought-resilient food security pairing in sandy red tracts.', why_ta: 'செம்மண் மேட்டு நிலங்களுக்கு உகந்த வறட்சி தாங்கும் சிறுதானிய முறை.' },
+    { key: 'castor', name: 'Castor', name_ta: 'ஆமணக்கு', ler: 1.22, nFixed: 0, ratio: '4:1', sp: '90 cm x 30 cm', dur: '140 Days', dur_ta: '140 நாட்கள்', why: 'Deep subsoil water foraging castor with shallow horsegram ground cover.', why_ta: 'ஆழமான ஆமணக்கு வேர்களும், மேலோட்டமான கொள்ளு மூடு பயிரும் இணைந்த முறை.' }
+  ],
+  chickpea: [
+    { key: 'coriander', name: 'Coriander', name_ta: 'கொத்தமல்லி', ler: 1.30, nFixed: 0, ratio: '4:1', sp: '30 cm x 10 cm', dur: '45 Days', dur_ta: '45 நாட்கள்', why: 'Cool season companion suited for winter Rabi Vertisols.', why_ta: 'குளிர்கால கரிசல் நிலங்களுக்கு ஏற்ற வாசனைப் பயிர் இணைப்பு.' },
+    { key: 'frenchbean', name: 'French Bush Bean', name_ta: 'பீன்ஸ்', ler: 1.26, nFixed: 24, ratio: '2:1', sp: '30 cm x 15 cm', dur: '60 Days', dur_ta: '60 நாட்கள்', why: 'Synergistic cool-season legume dual canopy utilization.', why_ta: 'குளிர்காலத்தில் இரட்டை பருப்பு மகசூல் தரும் முறை.' },
+    { key: 'radish', name: 'Radish', name_ta: 'முள்ளங்கி', ler: 1.22, nFixed: 0, ratio: '3:1', sp: '20 cm x 10 cm', dur: '45 Days', dur_ta: '45 நாட்கள்', why: 'Porous root channel creator improving clay soil aeration.', why_ta: 'கரிசல் மண்ணை இளக்கி கொண்டைக்கடலை வேர்களுக்கு காற்றோட்டம் தரும்.' }
+  ],
+  clusterbean: [
+    { key: 'maize', name: 'Maize / Corn', name_ta: 'மக்காச்சோளம்', ler: 1.32, nFixed: 0, ratio: '2:1', sp: '45 cm x 15 cm', dur: '100 Days', dur_ta: '100 நாட்கள்', why: 'Tall maize stalks complement erect bushy legume clusters.', why_ta: 'மக்காச்சோள நிழலைத் தாங்கி கொத்தவரை தழைச்சத்தை நிலைநிறுத்தும்.' },
+    { key: 'sorghum', name: 'Sorghum (Jowar)', name_ta: 'சோளம்', ler: 1.28, nFixed: 0, ratio: '2:1', sp: '45 cm x 15 cm', dur: '100 Days', dur_ta: '100 நாட்கள்', why: 'Drought-hardy forage cereal with commercial gum-yielding guar.', why_ta: 'மானாவாரிக்கு ஏற்ற தானிய-கொத்தவரை லாபகரமான கூட்டணி.' },
+    { key: 'pearlmillet', name: 'Pearl Millet (Bajra)', name_ta: 'கம்பு', ler: 1.24, nFixed: 0, ratio: '3:1', sp: '45 cm x 15 cm', dur: '80 Days', dur_ta: '80 நாட்கள்', why: 'Protects legume flowers from dry scorching winds in semi-arid tracts.', why_ta: 'வெம்மை காற்றில் இருந்து கொத்தவரை பூக்களைப் பாதுகாக்கும்.' }
+  ],
+  frenchbean: [
+    { key: 'radish', name: 'Radish', name_ta: 'முள்ளங்கி', ler: 1.30, nFixed: 0, ratio: '1:1', sp: '20 cm x 10 cm', dur: '45 Days', dur_ta: '45 நாட்கள்', why: 'Quick root companion inter-planted between bush legume rows.', why_ta: 'பீன்ஸ் செடிகளுக்கு இடையே விரைவாக வளர்ந்து நிலத்தைப் பயன்படுத்தும்.' },
+    { key: 'onion', name: 'Small Onion', name_ta: 'சின்ன வெங்காயம்', ler: 1.28, nFixed: 0, ratio: '1:2', sp: '15 cm x 10 cm', dur: '70 Days', dur_ta: '70 நாட்கள்', why: 'Pungent allium repels thrips and pod-boring insects.', why_ta: 'பீன்ஸ் பயிரைத் தாக்கும் பூச்சிகளை விரட்டும் சின்ன வெங்காயம்.' },
+    { key: 'coriander', name: 'Coriander', name_ta: 'கொத்தமல்லி', ler: 1.23, nFixed: 0, ratio: '1:1', sp: '15 cm x 5 cm', dur: '35 Days', dur_ta: '35 நாட்கள்', why: 'Quick herb harvested before bean canopies interlock.', why_ta: 'பீன்ஸ் படரும் முன்பே அறுவடை செய்யப்படும் குறுகிய காலக் கீரை.' }
+  ],
+  groundnut: [
+    { key: 'pearlmillet', name: 'Pearl Millet (Bajra)', name_ta: 'கம்பு', ler: 1.35, nFixed: 0, ratio: '6:1 Border', sp: '45 cm x 15 cm', dur: '80 - 85 Days', dur_ta: '80 - 85 நாட்கள்', why: 'Tall border rows deflect drying winds, preserving pegging micro-humidity.', why_ta: 'கம்பு வரப்புப் பயிராக இருந்து மணிலா விழுதுகள் இறங்குவதற்குத் தேவையான ஈரப்பதத்தைக் காக்கும்.' },
+    { key: 'pigeonpea', name: 'Pigeon Pea (Arhar / Tur)', name_ta: 'துவரை', ler: 1.36, nFixed: 42, ratio: '6:1', sp: '60 cm x 15 cm', dur: '140 Days', dur_ta: '140 நாட்கள்', why: 'Deep-rooted relay crop exploiting post-harvest subsoil moisture.', why_ta: 'வேர்க்கடலை அறுவடைக்கு பின்னும் ஆழமான ஈரத்தை எடுத்துக்கொண்டு பலன் தரும்.' },
+    { key: 'castor', name: 'Castor', name_ta: 'ஆமணக்கு', ler: 1.28, nFixed: 0, ratio: '8:1', sp: '90 cm x 30 cm', dur: '150 Days', dur_ta: '150 நாட்கள்', why: 'Commercial oilseed bonus and Spodoptera caterpillar oviposition trap.', why_ta: 'புழுக்களைத் தன்வசம் ஈர்த்து வேர்க்கடலையைக் காக்கும் இயற்கை கவர்ச்சிப் பயிர்.' }
+  ],
+  sesame: [
+    { key: 'blackgram', name: 'Black Gram', name_ta: 'உளுந்து', ler: 1.33, nFixed: 28, ratio: '1:2', sp: '30 cm x 10 cm', dur: '70 Days', dur_ta: '70 நாட்கள்', why: 'Pulse carpets soil around erect sesame stalks, fixing nitrogen.', why_ta: 'எள் பயிருக்கு அடியில் உளுந்து வளர்ந்து களைகளைக் கட்டுப்படுத்தி உரம் சேர்க்கும்.' },
+    { key: 'greengram', name: 'Green Gram', name_ta: 'பாசிப்பயறு', ler: 1.29, nFixed: 26, ratio: '1:2', sp: '25 cm x 10 cm', dur: '60 Days', dur_ta: '60 நாட்கள்', why: 'Fast pulse harvested before sesame seed capsules fully mature.', why_ta: 'எள் காய் முதிர்வதற்கு முன்பே அறுவடை செய்யப்படும் குறுகிய காலப் பயிர்.' },
+    { key: 'clusterbean', name: 'Cluster Bean', name_ta: 'கொத்தவரங்காய்', ler: 1.23, nFixed: 22, ratio: '1:1', sp: '30 cm x 10 cm', dur: '75 Days', dur_ta: '75 நாட்கள்', why: 'Taproot drought-hardy legume companion in low rainfall sandy soils.', why_ta: 'மணல் கலந்த நிலங்களில் வறட்சியைத் தாங்கி இரட்டை வருமானம் தரும்.' }
+  ],
+  sunflower: [
+    { key: 'greengram', name: 'Green Gram', name_ta: 'பாசிப்பயறு', ler: 1.32, nFixed: 30, ratio: '1:2', sp: '30 cm x 10 cm', dur: '60 Days', dur_ta: '60 நாட்கள்', why: 'Low-profile pulse leaves ample sunlight for wide sunflower heads.', why_ta: 'சூரியகாந்தியின் ஒளிச்சேர்க்கைக்கு இடையூறின்றி கீழே பாசிப்பயறு தழைச்சத்து சேர்க்கும்.' },
+    { key: 'blackgram', name: 'Black Gram', name_ta: 'உளுந்து', ler: 1.28, nFixed: 28, ratio: '1:2', sp: '30 cm x 10 cm', dur: '70 Days', dur_ta: '70 நாட்கள்', why: 'Feeds nitrogen to sunflower roots during head development stage.', why_ta: 'சூரியகாந்தி பூ வைக்கும் போது தேவையான தழைச்சத்தை உளுந்து வேர்கள் வழங்கும்.' },
+    { key: 'cowpea', name: 'Cowpea', name_ta: 'தட்டப்பயறு', ler: 1.24, nFixed: 30, ratio: '1:2', sp: '30 cm x 10 cm', dur: '65 Days', dur_ta: '65 நாட்கள்', why: 'Living mulch keeping sunflower soil ridges moist in hot afternoons.', why_ta: 'கடும் வெயிலில் நிலத்தின் ஈரப்பதம் ஆவியாகாமல் தடுக்கும் மூடு பயிர்.' }
+  ],
+  castor: [
+    { key: 'groundnut', name: 'Groundnut (Peanut)', name_ta: 'வேர்க்கடலை', ler: 1.38, nFixed: 26, ratio: '1:6', sp: '30 cm x 10 cm', dur: '105 Days', dur_ta: '105 நாட்கள்', why: 'Wide castor spacing accommodates multiple productive groundnut rows.', why_ta: 'ஆமணக்கின் அகன்ற இடைவெளியில் மணிலா சாகுபடி செய்து அதிக லாபம் பெறலாம்.' },
+    { key: 'blackgram', name: 'Black Gram', name_ta: 'உளுந்து', ler: 1.30, nFixed: 30, ratio: '1:3', sp: '30 cm x 10 cm', dur: '70 Days', dur_ta: '70 நாட்கள்', why: 'Quick legume yielding early returns before tall castor bushes shade ground.', why_ta: 'ஆமணக்கு பெரிதாக வளர்வதற்கு முன்பே உளுந்து அறுவடைக்கு வந்துவிடும்.' },
+    { key: 'greengram', name: 'Green Gram', name_ta: 'பாசிப்பயறு', ler: 1.25, nFixed: 28, ratio: '1:3', sp: '25 cm x 10 cm', dur: '60 Days', dur_ta: '60 நாட்கள்', why: '60-day companion taking full advantage of wide early rows.', why_ta: 'அகன்ற வரிசைகளைப் பயன்படுத்தி அறுவடை செய்யப்படும் 60 நாள் பயிர்.' }
+  ],
+  soybean: [
+    { key: 'pigeonpea', name: 'Pigeon Pea', name_ta: 'துவரை', ler: 1.36, nFixed: 40, ratio: '2:1', sp: '45 cm x 15 cm', dur: '140 Days', dur_ta: '140 நாட்கள்', why: 'Complementary canopy heights and double biological nitrogen enrichment.', why_ta: 'இரட்டை பருப்பு வகைகளின் கூட்டு தழைச்சத்து நிலத்தை மிக வளமாக்கும்.' },
+    { key: 'maize', name: 'Maize / Corn', name_ta: 'மக்காச்சோளம்', ler: 1.31, nFixed: 0, ratio: '2:2 Strip', sp: '45 cm x 15 cm', dur: '100 Days', dur_ta: '100 நாட்கள்', why: 'Classic cereal-legume relay strip maximizing solar absorption.', why_ta: 'சூரிய ஒளியை முழுமையாகப் பயன்படுத்தும் மக்காச்சோளம்-சோயாபீன் கூட்டு முறை.' },
+    { key: 'sorghum', name: 'Sorghum (Jowar)', name_ta: 'சோளம்', ler: 1.25, nFixed: 0, ratio: '2:1', sp: '45 cm x 15 cm', dur: '100 Days', dur_ta: '100 நாட்கள்', why: 'Semi-arid grain-oilseed combination resilient to heat stress.', why_ta: 'வறட்சியைத் தாங்கி நல்ல எண்ணெய் வித்து-தானிய வரவு தரும் முறை.' }
+  ],
+  coconut: [
+    { key: 'drumstick', name: 'Drumstick (Moringa)', name_ta: 'முருங்கை', ler: 1.52, nFixed: 0, ratio: 'Inter-Basin Alley', sp: '2.5m x 2.5m', dur: 'Perennial', dur_ta: 'ஆண்டு முழுவதும்', why: 'Agroforestry companion maximizing sun in wide palm alleys.', why_ta: 'தென்னந்தோப்பின் அகன்ற வரிசைகளில் சூரிய ஒளியைப் பயன்படுத்தி நிரந்தர வருமானம் தரும்.' },
+    { key: 'turmeric', name: 'Turmeric', name_ta: 'மஞ்சள்', ler: 1.39, nFixed: 0, ratio: 'Shaded Basin Beds', sp: '30 cm x 20 cm', dur: '9 Months', dur_ta: '9 மாதங்கள்', why: 'Shade-tolerant spice crop thriving in palm understory litter.', why_ta: 'தென்னையின் பகுதி நிழலில் செழித்து வளரும் பணப்பயிர்.' },
+    { key: 'ginger', name: 'Ginger', name_ta: 'இஞ்சி', ler: 1.35, nFixed: 0, ratio: 'Shaded Raised Beds', sp: '25 cm x 20 cm', dur: '8 - 9 Months', dur_ta: '8 - 9 மாதங்கள்', why: 'High-value spice bulb utilizing cool palm micro-climate.', why_ta: 'தென்னையின் குளிர்ந்த தட்பவெப்பத்தைப் பயன்படுத்தி அதிக லாபம் தரும் இஞ்சி.' }
+  ],
+  maize: [
+    { key: 'cowpea', name: 'Cowpea (Lobia)', name_ta: 'தட்டப்பயறு', ler: 1.35, nFixed: 35, ratio: '2:1', sp: '30 cm x 10 cm', dur: '65 - 75 Days', dur_ta: '65 - 75 நாட்கள்', why: 'Erect stalks allow dense cowpea foliage to smother weed flushes.', why_ta: 'மக்காச்சோளத் தட்டைகளுக்கு இடையே தட்டப்பயறு களைகளை ஒடுக்கி உரம் சேர்க்கும்.' },
+    { key: 'greengram', name: 'Green Gram', name_ta: 'பாசிப்பயறு', ler: 1.29, nFixed: 30, ratio: '1:2', sp: '25 cm x 10 cm', dur: '60 Days', dur_ta: '60 நாட்கள்', why: 'Harvested in 60 days before tall stalks close upper canopy.', why_ta: 'சோளம் முழுமையாக மூடும் முன்பே 60 நாட்களில் அறுவடை செய்யப்படும்.' },
+    { key: 'soybean', name: 'Soybean', name_ta: 'சோயாபீன்', ler: 1.27, nFixed: 36, ratio: '2:2 Strip', sp: '30 cm x 10 cm', dur: '85 Days', dur_ta: '85 நாட்கள்', why: 'Robust oilseed income with complementary erect rooting architecture.', why_ta: 'வேர்கள் முட்டாமல் மக்காச்சோளத்தோடு இணைந்து அதிக லாபம் தரும்.' }
+  ],
+  pearlmillet: [
+    { key: 'greengram', name: 'Green Gram', name_ta: 'பாசிப்பயறு', ler: 1.32, nFixed: 30, ratio: '1:2', sp: '25 cm x 10 cm', dur: '60 Days', dur_ta: '60 நாட்கள்', why: 'Harvested in 60 days before tall bajra stalks lock canopy.', why_ta: 'கம்பு முழு உயரத்தை எட்டும் முன்பே 60 நாட்களில் பாசிப்பயறு அறுவடைக்கு வரும்.' },
+    { key: 'cowpea', name: 'Cowpea (Lobia)', name_ta: 'தட்டப்பயறு', ler: 1.28, nFixed: 32, ratio: '2:1', sp: '30 cm x 10 cm', dur: '65 Days', dur_ta: '65 நாட்கள்', why: 'Nitrogen-fixing legume preventing sandy topsoil moisture loss.', why_ta: 'மணல் கலந்த நிலத்தில் கம்பு பயிருக்கு தேவையான ஈரத்தையும் உரத்தையும் தரும்.' },
+    { key: 'horsegram', name: 'Horse Gram', name_ta: 'கொள்ளு', ler: 1.23, nFixed: 24, ratio: '2:1', sp: '30 cm x 10 cm', dur: '80 Days', dur_ta: '80 நாட்கள்', why: 'Resilient dryland rainfed drought-insurance pairing.', why_ta: 'கடுமையான வறட்சியிலும் பயிர் இழப்பைத் தடுக்கும் இயற்கை காப்பீடு.' }
+  ],
+  sorghum: [
+    { key: 'cowpea', name: 'Cowpea (Lobia)', name_ta: 'தட்டப்பயறு', ler: 1.34, nFixed: 35, ratio: '2:1', sp: '30 cm x 10 cm', dur: '70 Days', dur_ta: '70 நாட்கள்', why: 'Drought-hardy cereal and legume pairing for semi-arid zones.', why_ta: 'மானாவாரி நிலங்களுக்கு ஏற்ற சிறந்த தானிய-பருப்பு ஊடுபயிர் முறை.' },
+    { key: 'blackgram', name: 'Black Gram', name_ta: 'உளுந்து', ler: 1.28, nFixed: 30, ratio: '1:2', sp: '30 cm x 10 cm', dur: '70 Days', dur_ta: '70 நாட்கள்', why: 'Pulse carpets soil between sorghum rows, curbing weed germination.', why_ta: 'சோள வரிசைகளுக்கு இடையே உளுந்து வளர்ந்து களை முளைப்பதைத் தடுக்கும்.' },
+    { key: 'frenchbean', name: 'French Bush Bean', name_ta: 'பீன்ஸ்', ler: 1.23, nFixed: 26, ratio: '1:1', sp: '30 cm x 15 cm', dur: '60 Days', dur_ta: '60 நாட்கள்', why: 'Early pod sales while sorghum grain heads are filling.', why_ta: 'சோளம் கதிர் வைக்கும் போதே காய்கறி மூலம் விரைவு வருமானம் தரும்.' }
+  ],
+  fingermillet: [
+    { key: 'blackgram', name: 'Black Gram', name_ta: 'உளுந்து', ler: 1.30, nFixed: 28, ratio: '4:1', sp: '25 cm x 10 cm', dur: '70 Days', dur_ta: '70 நாட்கள்', why: 'Adds crucial biological nitrogen to heavy-tillering ragi beds.', why_ta: 'கேழ்வரகு தூர்கள் வெடிக்கத் தேவையான தழைச்சத்தை உளுந்து வேர்கள் கொடுக்கும்.' },
+    { key: 'frenchbean', name: 'French Bush Bean', name_ta: 'பீன்ஸ்', ler: 1.26, nFixed: 26, ratio: '3:1', sp: '30 cm x 15 cm', dur: '60 Days', dur_ta: '60 நாட்கள்', why: 'Quick bean harvest providing commercial cash before ragi harvest.', why_ta: 'ராகி அறுவடைக்கு முன்பே பீன்ஸ் மூலம் நல்ல சந்தை வருமானம் கிடைக்கும்.' },
+    { key: 'cowpea', name: 'Cowpea', name_ta: 'தட்டப்பயறு', ler: 1.22, nFixed: 28, ratio: '4:1', sp: '25 cm x 10 cm', dur: '65 Days', dur_ta: '65 நாட்கள்', why: 'Covers bare soil between transplanted ragi seedlings.', why_ta: 'நடவு ராகி நாற்றுகளுக்கு நடுவே நிலப்போர்வையாக வளரும்.' }
+  ],
+  barnyardmillet: [
+    { key: 'greengram', name: 'Green Gram', name_ta: 'பாசிப்பயறு', ler: 1.31, nFixed: 28, ratio: '3:1', sp: '25 cm x 10 cm', dur: '60 Days', dur_ta: '60 நாட்கள்', why: 'Rapid drought-resistant dual harvest in sandy delta soils.', why_ta: 'குறைந்த நீரில் 60 நாட்களில் இரட்டை பலன் தரும் சிறுதானிய-பயறு முறை.' },
+    { key: 'blackgram', name: 'Black Gram', name_ta: 'உளுந்து', ler: 1.27, nFixed: 28, ratio: '3:1', sp: '25 cm x 10 cm', dur: '70 Days', dur_ta: '70 நாட்கள்', why: 'Fixes bio-nitrogen in poor soils during kuthiraivali grain filling.', why_ta: 'சத்து குறைந்த நிலங்களிலும் குதிரைவாலிக்கு தழைச்சத்தை அளிக்கும்.' },
+    { key: 'horsegram', name: 'Horse Gram', name_ta: 'கொள்ளு', ler: 1.23, nFixed: 22, ratio: '2:1', sp: '30 cm x 10 cm', dur: '80 Days', dur_ta: '80 நாட்கள்', why: 'Hardy dryland intercrop suited for dry drought spells.', why_ta: 'மழை குறைவான காலங்களிலும் வறட்சியைத் தாங்கும் சிறுதானிய முறை.' }
+  ],
+  foxtailmillet: [
+    { key: 'cowpea', name: 'Cowpea (Lobia)', name_ta: 'தட்டப்பயறு', ler: 1.30, nFixed: 30, ratio: '3:1', sp: '25 cm x 10 cm', dur: '65 Days', dur_ta: '65 நாட்கள்', why: 'Shallow root systems feed at complementary depths.', why_ta: 'தினை மற்றும் தட்டப்பயறு வெவ்வேறு ஆழங்களில் சத்துகளை உறிஞ்சி பலன் தரும்.' },
+    { key: 'greengram', name: 'Green Gram', name_ta: 'பாசிப்பயறு', ler: 1.26, nFixed: 28, ratio: '2:1', sp: '25 cm x 10 cm', dur: '60 Days', dur_ta: '60 நாட்கள்', why: 'Fast 60-day companion harvested synchronously with thinai.', why_ta: 'தினையோடு இணைந்து 60 நாட்களில் விரைவாக பலன் தரும் பாசிப்பயறு.' },
+    { key: 'blackgram', name: 'Black Gram', name_ta: 'உளுந்து', ler: 1.22, nFixed: 26, ratio: '2:1', sp: '25 cm x 10 cm', dur: '70 Days', dur_ta: '70 நாட்கள்', why: 'Soil enrichment crop for low fertility red loams.', why_ta: 'செம்மண் நிலங்களை வளப்படுத்தும் சிறுதானிய-உளுந்து முறை.' }
+  ],
+  kodomillet: [
+    { key: 'horsegram', name: 'Horse Gram (Kulthi)', name_ta: 'கொள்ளு', ler: 1.28, nFixed: 22, ratio: '2:1', sp: '30 cm x 10 cm', dur: '80 Days', dur_ta: '80 நாட்கள்', why: 'Resilient dryland combination for Southern Zone rainfed uplands.', why_ta: 'தென் மாவட்ட மானாவாரி மேட்டு நிலங்களுக்கு உகந்த வறட்சி தாங்கும் பயிர்கள்.' },
+    { key: 'blackgram', name: 'Black Gram', name_ta: 'உளுந்து', ler: 1.25, nFixed: 26, ratio: '3:1', sp: '25 cm x 10 cm', dur: '70 Days', dur_ta: '70 நாட்கள்', why: 'Enriches organic nitrogen in varagu root zones.', why_ta: 'வரகு பயிரின் வேர்ப்பகுதிக்கு தழைச்சத்தை வழங்கும்.' },
+    { key: 'greengram', name: 'Green Gram', name_ta: 'பாசிப்பயறு', ler: 1.22, nFixed: 26, ratio: '3:1', sp: '25 cm x 10 cm', dur: '60 Days', dur_ta: '60 நாட்கள்', why: 'Quick catch legume harvested before varagu grain heads mature.', why_ta: 'வரகு கதிர் முதிர்வதற்கு முன்பே அறுவடை செய்யப்படும் குறுகிய காலப் பயிர்.' }
+  ],
+  cotton: [
+    { key: 'blackgram', name: 'Black Gram (Urad)', name_ta: 'உளுந்து', ler: 1.34, nFixed: 32, ratio: '1:2', sp: '30 cm x 10 cm', dur: '70 - 75 Days', dur_ta: '70 - 75 நாட்கள்', why: 'Completes harvest in 70 days before wide cotton branches lock.', why_ta: 'பருத்தி கிளை விரிக்கும் முன்பே உளுந்து அறுவடை முடிந்து கூடுதல் பண வரவு தரும்.' },
+    { key: 'greengram', name: 'Green Gram', name_ta: 'பாசிப்பயறு', ler: 1.29, nFixed: 30, ratio: '1:2', sp: '25 cm x 10 cm', dur: '60 Days', dur_ta: '60 நாட்கள்', why: 'Ultra-fast 60-day legume with zero solar competition.', why_ta: 'பருத்தியுடன் நிழல் போட்டியின்றி 60 நாட்களில் விரைவாக அறுவடை செய்யலாம்.' },
+    { key: 'clusterbean', name: 'Cluster Bean (Guar)', name_ta: 'கொத்தவரங்காய்', ler: 1.24, nFixed: 25, ratio: '1:1', sp: '45 cm x 15 cm', dur: '85 Days', dur_ta: '85 நாட்கள்', why: 'Drought-tolerant taproot legume resilient in hot black vertisols.', why_ta: 'கரிசல் நில வறட்சியைத் தாங்கி பருத்தி வரிசைகளுக்கு நடுவே பலன் தரும்.' }
+  ],
+  sugarcane: [
+    { key: 'soybean', name: 'Soybean', name_ta: 'சோயாபீன்', ler: 1.39, nFixed: 36, ratio: '1:2', sp: '30 cm x 10 cm', dur: '85 Days', dur_ta: '85 நாட்கள்', why: 'Thrives in wide 120cm cane rows during the 90-day slow tillering phase.', why_ta: 'கரும்பு ஆரம்பத்தில் மெதுவாக வளரும் 90 நாட்களில் சோயாபீன் நல்ல வருமானம் தரும்.' },
+    { key: 'frenchbean', name: 'French Bush Bean', name_ta: 'பீன்ஸ்', ler: 1.31, nFixed: 26, ratio: '1:2', sp: '30 cm x 15 cm', dur: '60 Days', dur_ta: '60 நாட்கள்', why: 'Commercial vegetable pod harvest before thick cane canopies seal.', why_ta: 'கரும்பு தூர் கட்டுவதற்கு முன்பே காய்கறி சந்தை மூலம் நல்ல வருவாய் தரும்.' },
+    { key: 'sunnhemp', name: 'Sunn Hemp', name_ta: 'சணப்பை', ler: 1.25, nFixed: 40, ratio: '1:1 Furrow', sp: '20 cm x 10 cm', dur: '50 Days (Mulch)', dur_ta: '50 நாட்கள் (மூடுஉரம்)', why: 'Trampled in situ at 50 days as green manure, cutting synthetic urea costs.', why_ta: '50-வது நாளில் நிலத்திலேயே உழுது பசுந்தாள் உரமாக மாற்றி உரச்செலவைக் குறைக்கும்.' }
+  ],
+  sunnhemp: [
+    { key: 'sesame', name: 'Sesame (Til)', name_ta: 'எள்', ler: 1.27, nFixed: 0, ratio: '2:1', sp: '30 cm x 10 cm', dur: '75 Days', dur_ta: '75 நாட்கள்', why: 'Green manure legume improves soil structure for oilseed seed-set.', why_ta: 'பசுந்தாள் பயிரான சணப்பை நிலத்தின் அமைப்பை மேம்படுத்தி எள் விளைச்சலை அதிகரிக்கும்.' },
+    { key: 'groundnut', name: 'Groundnut', name_ta: 'வேர்க்கடலை', ler: 1.25, nFixed: 25, ratio: '2:1', sp: '30 cm x 10 cm', dur: '105 Days', dur_ta: '105 நாட்கள்', why: 'Soil loosening pairing facilitating smooth pod pegging.', why_ta: 'மண்ணைத் தளர்த்தி வேர்க்கடலை விழுதுகள் எளிதாக இறங்க உதவும்.' },
+    { key: 'pearlmillet', name: 'Pearl Millet (Bajra)', name_ta: 'கம்பு', ler: 1.22, nFixed: 0, ratio: '3:1', sp: '45 cm x 15 cm', dur: '80 Days', dur_ta: '80 நாட்கள்', why: 'Dual biomass and grain generation system.', why_ta: 'அதிக பசுந்தாள் உரத்தோடு தானிய உற்பத்தியையும் தரும் முறை.' }
+  ],
+  turmeric: [
+    { key: 'onion', name: 'Small Onion (Shallot)', name_ta: 'சின்ன வெங்காயம்', ler: 1.38, nFixed: 0, ratio: '1:2 Raised Bed', sp: '15 cm x 10 cm', dur: '70 Days', dur_ta: '70 நாட்கள்', why: 'Onions mature in 70 days, paying off bed preparation costs early.', why_ta: 'மஞ்சள் முளைத்து வரும் முன்பே வெங்காயம் அறுவடைக்கு வந்து உழவுச் செலவை ஈடு செய்யும்.' },
+    { key: 'frenchbean', name: 'French Bush Bean', name_ta: 'பீன்ஸ்', ler: 1.30, nFixed: 26, ratio: '1:2', sp: '30 cm x 15 cm', dur: '60 Days', dur_ta: '60 நாட்கள்', why: 'Supplies biological nitrogen directly to developing turmeric rhizomes.', why_ta: 'மஞ்சள் கிழங்கு பெருக்கத்திற்கு தேவையான இயற்கை தழைச்சத்தை வேருக்கு தரும்.' },
+    { key: 'coriander', name: 'Coriander', name_ta: 'கொத்தமல்லி', ler: 1.25, nFixed: 0, ratio: '1:2', sp: '15 cm x 5 cm', dur: '40 Days', dur_ta: '40 நாட்கள்', why: 'Fast herb extracted before turmeric vegetative leaves unfold.', why_ta: 'மஞ்சள் இலைகள் விரிவதற்கு முன்பே 40 நாளில் அறுவடை முடிந்துவிடும்.' }
+  ],
+  ginger: [
+    { key: 'frenchbean', name: 'French Bush Bean', name_ta: 'பீன்ஸ்', ler: 1.34, nFixed: 28, ratio: '1:2', sp: '30 cm x 15 cm', dur: '60 Days', dur_ta: '60 நாட்கள்', why: 'Bio-nitrogen enrichment directly feeding the developing rhizome root zone.', why_ta: 'இஞ்சியின் வேர்ப்பகுதிக்கு தழைச்சத்தை ஊட்டி கிழங்கு பெருக்க உதவும்.' },
+    { key: 'onion', name: 'Small Onion', name_ta: 'சின்ன வெங்காயம்', ler: 1.29, nFixed: 0, ratio: '1:2', sp: '15 cm x 10 cm', dur: '70 Days', dur_ta: '70 நாட்கள்', why: 'Raised bed space utilization before heavy ginger foliage forms.', why_ta: 'இஞ்சி செடி அடர்ந்து வளரும் முன் பாத்தி இடத்தை பயன்படுத்தி பலன் தரும்.' },
+    { key: 'coriander', name: 'Coriander', name_ta: 'கொத்தமல்லி', ler: 1.24, nFixed: 0, ratio: '1:2', sp: '15 cm x 5 cm', dur: '40 Days', dur_ta: '40 நாட்கள்', why: 'Ultra-fast catch crop yielding cash flow within 5 weeks.', why_ta: 'ஐந்தே வாரங்களில் அறுவடைக்கு வந்து ஆரம்ப செலவுகளை ஈடு செய்யும்.' }
+  ],
+  coriander: [
+    { key: 'radish', name: 'Radish', name_ta: 'முள்ளங்கி', ler: 1.31, nFixed: 0, ratio: '1:1', sp: '20 cm x 10 cm', dur: '45 Days', dur_ta: '45 நாட்கள்', why: 'Quick shallow root companion harvested synchronously.', why_ta: 'ஒரே நேரத்தில் அறுவடைக்கு வரும் இரட்டை குறுகிய கால காய்கறி-கீரை கூட்டணி.' },
+    { key: 'frenchbean', name: 'French Bush Bean', name_ta: 'பீன்ஸ்', ler: 1.28, nFixed: 26, ratio: '1:1', sp: '30 cm x 15 cm', dur: '55 Days', dur_ta: '55 நாட்கள்', why: 'Adds atmospheric nitrogen into the bed after coriander is clipped.', why_ta: 'கொத்தமல்லி அறுத்த பின் நிலத்தில் இயற்கை தழைச்சத்தை நிலைநிறுத்தும்.' },
+    { key: 'onion', name: 'Small Onion', name_ta: 'சின்ன வெங்காயம்', ler: 1.23, nFixed: 0, ratio: '1:2', sp: '15 cm x 10 cm', dur: '70 Days', dur_ta: '70 நாட்கள்', why: 'Staggered dual culinary herb and bulb combination.', why_ta: 'சமையல் தேவைகளுக்கான இரட்டை குறுகிய கால பணப்பயிர் முறை.' }
+  ]
+};
 
-const DICTIONARY = {
-  en: {
-    title: '🌱 AgriCompanion AI',
-    subtitle: 'Statewide Tamil Nadu Multi-Tier Intercropping & Soil Intelligence System',
-    district: '1. District (மாவட்டம்)',
-    constituency: '2. Constituency / Taluk (வட்டம் / தொகுதி)',
-    searchCrop: 'Search Crop (Tamil / English)',
-    searchPlaceholder: 'e.g. தக்காளி, Cotton, Onion...',
-    farmSize: 'Farm Plot Size:',
-    acres: 'Acres',
-    btnGet: 'Generate Blueprint 🚀',
-    selectedTarget: 'Selected Primary Target',
-    mandiPrice: 'Mandi:',
-    govtFloor: 'Govt Floor:',
-    perKg: '/kg',
-    tabBlueprint: '🌿 Blueprint',
-    tabWater: '💧 Water Footprint & Drip',
-    tabSoilAudit: '🧪 Soil N-P-K Audit',
-    tabStorage: '🧺 Post-Harvest Storage',
-    tabPests: '🐛 Pest Control & PHI',
-    tabEconomics: '💰 Economics',
-    tabWeather: '🌦️ Satellite Weather',
-    fieldMode: '☀️ Field Mode (Glare)',
-    pdfBtn: '📄 Generate Kisan Plan Certificate (PDF)',
-    saveBtn: '📌 Save Blueprint',
-    viewHistory: '📋 Saved Plans',
-    logout: '🚪 Logout',
-    signIn: 'Sign In / Register',
-    loginPrompt: 'Please sign in to save your farm blueprint to your account.',
-    savedSuccess: '✅ Blueprint saved successfully to your farmer account!',
-    voiceCommand: 'Speak Command',
-    voiceListening: 'Listening...',
-    soilScanner: '📸 Soil Scanner & HUD Viewfinder',
-    captureUpload: 'Capture / Upload',
-    voiceCommanderTitle: '🎙 Voice Field Commander'
-  },
-  ta: {
-    title: '🌱 அக்ரிகாம்பானியன் AI',
-    subtitle: 'தமிழ்நாடு பல்நிலை ஊடுபயிர் வழிகாட்டி மற்றும் மண் நுண்ணறிவு முறைமை',
-    district: '1. மாவட்டம் (District)',
-    constituency: '2. வட்டம் / தொகுதி (Taluk / Constituency)',
-    searchCrop: 'பயிரைத் தேடுக (தமிழ் / English)',
-    searchPlaceholder: 'உதா: கத்தரி, தக்காளி, Cotton, வெங்காயம்...',
-    farmSize: 'நிலத்தின் பரப்பளவு:',
-    acres: 'ஏக்கர்',
-    btnGet: 'திட்டத்தை உருவாக்குக 🚀',
-    selectedTarget: 'தேர்ந்தெடுக்கப்பட்ட முதன்மைப் பயிர்',
-    mandiPrice: 'சந்தை விலை:',
-    govtFloor: 'அரசு குறைந்தபட்ச விலை:',
-    perKg: '/கிலோ',
-    tabBlueprint: '🌿 ஊடுபயிர் வரைபடம்',
-    tabWater: '💧 நீர் தடம் & சொட்டுநீர் கால்குலேட்டர்',
-    tabSoilAudit: '🧪 மண் சத்து (N-P-K) ஆய்வு',
-    tabStorage: '🧺 அறுவடைக்கு பிந்தைய சேமிப்பு',
-    tabPests: '🐛 பூச்சி கட்டுப்பாடு & பாதுகாப்பு (PHI)',
-    tabEconomics: '💰 லாபம் & வரவு-செலவு',
-    tabWeather: '🌦️ செயற்கைக்கோள் வானிலை',
-    fieldMode: '☀ கள ஒளிப் பார்வை (Field Mode)',
-    pdfBtn: '📄 உழவர் சான்றிதழ் அச்சிடுக (PDF)',
-    saveBtn: '📌 திட்டத்தைச் சேமிக்க',
-    viewHistory: '📋 சேமித்த திட்டங்கள்',
-    logout: '🚪 வெளியேறு',
-    signIn: 'உள்நுழைக / பதிவு செய்க',
-    loginPrompt: 'உங்கள் விவசாய திட்டத்தைச் சேமிக்க முதலில் உள்நுழையவும்.',
-    savedSuccess: '✅ உழவர் திட்ட வரைபடம் வெற்றிகரமாக சேமிக்கப்பட்டது!',
-    voiceCommand: 'குரல் மூலம் பேசுங்கள்',
-    voiceListening: 'கேட்டுக்கொண்டிருக்கிறது...',
-    soilScanner: '📸 மண் ஸ்கேனர் & HUD கருவி',
-    captureUpload: 'படம் எடுக்க / பதிவேற்ற',
-    voiceCommanderTitle: '🎙 விவசாய குரல் வழிகாட்டி'
+// District Agro-Climatic Intelligence Engine (In-Browser Execution)
+function computeCompleteAdvice(cKey, dKey, sType, acresVal, targetLang) {
+  const cropMeta = TN_38_CROPS[cKey] || TN_38_CROPS.brinjal;
+  const distMeta = TN_38_DISTRICTS[dKey] || TN_38_DISTRICTS.thanjavur;
+  const isTa = targetLang === 'ta';
+  const zone = distMeta.zone;
+  const distLabel = isTa ? distMeta.name_ta : distMeta.name;
+
+  let options = JSON.parse(JSON.stringify(ALL_37_COMPANION_DATA[cKey] || ALL_37_COMPANION_DATA.brinjal));
+
+  // Regional adjustments
+  if (cKey === 'clusterbean') {
+    if (zone === 'Southern Zone' || sType === 'Black') {
+      options = [
+        options.find(o => o.key === 'sorghum') || options[1],
+        options.find(o => o.key === 'pearlmillet') || options[2],
+        options.find(o => o.key === 'maize') || options[0]
+      ];
+      options[0].why = `In ${distLabel} (${zone} rainfed black soils), Sorghum provides drought-resilient windbreak barriers while Guar taproots fix nitrogen.`;
+      options[0].why_ta = `${distLabel} தென்மண்டல கரிசல் நிலங்களில் சோளம் வறட்சியைத் தாங்கி காற்றுத் தடுப்பாக இருக்க, கொத்தவரை வேர்கள் நிலத்தை வளப்படுத்தும்.`;
+    } else {
+      options = [
+        options.find(o => o.key === 'maize') || options[0],
+        options.find(o => o.key === 'sorghum') || options[1],
+        options.find(o => o.key === 'pearlmillet') || options[2]
+      ];
+      options[0].why = `In ${distLabel}'s irrigated tracts, Maize stalks intercept sunlight efficiently alongside erect bushy cluster beans.`;
+      options[0].why_ta = `${distLabel} பாசனப் பகுதிகளில் மக்காச்சோளத் தட்டைகளுக்கு இடையே கொத்தவரை நிழல் போட்டியின்றி சிறந்த பலன் தரும்.`;
+    }
+  } else if (cKey === 'groundnut') {
+    if (zone === 'North Eastern Zone' || sType === 'Sandy') {
+      options = [
+        options.find(o => o.key === 'pearlmillet') || options[0],
+        options.find(o => o.key === 'pigeonpea') || options[1],
+        options.find(o => o.key === 'castor') || options[2]
+      ];
+      options[0].why = `In ${distLabel}'s coastal sandy tracts, Pearl Millet border shelterbelts deflect drying coastal sea winds, preserving pegging moisture.`;
+      options[0].why_ta = `${distLabel} கடலோர மணற்பாங்கான நிலங்களில் கம்பு வரப்புப் பயிராக இருந்து கடல் வெம்மை காற்றைத் தடுத்து விழுதுகள் இறங்க உதவும்.`;
+    } else {
+      options = [
+        options.find(o => o.key === 'pigeonpea') || options[1],
+        options.find(o => o.key === 'pearlmillet') || options[0],
+        options.find(o => o.key === 'castor') || options[2]
+      ];
+      options[0].why = `In ${distLabel} (${zone}), deep-rooted Pigeon Pea utilizes subsoil moisture after groundnut harvest.`;
+      options[0].why_ta = `${distLabel} பகுதிகளில் மணிலா அறுவடைக்குப் பின் ஆழமான துவரை வேர்கள் எஞ்சிய ஈரத்தை எடுத்துக்கொண்டு கூடுதல் வருமானம் தரும்.`;
+    }
+  } else if (cKey === 'cotton') {
+    if (zone === 'Southern Zone' || sType === 'Black') {
+      options = [
+        options.find(o => o.key === 'blackgram') || options[0],
+        options.find(o => o.key === 'clusterbean') || options[2],
+        options.find(o => o.key === 'greengram') || options[1]
+      ];
+      options[0].why = `In ${distLabel}'s heavy black vertisols, Black Gram matures rapidly in 70 days before summer moisture stress occurs.`;
+      options[0].why_ta = `${distLabel} கரிசல் நிலங்களில் வறட்சி ஏற்படும் முன்பே 70 நாட்களில் உளுந்து அறுவடைக்கு வந்து கூடுதல் லாபம் தரும்.`;
+    } else {
+      options = [
+        options.find(o => o.key === 'greengram') || options[1],
+        options.find(o => o.key === 'blackgram') || options[0],
+        options.find(o => o.key === 'clusterbean') || options[2]
+      ];
+      options[0].why = `In ${distLabel}'s irrigated loamy tracts, Green Gram completes its cycle in 60 days with zero canopy competition.`;
+      options[0].why_ta = `${distLabel} பாசன நிலங்களில் பருத்தியுடன் நிழல் போட்டியின்றி 60 நாட்களில் பாசிப்பயறு விரைவாக பலன் தரும்.`;
+    }
+  } else if (cKey === 'brinjal' || cKey === 'tomato') {
+    if (zone === 'Cauvery Delta' || sType === 'Clay') {
+      options = [
+        options.find(o => o.key === 'coriander') || options[0],
+        options.find(o => o.key === 'frenchbean') || options[1],
+        options.find(o => o.key === 'marigold') || options[2]
+      ];
+      options[0].why = `In ${distLabel} (Cauvery Delta alluvium), Coriander generates quick cash in 40 days before monsoon compaction sets in.`;
+      options[0].why_ta = `${distLabel} டெல்டா வண்டல் நிலங்களில் 40 நாட்களில் கொத்தமல்லி அறுவடைக்கு வந்து ஆரம்ப கால உடனடி பண வரவு தரும்.`;
+    } else {
+      options = [
+        options.find(o => o.key === 'frenchbean') || options[1],
+        options.find(o => o.key === 'coriander') || options[0],
+        options.find(o => o.key === 'marigold') || options[2]
+      ];
+      options[0].why = `In ${distLabel}'s well-drained soils, French Bush Bean fixes active nitrogen into heavy-feeder root zones.`;
+      options[0].why_ta = `${distLabel} நிலங்களில் செடி பீன்ஸ் பயிரானது வேர் முடிச்சுகள் மூலம் இயற்கை தழைச்சத்தை அதிகரித்து கூடுதல் மகசூல் தரும்.`;
+    }
   }
-};
 
-function FloatingVoiceOrb({ onToggleListen, isListening, lastTranscript }) {
-  return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2">
-      {lastTranscript && (
-        <div className="bg-emerald-950/90 text-emerald-100 text-[11px] px-3.5 py-1.5 rounded-full shadow-xl max-w-xs truncate border border-emerald-500/30 backdrop-blur-md">
-          🗣️ "{lastTranscript}"
-        </div>
-      )}
+  const tiersEn = ['⭐ Highly Recommended', '👍 Recommended', '🌾 Feasible Alternative'];
+  const tiersTa = ['⭐ மிகச் சிறந்த பரிந்துரை', '👍 பரிந்துரைக்கப்படுகிறது', '🌾 சாத்தியமான மாற்றுப் பயிர்'];
 
-      <div className="relative flex items-center justify-center">
-        {isListening && (
-          <>
-            <span className="absolute w-20 h-20 rounded-full bg-rose-500/30 animate-ping"></span>
-            <span className="absolute w-16 h-16 rounded-full bg-emerald-500/40 animate-pulse"></span>
-          </>
-        )}
+  const companionOptions = options.map((c, idx) => ({
+    ...c,
+    tier: isTa ? tiersTa[idx] : tiersEn[idx],
+    tier_ta: tiersTa[idx],
+    lerScore: c.ler,
+    harvestDuration: c.dur,
+    harvestDuration_ta: c.dur_ta,
+    rowRatio: c.ratio,
+    spacing: c.sp,
+    nitrogenFixed: c.nFixed,
+    reasoning: isTa ? (c.why_ta || c.why) : (c.why || c.why_ta)
+  }));
 
-        <button
-          onClick={onToggleListen}
-          className={`relative w-14 h-14 rounded-full shadow-2xl flex items-center justify-center text-white transition-all transform hover:scale-105 active:scale-95 ${
-            isListening 
-              ? 'bg-gradient-to-tr from-rose-600 to-red-500 ring-4 ring-rose-400/50 shadow-rose-500/30' 
-              : 'bg-gradient-to-tr from-emerald-600 via-teal-500 to-amber-500 ring-4 ring-emerald-500/20 shadow-emerald-600/30 hover:shadow-emerald-600/50'
-          }`}
-          title="State your crop, soil, or acres"
-        >
-          <span className="text-xl">🎙</span>
-        </button>
-      </div>
-    </div>
-  );
+  const activeCompanion = companionOptions[0];
+
+  const baseWaterMm = cropMeta.waterReqMm || 500;
+  const LITERS_PER_MM_ACRE = 4046.86;
+  const floodLitersPerAcre = Math.round(baseWaterMm * LITERS_PER_MM_ACRE);
+  const dripLitersPerAcre = Math.round(floodLitersPerAcre * 0.48);
+  const waterSavedLitersPerAcre = floodLitersPerAcre - dripLitersPerAcre;
+
+  const soilFactors = {
+    Clay: { hoursPerIrrigation: 1.5, frequencyDays: 3, infiltration: 'Slow (High Moisture Retention)' },
+    Black: { hoursPerIrrigation: 1.8, frequencyDays: 3, infiltration: 'Medium-Slow (High Shrink-Swell)' },
+    Loamy: { hoursPerIrrigation: 2.0, frequencyDays: 2, infiltration: 'Optimal Infiltration Rate' },
+    Sandy: { hoursPerIrrigation: 1.0, frequencyDays: 1, infiltration: 'Rapid (Requires Frequent Micro-Pulses)' }
+  }[sType] || { hoursPerIrrigation: 1.8, frequencyDays: 2, infiltration: 'Moderate' };
+
+  return {
+    primaryCrop: {
+      key: cKey,
+      name: cropMeta.name,
+      name_ta: cropMeta.name_ta,
+      harvestDuration: cropMeta.harvestDur,
+      harvestDuration_ta: isTa ? `${cropMeta.harvestDur} (தமிழ்நாடு தட்பவெப்பம்)` : cropMeta.harvestDur,
+      avgYield: cropMeta.avgYield,
+      safeMoisturePct: cropMeta.safeMoisturePct,
+      ambientDays: cropMeta.ambientDays,
+      coldDays: cropMeta.coldDays
+    },
+    marketData: {
+      pricePerKg: cropMeta.mandiRate,
+      officialMspPerKg: cropMeta.msp,
+      lastUpdated: '2026-10-01'
+    },
+    intercrop: activeCompanion,
+    companionOptions,
+    waterFootprint: {
+      floodLitersPerAcre,
+      dripLitersPerAcre,
+      waterSavedLitersPerAcre,
+      waterSavedPercent: 52,
+      dripSchedule: {
+        runtimeHoursPerCycle: soilFactors.hoursPerIrrigation,
+        irrigationIntervalDays: soilFactors.frequencyDays,
+        soilInfiltrationNote: soilFactors.infiltration,
+        evaporationReduction: '32% due to canopy soil shading'
+      }
+    },
+    soilChemistry: {
+      before: { availableN: '210 kg/ha', availableP: '18 kg/ha', availableK: '280 kg/ha', organicCarbon: '0.52%' },
+      after: { availableN: `${210 + Math.round(activeCompanion.nitrogenFixed * 0.7)} kg/ha (+${Math.round(activeCompanion.nitrogenFixed * 0.7)} kg Bio-N)`, availableP: '20 kg/ha (Buffered)', availableK: '275 kg/ha', organicCarbon: '0.64% (+23%)' }
+    },
+    pests: [{
+      pestName: `${cropMeta.name} Specific Pest Complex`,
+      pestName_ta: `${cropMeta.name_ta} தாக்கும் பூச்சிகள் மற்றும் புழுக்கள்`,
+      cultural: 'Prompt clipping of wilted shoots; install sticky/pheromone trap borders.',
+      cultural_ta: 'வாடிய பகுதிகளை உடனுக்குடன் அகற்றுதல்; வண்ணப் பொறிகள் அமைத்தல்.',
+      bio: 'Neem seed kernel extract (NSKE 5%) or Bacillus thuringiensis spray @ 2g/L.',
+      bio_ta: 'வேப்பங்கொட்டை கரைசல் (5%) அல்லது பேசிலஸ் துரிஞ்சியென்சிஸ் தெளித்தல்.',
+      toxicity: 'Moderate',
+      phiDays: 3
+    }]
+  };
 }
 
 export default function App() {
@@ -277,7 +514,7 @@ export default function App() {
         setLocationName(`${unitLabel}, ${distLabel} (${lat.toFixed(2)}°N, ${lon.toFixed(2)}°E)`);
       }
     } catch {
-      // Fallback
+      // Retain offline default
     }
   };
 
@@ -288,7 +525,7 @@ export default function App() {
     }
   }, [selectedDistrict, selectedUnit, lang]);
 
-  // When location changes, update coords and clear previous blueprint so fresh district-tailored recommendation must be requested
+  // When location changes, reset advice so new location must be generated
   const handleDistrictChange = (distKey) => {
     setSelectedDistrict(distKey);
     const dist = TN_38_DISTRICTS[distKey];
@@ -345,31 +582,33 @@ export default function App() {
     reader.readAsDataURL(file);
   };
 
-  // Primary Generator Function Triggered Exclusively by Button
+  // Primary Generator Function (Direct In-Browser with API Support)
   const handleGenerateBlueprint = async () => {
     setIsGenerating(true);
     try {
-      const res = await fetch(`${API_BASE}/api/recommend`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          primaryCropKey,
-          districtKey: selectedDistrict,
-          soilType,
-          lang
-        })
-      });
-
-      if (!res.ok) throw new Error(`Server status ${res.status}`);
-      const data = await res.json();
-      if (!data || !data.primaryCrop) throw new Error('Malformed payload');
-
-      setAdvice(data);
+      if (API_BASE) {
+        const res = await fetch(`${API_BASE}/api/recommend`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ primaryCropKey, districtKey: selectedDistrict, soilType, lang })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.primaryCrop) {
+            setAdvice(data);
+            setIsGenerating(false);
+            return;
+          }
+        }
+      }
     } catch {
-      alert('Unable to connect to advisory backend. Please verify server is running on port 5002.');
-    } finally {
-      setIsGenerating(false);
+      // Backend unreachable or mixed-content blocked
     }
+
+    // Direct in-browser agro-climatic computation
+    const computed = computeCompleteAdvice(primaryCropKey, selectedDistrict, soilType, acres, lang);
+    setAdvice(computed);
+    setIsGenerating(false);
   };
 
   const handleSaveBlueprint = async () => {
@@ -379,30 +618,37 @@ export default function App() {
       return;
     }
 
+    const payload = {
+      id: Date.now(),
+      userId: user.id || 1,
+      primaryCrop: primaryCropKey,
+      primary_crop: primaryCropKey,
+      intercrop: advice?.intercrop?.name || advice?.intercrop?.key || 'companion',
+      district: selectedDistrict,
+      constituency: selectedUnit,
+      season,
+      soilType,
+      waterStatus,
+      created_at: new Date().toISOString()
+    };
+
     try {
-      const res = await fetch(`${API_BASE}/api/history/save`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: user.id || 1,
-          primaryCrop: primaryCropKey,
-          intercrop: advice?.intercrop?.key || 'companion',
-          district: selectedDistrict,
-          constituency: selectedUnit,
-          season,
-          soilType,
-          waterStatus
-        })
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
-        alert(d.savedSuccess);
-      } else {
-        alert(d.savedSuccess);
+      if (API_BASE) {
+        await fetch(`${API_BASE}/api/history/save`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
       }
     } catch {
-      alert(d.savedSuccess);
+      // Silent catch
     }
+
+    // Always update local storage
+    const existing = JSON.parse(localStorage.getItem('agri_history') || '[]');
+    existing.unshift(payload);
+    localStorage.setItem('agri_history', JSON.stringify(existing));
+    alert(d.savedSuccess);
   };
 
   const handleOpenHistory = async () => {
@@ -412,27 +658,40 @@ export default function App() {
       return;
     }
 
+    let list = [];
     try {
-      const res = await fetch(`${API_BASE}/api/history/${user.id || 1}`);
-      const data = await res.json();
-      setHistoryList(Array.isArray(data) ? data : []);
-      setShowHistory(true);
+      if (API_BASE) {
+        const res = await fetch(`${API_BASE}/api/history/${user.id || 1}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data)) list = data;
+        }
+      }
     } catch {
-      setHistoryList([
-        { id: 1, primary_crop: primaryCropKey, intercrop: advice?.intercrop?.name, district: selectedDistrict, season }
-      ]);
-      setShowHistory(true);
+      // Fetch local storage
     }
+
+    if (list.length === 0) {
+      list = JSON.parse(localStorage.getItem('agri_history') || '[]');
+    }
+
+    setHistoryList(list);
+    setShowHistory(true);
   };
 
   const handleDeleteHistoryItem = async (id, e) => {
     e.stopPropagation();
     try {
-      await fetch(`${API_BASE}/api/history/${id}`, { method: 'DELETE' });
-      setHistoryList(prev => prev.filter(item => String(item.id) !== String(id)));
+      if (API_BASE) {
+        await fetch(`${API_BASE}/api/history/${id}`, { method: 'DELETE' });
+      }
     } catch {
-      setHistoryList(prev => prev.filter(item => String(item.id) !== String(id)));
+      // Silent catch
     }
+
+    const updated = historyList.filter(item => String(item.id) !== String(id));
+    setHistoryList(updated);
+    localStorage.setItem('agri_history', JSON.stringify(updated));
   };
 
   const handleLogout = () => {
@@ -445,26 +704,31 @@ export default function App() {
     e.preventDefault();
     const chosenName = farmerName && farmerName.trim() ? farmerName.trim() : contact.split('@')[0];
 
+    const loggedUser = { id: Date.now(), name: chosenName, contact };
     try {
-      const res = await fetch(`${API_BASE}/api/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contactInfo: contact, password, name: chosenName })
-      });
-      const data = await res.json();
-      if (res.ok && data.user) {
-        localStorage.setItem('agri_user', JSON.stringify(data.user));
-        setUser(data.user);
-      } else {
-        const dummyUser = { id: Date.now(), name: chosenName, contact };
-        localStorage.setItem('agri_user', JSON.stringify(dummyUser));
-        setUser(dummyUser);
+      if (API_BASE) {
+        const res = await fetch(`${API_BASE}/api/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contactInfo: contact, password, name: chosenName })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.user) {
+            setUser(data.user);
+            localStorage.setItem('agri_user', JSON.stringify(data.user));
+            setShowAuth(false);
+            setFarmerName('');
+            return;
+          }
+        }
       }
     } catch {
-      const dummyUser = { id: Date.now(), name: chosenName, contact };
-      localStorage.setItem('agri_user', JSON.stringify(dummyUser));
-      setUser(dummyUser);
+      // Fallback to local session
     }
+
+    setUser(loggedUser);
+    localStorage.setItem('agri_user', JSON.stringify(loggedUser));
     setShowAuth(false);
     setAuthReason('');
     setFarmerName('');
@@ -629,7 +893,6 @@ export default function App() {
           : 'bg-gradient-to-br from-emerald-50/70 via-teal-50/40 to-amber-50/40 text-slate-800'
       }`}
     >
-      
       {/* HEADER */}
       <div className={`flex flex-wrap justify-between items-center p-5 rounded-2xl shadow-sm border mb-6 gap-3 transition-all ${
         isFieldMode 
@@ -1422,4 +1685,4 @@ export default function App() {
       )}
     </div>
   );
-}
+}	
