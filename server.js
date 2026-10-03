@@ -27,6 +27,7 @@ const pool = mysql.createPool({
 const initDatabase = async () => {
   try {
     const connection = await pool.getConnection();
+
     await connection.query(`
       CREATE TABLE IF NOT EXISTS users (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -52,6 +53,7 @@ const initDatabase = async () => {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
+
     connection.release();
     console.log('✅ AgriCompanion MySQL database initialized successfully.');
   } catch (err) {
@@ -61,6 +63,7 @@ const initDatabase = async () => {
 
 initDatabase();
 
+// 37 Commercial Crops of Tamil Nadu
 export const STATEWIDE_CROP_DIRECTORY = {
   brinjal: { name: 'Brinjal / Eggplant', name_ta: 'கத்தரிக்காய்', category: 'Vegetables', avgYield: 110, mandiRate: 24.50, msp: 18.00, costPerAcre: 26000, defaultSoil: 'Clay', harvestDur: '4 - 5 Months', safeMoisturePct: 85.0, ambientDays: 4, coldDays: 25, waterReqMm: 550 },
   tomato: { name: 'Tomato', name_ta: 'தக்காளி', category: 'Vegetables', avgYield: 140, mandiRate: 22.00, msp: 15.00, costPerAcre: 32000, defaultSoil: 'Loamy', harvestDur: '3 - 4 Months', safeMoisturePct: 88.0, ambientDays: 6, coldDays: 28, waterReqMm: 500 },
@@ -101,9 +104,55 @@ export const STATEWIDE_CROP_DIRECTORY = {
   coriander: { name: 'Coriander (Seed & Herb)', name_ta: 'கொத்தமல்லி', category: 'Spices & Tubers', avgYield: 4.5, mandiRate: 92.00, msp: 75.00, costPerAcre: 9000, defaultSoil: 'Black', harvestDur: '35 - 45 Days', safeMoisturePct: 9.0, ambientDays: 180, coldDays: 365, waterReqMm: 240 }
 };
 
-// 37 STRICT, DEDICATED 3-TIER HIERARCHY CROP PAIRINGS
+// 7 Official Agro-Ecological Zones for all 38 Districts of Tamil Nadu
+export const TN_ZONE_MAPPING = {
+  thanjavur: 'Cauvery Delta',
+  tiruvarur: 'Cauvery Delta',
+  nagapattinam: 'Cauvery Delta',
+  mayiladuthurai: 'Cauvery Delta',
+  tiruchirappalli: 'Cauvery Delta',
+  perambalur: 'Cauvery Delta',
+  ariyalur: 'Cauvery Delta',
+  pudukkottai: 'Cauvery Delta',
+
+  coimbatore: 'Western Zone',
+  tiruppur: 'Western Zone',
+  erode: 'Western Zone',
+  dindigul: 'Western Zone',
+  karur: 'Western Zone',
+  theni: 'Western Zone',
+
+  madurai: 'Southern Zone',
+  virudhunagar: 'Southern Zone',
+  thoothukudi: 'Southern Zone',
+  tirunelveli: 'Southern Zone',
+  tenkasi: 'Southern Zone',
+  ramanathapuram: 'Southern Zone',
+  sivagangai: 'Southern Zone',
+
+  salem: 'North Western Zone',
+  namakkal: 'North Western Zone',
+  dharmapuri: 'North Western Zone',
+  krishnagiri: 'North Western Zone',
+
+  cuddalore: 'North Eastern Zone',
+  villupuram: 'North Eastern Zone',
+  kallakurichi: 'North Eastern Zone',
+  tiruvannamalai: 'North Eastern Zone',
+  vellore: 'North Eastern Zone',
+  tirupathur: 'North Eastern Zone',
+  ranipet: 'North Eastern Zone',
+  kanchipuram: 'North Eastern Zone',
+  chengalpattu: 'North Eastern Zone',
+  tiruvallur: 'North Eastern Zone',
+  chennai: 'North Eastern Zone',
+
+  kanyakumari: 'High Rainfall Zone',
+  nilgiris: 'Hilly Zone'
+};
+
+// Full 37 Crops Base Companion Map
 export const COMPANION_DATA_MAP = {
-  // Vegetables
   brinjal: [
     { key: 'coriander', name: 'Coriander (Kothamalli)', name_ta: 'கொத்தமல்லி', ler: 1.34, nFixed: 0, ratio: '1:2', sp: '15 cm x 5 cm', dur: '35 - 45 Days', dur_ta: '35 - 45 நாட்கள்', why: 'Quick catch crop providing fast revenue before brinjal canopies close.', why_ta: 'கத்தரி கிளை பரப்பும் முன்பே 40 நாட்களில் பண வரவு தரும் குறுகிய காலப் பயிர்.' },
     { key: 'frenchbean', name: 'French Bush Bean', name_ta: 'பீன்ஸ்', ler: 1.29, nFixed: 26, ratio: '1:1', sp: '30 cm x 15 cm', dur: '55 - 65 Days', dur_ta: '55 - 65 நாட்கள்', why: 'Biological nitrogen fixer enriching heavy-feeder brinjal rhizosphere.', why_ta: 'கத்தரிக்குத் தேவையான தழைச்சத்தை வேர் முடிச்சுகள் மூலம் நிலைநிறுத்துகிறது.' },
@@ -154,8 +203,6 @@ export const COMPANION_DATA_MAP = {
     { key: 'frenchbean', name: 'French Bush Bean', name_ta: 'பீன்ஸ்', ler: 1.27, nFixed: 24, ratio: '1:1', sp: '30 cm x 15 cm', dur: '55 Days', dur_ta: '55 நாட்கள்', why: 'Legume enriches soil nitrogen after radish tubers are extracted.', why_ta: 'முள்ளங்கி அறுவடைக்கு பின் நிலத்தில் தழைச்சத்தை நிலைநிறுத்தும்.' },
     { key: 'onion', name: 'Small Onion', name_ta: 'சின்ன வெங்காயம்', ler: 1.23, nFixed: 0, ratio: '1:1', sp: '15 cm x 10 cm', dur: '70 Days', dur_ta: '70 நாட்கள்', why: 'Staggered dual root-bulb crop architecture.', why_ta: 'முள்ளங்கிக்கு பின் வெங்காயம் அறுவடைக்கு வரும் இரட்டை அடுக்கு முறை.' }
   ],
-
-  // Pulses
   blackgram: [
     { key: 'sesame', name: 'Sesame (Til)', name_ta: 'எள்', ler: 1.32, nFixed: 0, ratio: '3:1', sp: '30 cm x 10 cm', dur: '75 Days', dur_ta: '75 நாட்கள்', why: 'Erect oilseed stems complement sprawling pulse canopies.', why_ta: 'செங்குத்தாக வளரும் எள், படரும் உளுந்துக்கு இடையே மிகச் சிறந்த ஒளி பயன்பாட்டைத் தரும்.' },
     { key: 'pearlmillet', name: 'Pearl Millet (Bajra)', name_ta: 'கம்பு', ler: 1.28, nFixed: 0, ratio: '4:1 Border', sp: '45 cm x 15 cm', dur: '80 Days', dur_ta: '80 நாட்கள்', why: 'Border windbreak deflecting dry heat winds from pulse blooms.', why_ta: 'கம்பு வரப்புப் பயிராக இருந்து பூக்கள் உதிர்வதைத் தடுக்கும்.' },
@@ -196,8 +243,6 @@ export const COMPANION_DATA_MAP = {
     { key: 'onion', name: 'Small Onion', name_ta: 'சின்ன வெங்காயம்', ler: 1.28, nFixed: 0, ratio: '1:2', sp: '15 cm x 10 cm', dur: '70 Days', dur_ta: '70 நாட்கள்', why: 'Pungent allium repels thrips and pod-boring insects.', why_ta: 'பீன்ஸ் பயிரைத் தாக்கும் பூச்சிகளை விரட்டும் சின்ன வெங்காயம்.' },
     { key: 'coriander', name: 'Coriander', name_ta: 'கொத்தமல்லி', ler: 1.23, nFixed: 0, ratio: '1:1', sp: '15 cm x 5 cm', dur: '35 Days', dur_ta: '35 நாட்கள்', why: 'Quick herb harvested before bean canopies interlock.', why_ta: 'பீன்ஸ் படரும் முன்பே அறுவடை செய்யப்படும் குறுகிய காலக் கீரை.' }
   ],
-
-  // Oilseeds
   groundnut: [
     { key: 'pearlmillet', name: 'Pearl Millet (Bajra)', name_ta: 'கம்பு', ler: 1.35, nFixed: 0, ratio: '6:1 Border', sp: '45 cm x 15 cm', dur: '80 - 85 Days', dur_ta: '80 - 85 நாட்கள்', why: 'Tall border rows deflect drying winds, preserving pegging micro-humidity.', why_ta: 'கம்பு வரப்புப் பயிராக இருந்து மணிலா விழுதுகள் இறங்குவதற்குத் தேவையான ஈரப்பதத்தைக் காக்கும்.' },
     { key: 'pigeonpea', name: 'Pigeon Pea (Arhar / Tur)', name_ta: 'துவரை', ler: 1.36, nFixed: 42, ratio: '6:1', sp: '60 cm x 15 cm', dur: '140 Days', dur_ta: '140 நாட்கள்', why: 'Deep-rooted relay crop exploiting post-harvest subsoil moisture.', why_ta: 'வேர்க்கடலை அறுவடைக்கு பின்னும் ஆழமான ஈரத்தை எடுத்துக்கொண்டு பலன் தரும்.' },
@@ -228,8 +273,6 @@ export const COMPANION_DATA_MAP = {
     { key: 'turmeric', name: 'Turmeric', name_ta: 'மஞ்சள்', ler: 1.39, nFixed: 0, ratio: 'Shaded Basin Beds', sp: '30 cm x 20 cm', dur: '9 Months', dur_ta: '9 மாதங்கள்', why: 'Shade-tolerant spice crop thriving in palm understory litter.', why_ta: 'தென்னையின் பகுதி நிழலில் செழித்து வளரும் பணப்பயிர்.' },
     { key: 'ginger', name: 'Ginger', name_ta: 'இஞ்சி', ler: 1.35, nFixed: 0, ratio: 'Shaded Raised Beds', sp: '25 cm x 20 cm', dur: '8 - 9 Months', dur_ta: '8 - 9 மாதங்கள்', why: 'High-value spice bulb utilizing cool palm micro-climate.', why_ta: 'தென்னையின் குளிர்ந்த தட்பவெப்பத்தைப் பயன்படுத்தி அதிக லாபம் தரும் இஞ்சி.' }
   ],
-
-  // Millets & Cereals
   maize: [
     { key: 'cowpea', name: 'Cowpea (Lobia)', name_ta: 'தட்டப்பயறு', ler: 1.35, nFixed: 35, ratio: '2:1', sp: '30 cm x 10 cm', dur: '65 - 75 Days', dur_ta: '65 - 75 நாட்கள்', why: 'Erect stalks allow dense cowpea foliage to smother weed flushes.', why_ta: 'மக்காச்சோளத் தட்டைகளுக்கு இடையே தட்டப்பயறு களைகளை ஒடுக்கி உரம் சேர்க்கும்.' },
     { key: 'greengram', name: 'Green Gram', name_ta: 'பாசிப்பயறு', ler: 1.29, nFixed: 30, ratio: '1:2', sp: '25 cm x 10 cm', dur: '60 Days', dur_ta: '60 நாட்கள்', why: 'Harvested in 60 days before tall stalks close upper canopy.', why_ta: 'சோளம் முழுமையாக மூடும் முன்பே 60 நாட்களில் அறுவடை செய்யப்படும்.' },
@@ -265,8 +308,6 @@ export const COMPANION_DATA_MAP = {
     { key: 'blackgram', name: 'Black Gram', name_ta: 'உளுந்து', ler: 1.25, nFixed: 26, ratio: '3:1', sp: '25 cm x 10 cm', dur: '70 Days', dur_ta: '70 நாட்கள்', why: 'Enriches organic nitrogen in varagu root zones.', why_ta: 'வரகு பயிரின் வேர்ப்பகுதிக்கு தழைச்சத்தை வழங்கும்.' },
     { key: 'greengram', name: 'Green Gram', name_ta: 'பாசிப்பயறு', ler: 1.22, nFixed: 26, ratio: '3:1', sp: '25 cm x 10 cm', dur: '60 Days', dur_ta: '60 நாட்கள்', why: 'Quick catch legume harvested before varagu grain heads mature.', why_ta: 'வரகு கதிர் முதிர்வதற்கு முன்பே அறுவடை செய்யப்படும் குறுகிய காலப் பயிர்.' }
   ],
-
-  // Cash, Fiber & Spices
   cotton: [
     { key: 'blackgram', name: 'Black Gram (Urad)', name_ta: 'உளுந்து', ler: 1.34, nFixed: 32, ratio: '1:2', sp: '30 cm x 10 cm', dur: '70 - 75 Days', dur_ta: '70 - 75 நாட்கள்', why: 'Completes harvest in 70 days before wide cotton branches lock.', why_ta: 'பருத்தி கிளை விரிக்கும் முன்பே உளுந்து அறுவடை முடிந்து கூடுதல் பண வரவு தரும்.' },
     { key: 'greengram', name: 'Green Gram', name_ta: 'பாசிப்பயறு', ler: 1.29, nFixed: 30, ratio: '1:2', sp: '25 cm x 10 cm', dur: '60 Days', dur_ta: '60 நாட்கள்', why: 'Ultra-fast 60-day legume with zero solar competition.', why_ta: 'பருத்தியுடன் நிழல் போட்டியின்றி 60 நாட்களில் விரைவாக அறுவடை செய்யலாம்.' },
@@ -297,6 +338,100 @@ export const COMPANION_DATA_MAP = {
     { key: 'frenchbean', name: 'French Bush Bean', name_ta: 'பீன்ஸ்', ler: 1.28, nFixed: 26, ratio: '1:1', sp: '30 cm x 15 cm', dur: '55 Days', dur_ta: '55 நாட்கள்', why: 'Adds atmospheric nitrogen into the bed after coriander is clipped.', why_ta: 'கொத்தமல்லி அறுத்த பின் நிலத்தில் இயற்கை தழைச்சத்தை நிலைநிறுத்தும்.' },
     { key: 'onion', name: 'Small Onion', name_ta: 'சின்ன வெங்காயம்', ler: 1.23, nFixed: 0, ratio: '1:2', sp: '15 cm x 10 cm', dur: '70 Days', dur_ta: '70 நாட்கள்', why: 'Staggered dual culinary herb and bulb combination.', why_ta: 'சமையல் தேவைகளுக்கான இரட்டை குறுகிய கால பணப்பயிர் முறை.' }
   ]
+};
+
+// District Agro-Climatic Intelligence Engine (Location & Soil Tailoring)
+export const getDistrictTailoredCompanions = (cKey, dKey, sType, lang) => {
+  const baseOptions = COMPANION_DATA_MAP[cKey] || COMPANION_DATA_MAP.brinjal;
+  const isTa = lang === 'ta';
+  const zone = TN_ZONE_MAPPING[dKey] || 'Cauvery Delta';
+  const distLabel = dKey.charAt(0).toUpperCase() + dKey.slice(1);
+
+  let options = JSON.parse(JSON.stringify(baseOptions));
+
+  // Dynamic ranking based on agro-ecological zones and soils
+  if (cKey === 'clusterbean') {
+    if (zone === 'Southern Zone' || sType === 'Black') {
+      options = [
+        options.find(o => o.key === 'sorghum') || options[1],
+        options.find(o => o.key === 'pearlmillet') || options[2],
+        options.find(o => o.key === 'maize') || options[0]
+      ];
+      options[0].reasoning = `In ${distLabel} (${zone} rainfed black soils), Sorghum provides drought-resilient windbreak barriers while Guar taproots fix nitrogen.`;
+      options[0].reasoning_ta = `${distLabel} தென்மண்டல கரிசல் நிலங்களில் சோளம் வறட்சியைத் தாங்கி காற்றுத் தடுப்பாக இருக்க, கொத்தவரை வேர்கள் நிலத்தை வளப்படுத்தும்.`;
+    } else {
+      options = [
+        options.find(o => o.key === 'maize') || options[0],
+        options.find(o => o.key === 'sorghum') || options[1],
+        options.find(o => o.key === 'pearlmillet') || options[2]
+      ];
+      options[0].reasoning = `In ${distLabel}'s irrigated tracts, Maize stalks intercept sunlight efficiently alongside erect bushy cluster beans.`;
+      options[0].reasoning_ta = `${distLabel} பாசனப் பகுதிகளில் மக்காச்சோளத் தட்டைகளுக்கு இடையே கொத்தவரை நிழல் போட்டியின்றி சிறந்த பலன் தரும்.`;
+    }
+  } else if (cKey === 'groundnut') {
+    if (zone === 'North Eastern Zone' || sType === 'Sandy') {
+      options = [
+        options.find(o => o.key === 'pearlmillet') || options[0],
+        options.find(o => o.key === 'pigeonpea') || options[1],
+        options.find(o => o.key === 'castor') || options[2]
+      ];
+      options[0].reasoning = `In ${distLabel}'s coastal sandy tracts, Pearl Millet border shelterbelts deflect drying coastal sea winds, preserving pegging moisture.`;
+      options[0].reasoning_ta = `${distLabel} கடலோர மணற்பாங்கான நிலங்களில் கம்பு வரப்புப் பயிராக இருந்து கடல் வெம்மை காற்றைத் தடுத்து விழுதுகள் இறங்க உதவும்.`;
+    } else {
+      options = [
+        options.find(o => o.key === 'pigeonpea') || options[1],
+        options.find(o => o.key === 'pearlmillet') || options[0],
+        options.find(o => o.key === 'castor') || options[2]
+      ];
+      options[0].reasoning = `In ${distLabel} (${zone}), deep-rooted Pigeon Pea utilizes subsoil moisture after groundnut harvest.`;
+      options[0].reasoning_ta = `${distLabel} பகுதிகளில் மணிலா அறுவடைக்குப் பின் ஆழமான துவரை வேர்கள் எஞ்சிய ஈரத்தை எடுத்துக்கொண்டு கூடுதல் வருமானம் தரும்.`;
+    }
+  } else if (cKey === 'cotton') {
+    if (zone === 'Southern Zone' || sType === 'Black') {
+      options = [
+        options.find(o => o.key === 'blackgram') || options[0],
+        options.find(o => o.key === 'clusterbean') || options[2],
+        options.find(o => o.key === 'greengram') || options[1]
+      ];
+      options[0].reasoning = `In ${distLabel}'s heavy black vertisols, Black Gram matures rapidly in 70 days before summer moisture stress occurs.`;
+      options[0].reasoning_ta = `${distLabel} கரிசல் நிலங்களில் வறட்சி ஏற்படும் முன்பே 70 நாட்களில் உளுந்து அறுவடைக்கு வந்து கூடுதல் லாபம் தரும்.`;
+    } else {
+      options = [
+        options.find(o => o.key === 'greengram') || options[1],
+        options.find(o => o.key === 'blackgram') || options[0],
+        options.find(o => o.key === 'clusterbean') || options[2]
+      ];
+      options[0].reasoning = `In ${distLabel}'s irrigated loamy tracts, Green Gram completes its cycle in 60 days with zero canopy competition.`;
+      options[0].reasoning_ta = `${distLabel} பாசன நிலங்களில் பருத்தியுடன் நிழல் போட்டியின்றி 60 நாட்களில் பாசிப்பயறு விரைவாக பலன் தரும்.`;
+    }
+  } else if (cKey === 'brinjal' || cKey === 'tomato') {
+    if (zone === 'Cauvery Delta' || sType === 'Clay') {
+      options = [
+        options.find(o => o.key === 'coriander') || options[0],
+        options.find(o => o.key === 'frenchbean') || options[1],
+        options.find(o => o.key === 'marigold') || options[2]
+      ];
+      options[0].reasoning = `In ${distLabel} (Cauvery Delta alluvium), Coriander generates quick cash in 40 days before monsoon waterlogging sets in.`;
+      options[0].reasoning_ta = `${distLabel} டெல்டா வண்டல் நிலங்களில் 40 நாட்களில் கொத்தமல்லி அறுவடைக்கு வந்து ஆரம்ப கால உடனடி பண வரவு தரும்.`;
+    } else {
+      options = [
+        options.find(o => o.key === 'frenchbean') || options[1],
+        options.find(o => o.key === 'coriander') || options[0],
+        options.find(o => o.key === 'marigold') || options[2]
+      ];
+      options[0].reasoning = `In ${distLabel}'s well-drained soils, French Bush Bean fixes active nitrogen into heavy-feeder root zones.`;
+      options[0].reasoning_ta = `${distLabel} நிலங்களில் செடி பீன்ஸ் பயிரானது வேர் முடிச்சுகள் மூலம் இயற்கை தழைச்சத்தை அதிகரித்து கூடுதல் மகசூல் தரும்.`;
+    }
+  }
+
+  const tiersEn = ['⭐ Highly Recommended', '👍 Recommended', '🌾 Feasible Alternative'];
+  const tiersTa = ['⭐ மிகச் சிறந்த பரிந்துரை', '👍 பரிந்துரைக்கப்படுகிறது', '🌾 சாத்தியமான மாற்றுப் பயிர்'];
+
+  return options.slice(0, 3).map((comp, idx) => ({
+    ...comp,
+    tier: isTa ? tiersTa[idx] : tiersEn[idx],
+    tier_ta: tiersTa[idx]
+  }));
 };
 
 const calculateWaterFootprintAndDrip = (primaryCropKey, soilType = 'Clay') => {
@@ -385,17 +520,9 @@ app.post('/api/recommend', async (req, res) => {
       lastUpdated: '2026-10-01'
     };
 
-    const matchedCompanions = COMPANION_DATA_MAP[cKey] || COMPANION_DATA_MAP.brinjal;
-    const tiersEn = ['⭐ Highly Recommended', '👍 Recommended', '🌾 Feasible Alternative'];
-    const tiersTa = ['⭐ மிகச் சிறந்த பரிந்துரை', '👍 பரிந்துரைக்கப்படுகிறது', '🌾 சாத்தியமான மாற்றுப் பயிர்'];
-
-    const companionOptions = matchedCompanions.slice(0, 3).map((comp, idx) => ({
-      ...comp,
-      tier: currentLang === 'ta' ? tiersTa[idx] : tiersEn[idx],
-      tier_ta: tiersTa[idx]
-    }));
-
+    const companionOptions = getDistrictTailoredCompanions(cKey, dKey, sType, currentLang);
     const activeCompanion = companionOptions[0];
+
     const soilChemistry = calculateSoilChemistryEvolution(cKey, activeCompanion.nitrogenFixed, sType);
     const waterFootprint = calculateWaterFootprintAndDrip(cKey, sType);
 
