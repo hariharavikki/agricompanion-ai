@@ -114,7 +114,14 @@ export const STATEWIDE_CROP_DIRECTORY = {
   coriander: { name: 'Coriander (Seed & Herb)', name_ta: 'கொத்தமல்லி', category: 'Spices & Tubers', avgYield: 4.5, mandiRate: 92.00, msp: 75.00, costPerAcre: 9000, defaultSoil: 'Black', harvestDur: '35 - 45 Days', safeMoisturePct: 9.0, ambientDays: 180, coldDays: 365, waterReqMm: 240 }
 };
 
-// 37 DEDICATED 3-TIER HIERARCHY CROP PAIRINGS
+const PEST_REGISTRY = {
+  borer: { pestName: 'Fruit & Shoot Borer Complex', pestName_ta: 'காய் மற்றும் தண்டு துளைப்பான் புழு', cultural: 'Prompt clipping of wilted shoots; install Marigold trap borders.', cultural_ta: 'வாடிய குருத்துகளை அகற்றுதல்; சாமந்திப் பூக்களை நடுதல்.', bio: 'Neem seed kernel extract (NSKE 5%) or Bt spray @ 2g/L.', bio_ta: 'வேப்பங்கொட்டை கரைசல் (5%) அல்லது பேசிலஸ் துரிஞ்சியென்சிஸ் தெளித்தல்.', chemical: 'Chlorantraniliprole 18.5% SC @ 0.3 ml/L water.', toxicity: 'Moderate', phiDays: 3 },
+  bollworm: { pestName: 'Bollworm Complex & Whitefly', pestName_ta: 'காய்ப்புழு மற்றும் வெள்ளை ஈ', cultural: 'Erect 15 yellow sticky cards per acre; remove alternate weed hosts.', cultural_ta: 'மஞ்சள் வண்ண ஒட்டுப்பசை பொறிகள் வைத்தல்; களைகளை அகற்றுதல்.', bio: 'Beauveria bassiana @ 10g/L or release Chrysoperla predator larvae.', bio_ta: 'பவேரியா பேசியானா அல்லது கிரைசோபெர்லா இரைவிழுங்கிகள் விடுதல்.', chemical: 'Flonicamid 50% WG @ 4g/10L water.', toxicity: 'Moderate', phiDays: 21 },
+  spodoptera: { pestName: 'Spodoptera Armyworm & Miner', pestName_ta: 'இலை தின்னும் புழு & சுரங்கப் புழு', cultural: 'Plant Castor/Bajra borders to intercept egg clusters.', cultural_ta: 'ஆமணக்கு அல்லது கம்பு பயிர்களை வரப்புகளில் நட்டு முட்டைக் குவியல்களை அழித்தல்.', bio: 'NPV virus @ 250 LE/acre with jaggery.', bio_ta: 'NPV வைரஸ் கரைசல் தெளித்தல்.', chemical: 'Emamectin benzoate 5% SG @ 4g/10L water.', toxicity: 'Moderate', phiDays: 14 },
+  general: { pestName: 'Sucking Pest Complex', pestName_ta: 'சாறு உறிஞ்சும் பூச்சிகள் (அசுவினி, இலைப்பேன்)', cultural: 'Mulch inter-rows with pulse canopy.', cultural_ta: 'பருப்பு வகைகளை ஊடுபயிராகப் பயிரிட்டு நிலப்போர்வை அமைத்தல்.', bio: 'Spray 3% neem oil with soap water emulsifier.', bio_ta: '3% வேப்பெண்ணெய் கரைசல் தெளித்தல்.', chemical: 'Imidacloprid 17.8% SL @ 0.5 ml/L water.', toxicity: 'Severe', phiDays: 10 }
+};
+
+// FULL 37 CROP REPUTED COMPANION MATRIX
 export const COMPANION_DATA_MAP = {
   brinjal: [
     { key: 'coriander', name: 'Coriander (Kothamalli)', name_ta: 'கொத்தமல்லி', ler: 1.34, nFixed: 0, ratio: '1:2', sp: '15 cm x 5 cm', dur: '35 - 45 Days', dur_ta: '35 - 45 நாட்கள்', why: 'Quick catch crop providing fast revenue before brinjal canopies close.', why_ta: 'கத்தரி கிளை பரப்பும் முன்பே 40 நாட்களில் பண வரவு தரும் குறுகிய காலப் பயிர்.' },

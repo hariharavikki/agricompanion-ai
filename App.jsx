@@ -58,7 +58,7 @@ const TN_38_CROPS = {
   radish: { name: 'Radish', name_ta: 'முள்ளங்கி', category: 'Vegetables', avgYield: 80, mandiRate: 18.00, msp: 12.00, costPerAcre: 14000, defaultSoil: 'Sandy', waterReqMm: 280 },
   blackgram: { name: 'Black Gram (Urad)', name_ta: 'உளுந்து (கருப்பு உளுந்து)', category: 'Pulses', avgYield: 4.5, mandiRate: 74.00, msp: 70.00, costPerAcre: 9500, defaultSoil: 'Clay', waterReqMm: 300 },
   greengram: { name: 'Green Gram (Moong)', name_ta: 'பாசிப்பயறு (பச்சைப்பயறு)', category: 'Pulses', avgYield: 4.0, mandiRate: 86.00, msp: 85.58, costPerAcre: 9500, defaultSoil: 'Loamy', waterReqMm: 280 },
-  pigeonpea: { name: 'Red Gram (Arhar / Tur)', name_ta: 'துவரை (செந்துவரை)', category: 'Pulses', avgYield: 6.0, mandiRate: 78.00, msp: 75.50, costPerAcre: 12000, defaultSoil: 'Loamy', waterReqMm: 450 },
+  pigeonpea: { name: 'Red Gram (Arhar / Tur)', name_ta: 'துவரை (செந்துவரை)', category: 'Pulses', avgYield: 6.0, mandiRate: 78.00, msp: 75.50, costPerAcre: 12000, defaultSoil: 'Loamy', harvestDur: '5 - 6 Months', safeMoisturePct: 10.5, ambientDays: 300, coldDays: 540, waterReqMm: 450 },
   cowpea: { name: 'Cowpea (Lobia)', name_ta: 'தட்டப்பயறு (காராமணி)', category: 'Pulses', avgYield: 5.5, mandiRate: 64.00, msp: 58.00, costPerAcre: 9000, defaultSoil: 'Sandy', waterReqMm: 320 },
   horsegram: { name: 'Horse Gram (Kulthi)', name_ta: 'கொள்ளு', category: 'Pulses', avgYield: 3.5, mandiRate: 48.00, msp: 42.00, costPerAcre: 6500, defaultSoil: 'Sandy', waterReqMm: 220 },
   chickpea: { name: 'Chickpea (Chana)', name_ta: 'கொண்டைக்கடலை', category: 'Pulses', avgYield: 5.0, mandiRate: 58.00, msp: 54.40, costPerAcre: 11000, defaultSoil: 'Black', waterReqMm: 290 },
@@ -129,7 +129,7 @@ const DICTIONARY = {
     voiceListening: 'Listening...',
     soilScanner: '📸 Soil Scanner & HUD Viewfinder',
     captureUpload: 'Capture / Upload',
-    voiceCommanderTitle: '🎙️️ Voice Field Commander'
+    voiceCommanderTitle: '🎙 Voice Field Commander'
   },
   ta: {
     title: '🌱 அக்ரிகாம்பானியன் AI',
@@ -873,7 +873,7 @@ export default function App() {
             </button>
           </div>
           {spokenTranscript ? (
-            <p className="text-xs italic bg-emerald-50 text-emerald-900 p-3 rounded-xl border border-emerald-200 mt-2">🗣️ "{spokenTranscript}"</p>
+            <p className="text-xs italic bg-emerald-50 text-emerald-900 p-3 rounded-xl border border-emerald-200 mt-2">🗣 "{spokenTranscript}"</p>
           ) : (
             <p className="text-[11px] text-slate-500 mt-2">
               {lang === 'ta' ? 'உதா: "தக்காளி 2 ஏக்கர் வண்டல் மண்" அல்லது "பருத்தி கரிசல் மண்"' : 'Try: "Tomato loam 2 acres" or "Cotton black soil"'}
