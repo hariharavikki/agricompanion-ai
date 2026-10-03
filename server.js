@@ -11,8 +11,8 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 5002;
 
-const memoryUsers = new Map();
-const memoryHistory = [];
+let memoryUsers = new Map();
+let memoryHistory = [];
 
 const pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
@@ -114,7 +114,7 @@ export const STATEWIDE_CROP_DIRECTORY = {
   coriander: { name: 'Coriander (Seed & Herb)', name_ta: 'கொத்தமல்லி', category: 'Spices & Tubers', avgYield: 4.5, mandiRate: 92.00, msp: 75.00, costPerAcre: 9000, defaultSoil: 'Black', harvestDur: '35 - 45 Days', safeMoisturePct: 9.0, ambientDays: 180, coldDays: 365, waterReqMm: 240 }
 };
 
-// FULL 37 CROP REPUTED COMPANION MATRIX
+// 37 DEDICATED 3-TIER HIERARCHY CROP PAIRINGS
 export const COMPANION_DATA_MAP = {
   brinjal: [
     { key: 'coriander', name: 'Coriander (Kothamalli)', name_ta: 'கொத்தமல்லி', ler: 1.34, nFixed: 0, ratio: '1:2', sp: '15 cm x 5 cm', dur: '35 - 45 Days', dur_ta: '35 - 45 நாட்கள்', why: 'Quick catch crop providing fast revenue before brinjal canopies close.', why_ta: 'கத்தரி கிளை பரப்பும் முன்பே 40 நாட்களில் பண வரவு தரும் குறுகிய காலப் பயிர்.' },
@@ -348,51 +348,81 @@ app.get('/api/weather', async (req, res) => {
   }
 });
 
+// Authentication Endpoint: accepts contact, password, and explicit farmer name
 app.post('/api/auth/login', async (req, res) => {
-  const { contactInfo, password } = req.body;
+  const { contactInfo, password, name } = req.body;
   if (!contactInfo || !password) return res.status(400).json({ error: 'Contact and password are required' });
+
+  const resolvedName = name && name.trim() ? name.trim() : contactInfo.split('@')[0];
 
   try {
     const [rows] = await pool.query('SELECT * FROM users WHERE contact = ?', [contactInfo]);
     if (rows && rows.length > 0) {
       const user = rows[0];
-      if (user.password === password) return res.json({ user: { id: user.id, contact: user.contact, name: user.name || user.contact.split('@')[0] } });
+      if (user.password === password) {
+        if (name && name.trim() && user.name !== name.trim()) {
+          await pool.query('UPDATE users SET name = ? WHERE id = ?', [name.trim(), user.id]);
+          user.name = name.trim();
+        }
+        return res.json({ user: { id: user.id, contact: user.contact, name: user.name || resolvedName } });
+      }
       return res.status(401).json({ error: 'Invalid password' });
     }
 
-    const [result] = await pool.query('INSERT INTO users (contact, password, name) VALUES (?, ?, ?)', [contactInfo, password, contactInfo.split('@')[0]]);
-    return res.json({ user: { id: result.insertId, contact: contactInfo, name: contactInfo.split('@')[0] } });
+    const [result] = await pool.query('INSERT INTO users (contact, password, name) VALUES (?, ?, ?)', [contactInfo, password, resolvedName]);
+    return res.json({ user: { id: result.insertId, contact: contactInfo, name: resolvedName } });
   } catch {
     if (memoryUsers.has(contactInfo)) {
       const existingUser = memoryUsers.get(contactInfo);
-      if (existingUser.password === password) return res.json({ user: { id: existingUser.id, contact: existingUser.contact, name: existingUser.name } });
+      if (existingUser.password === password) {
+        if (name && name.trim()) existingUser.name = name.trim();
+        return res.json({ user: { id: existingUser.id, contact: existingUser.contact, name: existingUser.name } });
+      }
       return res.status(401).json({ error: 'Invalid password' });
     }
-    const newUser = { id: Date.now(), contact: contactInfo, name: contactInfo.split('@')[0], password };
+    const newUser = { id: Date.now(), contact: contactInfo, name: resolvedName, password };
     memoryUsers.set(contactInfo, newUser);
     return res.json({ user: { id: newUser.id, contact: newUser.contact, name: newUser.name } });
   }
 });
 
+// History Save Endpoint
 app.post('/api/history/save', async (req, res) => {
   const { userId, primaryCrop, intercrop, district, constituency, season, soilType, waterStatus } = req.body;
   if (!userId || !primaryCrop) return res.status(400).json({ error: 'Missing required fields' });
 
   try {
-    await pool.query('INSERT INTO crop_history (user_id, primary_crop, intercrop, district, constituency, season, soil_type, water_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [userId, primaryCrop, intercrop, district, constituency, season, soilType, waterStatus]);
-    return res.json({ success: true });
+    const [result] = await pool.query(
+      'INSERT INTO crop_history (user_id, primary_crop, intercrop, district, constituency, season, soil_type, water_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      [userId, primaryCrop, intercrop, district, constituency, season, soilType, waterStatus]
+    );
+    return res.json({ success: true, id: result.insertId });
   } catch {
-    memoryHistory.unshift({ id: Date.now(), user_id: userId, primary_crop: primaryCrop, intercrop, district, constituency, season, soil_type: soilType, water_status: waterStatus, created_at: new Date().toISOString() });
-    return res.json({ success: true });
+    const newEntry = { id: Date.now(), user_id: userId, primary_crop: primaryCrop, intercrop, district, constituency, season, soil_type: soilType, water_status: waterStatus, created_at: new Date().toISOString() };
+    memoryHistory.unshift(newEntry);
+    return res.json({ success: true, id: newEntry.id });
   }
 });
 
+// History Fetch Endpoint
 app.get('/api/history/:userId', async (req, res) => {
   try {
     const [rows] = await pool.query('SELECT * FROM crop_history WHERE user_id = ? ORDER BY created_at DESC', [req.params.userId]);
     return res.json(rows);
   } catch {
     return res.json(memoryHistory.filter(h => String(h.user_id) === String(req.params.userId)));
+  }
+});
+
+// History Delete Endpoint
+app.delete('/api/history/:id', async (req, res) => {
+  const historyId = req.params.id;
+  try {
+    await pool.query('DELETE FROM crop_history WHERE id = ?', [historyId]);
+    return res.json({ success: true });
+  } catch {
+    memoryHistory = memoryHistory.filter(h => String(h.id) !== String(historyId));
+    return res.json({ success: true });
   }
 });
 

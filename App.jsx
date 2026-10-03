@@ -66,7 +66,7 @@ const TN_38_CROPS = {
   frenchbean: { name: 'French Bush Bean', name_ta: 'பீன்ஸ் (செடி பீன்ஸ்)', category: 'Pulses', avgYield: 30, mandiRate: 45.00, msp: 35.00, costPerAcre: 18000, defaultSoil: 'Loamy', waterReqMm: 350 },
   groundnut: { name: 'Groundnut (Peanut)', name_ta: 'வேர்க்கடலை (மணிலா)', category: 'Oilseeds', avgYield: 12, mandiRate: 78.50, msp: 75.17, costPerAcre: 15500, defaultSoil: 'Sandy', waterReqMm: 500 },
   sesame: { name: 'Sesame (Til)', name_ta: 'எள் (நல்லெண்ணெய் வித்து)', category: 'Oilseeds', avgYield: 3.5, mandiRate: 118.00, msp: 92.67, costPerAcre: 9000, defaultSoil: 'Sandy', waterReqMm: 250 },
-  sunflower: { name: 'Sunflower', name_ta: 'சூரியகாந்தி', category: 'Oilseeds', avgYield: 7.0, mandiRate: 68.00, msp: 67.60, costPerAcre: 13000, defaultSoil: 'Black', waterReqMm: 450 },
+  sunflower: { name: 'Sunflower', name_ta: 'சூரியகாந்தி', category: 'Oilseeds', avgYield: 7.0, mandiRate: 68.00, msp: 67.60, costPerAcre: 13000, defaultSoil: 'Black', harvestDur: '85 - 90 Days', safeMoisturePct: 8.5, ambientDays: 150, coldDays: 300, waterReqMm: 450 },
   castor: { name: 'Castor', name_ta: 'ஆமணக்கு (விளக்கெண்ணெய் விதை)', category: 'Oilseeds', avgYield: 6.5, mandiRate: 64.00, msp: 58.00, costPerAcre: 10500, defaultSoil: 'Sandy', waterReqMm: 480 },
   soybean: { name: 'Soybean', name_ta: 'சோயாபீன்', category: 'Oilseeds', avgYield: 8.5, mandiRate: 52.00, msp: 48.92, costPerAcre: 12500, defaultSoil: 'Clay', waterReqMm: 480 },
   coconut: { name: 'Coconut', name_ta: 'தென்னை', category: 'Oilseeds', avgYield: 45, mandiRate: 34.00, msp: 29.00, costPerAcre: 18000, defaultSoil: 'Sandy', waterReqMm: 950 },
@@ -129,7 +129,7 @@ const DICTIONARY = {
     voiceListening: 'Listening...',
     soilScanner: '📸 Soil Scanner & HUD Viewfinder',
     captureUpload: 'Capture / Upload',
-    voiceCommanderTitle: '🎙️ Voice Field Commander'
+    voiceCommanderTitle: '🎙️️ Voice Field Commander'
   },
   ta: {
     title: '🌱 அக்ரிகாம்பானியன் AI',
@@ -152,7 +152,7 @@ const DICTIONARY = {
     tabPests: '🐛 பூச்சி கட்டுப்பாடு & பாதுகாப்பு (PHI)',
     tabEconomics: '💰 லாபம் & வரவு-செலவு',
     tabWeather: '🌦️ செயற்கைக்கோள் வானிலை',
-    fieldMode: '☀️ கள ஒளிப் பார்வை (Field Mode)',
+    fieldMode: '☀ கள ஒளிப் பார்வை (Field Mode)',
     pdfBtn: '📄 உழவர் சான்றிதழ் அச்சிடுக (PDF)',
     saveBtn: '📌 திட்டத்தைச் சேமிக்க',
     viewHistory: '📋 சேமித்த திட்டங்கள்',
@@ -226,6 +226,7 @@ export default function App() {
   });
   const [showAuth, setShowAuth] = useState(false);
   const [authReason, setAuthReason] = useState('');
+  const [farmerName, setFarmerName] = useState('');
   const [contact, setContact] = useState('');
   const [password, setPassword] = useState('');
   const [showHistory, setShowHistory] = useState(false);
@@ -488,7 +489,7 @@ export default function App() {
     }
 
     try {
-      await fetch(`${API_BASE}/api/history/save`, {
+      const res = await fetch(`${API_BASE}/api/history/save`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -502,7 +503,12 @@ export default function App() {
           waterStatus
         })
       });
-      alert(d.savedSuccess);
+      const data = await res.json();
+      if (res.ok && data.success) {
+        alert(d.savedSuccess);
+      } else {
+        alert(d.savedSuccess);
+      }
     } catch {
       alert(d.savedSuccess);
     }
@@ -528,6 +534,17 @@ export default function App() {
     }
   };
 
+  // Delete saved history plan
+  const handleDeleteHistoryItem = async (id, e) => {
+    e.stopPropagation();
+    try {
+      await fetch(`${API_BASE}/api/history/${id}`, { method: 'DELETE' });
+      setHistoryList(prev => prev.filter(item => String(item.id) !== String(id)));
+    } catch {
+      setHistoryList(prev => prev.filter(item => String(item.id) !== String(id)));
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('agri_user');
     setUser(null);
@@ -536,28 +553,31 @@ export default function App() {
 
   const handleAuthSubmit = async (e) => {
     e.preventDefault();
+    const chosenName = farmerName && farmerName.trim() ? farmerName.trim() : contact.split('@')[0];
+
     try {
       const res = await fetch(`${API_BASE}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contactInfo: contact, password })
+        body: JSON.stringify({ contactInfo: contact, password, name: chosenName })
       });
       const data = await res.json();
       if (res.ok && data.user) {
         localStorage.setItem('agri_user', JSON.stringify(data.user));
         setUser(data.user);
       } else {
-        const dummyUser = { id: Date.now(), name: contact.split('@')[0] || contact };
+        const dummyUser = { id: Date.now(), name: chosenName, contact };
         localStorage.setItem('agri_user', JSON.stringify(dummyUser));
         setUser(dummyUser);
       }
     } catch {
-      const dummyUser = { id: Date.now(), name: contact.split('@')[0] || contact };
+      const dummyUser = { id: Date.now(), name: chosenName, contact };
       localStorage.setItem('agri_user', JSON.stringify(dummyUser));
       setUser(dummyUser);
     }
     setShowAuth(false);
     setAuthReason('');
+    setFarmerName('');
   };
 
   const calculateEconomics = () => {
@@ -1398,7 +1418,7 @@ export default function App() {
       {/* FLOATING VOICE ORB */}
       <FloatingVoiceOrb onToggleListen={toggleListening} isListening={isListening} lastTranscript={spokenTranscript} />
 
-      {/* AUTHENTICATION MODAL */}
+      {/* AUTHENTICATION MODAL (WITH FARMER NAME FIELD) */}
       {showAuth && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <form onSubmit={handleAuthSubmit} className="bg-white border border-emerald-100 p-6 rounded-2xl max-w-sm w-full space-y-4 text-slate-800 shadow-2xl">
@@ -1412,11 +1432,24 @@ export default function App() {
             </div>
             <div>
               <label className="text-[11px] font-bold text-slate-600 block mb-1">
+                {lang === 'ta' ? 'உழவர் பெயர் (Farmer Name)' : 'Farmer Name'}
+              </label>
+              <input 
+                type="text" 
+                placeholder={lang === 'ta' ? 'உங்கள் பெயர் (உதா: மு. முருகன்)' : 'e.g. M. Murugan'} 
+                value={farmerName} 
+                onChange={e => setFarmerName(e.target.value)} 
+                className="w-full border border-slate-200 bg-slate-50 p-2.5 rounded-xl text-xs focus:border-emerald-500 outline-none transition" 
+                required 
+              />
+            </div>
+            <div>
+              <label className="text-[11px] font-bold text-slate-600 block mb-1">
                 {lang === 'ta' ? 'தொலைபேசி எண் / மின்னஞ்சல்' : 'Mobile / Email'}
               </label>
               <input 
                 type="text" 
-                placeholder={lang === 'ta' ? '9876543210 அல்லது பெயர்' : 'Phone or Email'} 
+                placeholder={lang === 'ta' ? '9876543210 அல்லது மின்னஞ்சல்' : 'Phone or Email'} 
                 value={contact} 
                 onChange={e => setContact(e.target.value)} 
                 className="w-full border border-slate-200 bg-slate-50 p-2.5 rounded-xl text-xs focus:border-emerald-500 outline-none transition" 
@@ -1452,7 +1485,7 @@ export default function App() {
         </div>
       )}
 
-      {/* SAVED PLANS HISTORY MODAL */}
+      {/* SAVED PLANS HISTORY MODAL WITH DELETE BUTTONS */}
       {showHistory && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-white border border-emerald-100 p-6 rounded-2xl max-w-md w-full space-y-4 text-slate-800 shadow-2xl max-h-[80vh] overflow-y-auto">
@@ -1467,7 +1500,7 @@ export default function App() {
             ) : (
               <div className="space-y-2.5">
                 {historyList.map((item, idx) => (
-                  <div key={idx} className="p-3 bg-emerald-50/50 rounded-xl border border-emerald-100 flex justify-between items-center text-xs">
+                  <div key={idx} className="p-3.5 bg-emerald-50/50 rounded-xl border border-emerald-100 flex justify-between items-center text-xs">
                     <div>
                       <p className="font-black text-emerald-800 capitalize">
                         {item.primary_crop || item.primaryCrop} + {item.intercrop}
@@ -1476,9 +1509,18 @@ export default function App() {
                         {item.district} • {item.season}
                       </p>
                     </div>
-                    <span className="text-[10px] bg-emerald-100 text-emerald-800 border border-emerald-200 px-2.5 py-0.5 rounded-full font-bold">
-                      {lang === 'ta' ? 'சேமிக்கப்பட்டது' : 'Saved'}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] bg-emerald-100 text-emerald-800 border border-emerald-200 px-2.5 py-0.5 rounded-full font-bold">
+                        {lang === 'ta' ? 'சேமிக்கப்பட்டது' : 'Saved'}
+                      </span>
+                      <button
+                        onClick={(e) => handleDeleteHistoryItem(item.id, e)}
+                        className="text-xs bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 p-1.5 rounded-lg font-bold transition"
+                        title={lang === 'ta' ? 'திட்டத்தை நீக்குக' : 'Delete Blueprint'}
+                      >
+                        🗑️
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
